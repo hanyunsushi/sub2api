@@ -1,6 +1,15 @@
 <template>
+  <!-- 展示信息模块 / 数字展示 / 组件绘制动画：嵌入Canvas使用本系统图表适配，保留原数据模型。 -->
   <AppLayout>
-    <div class="space-y-6">
+    <div class="kreepai-dashboard space-y-6">
+      <!-- 警告信息 / 普通按钮：请求失败持续可见并可重试，后续失败保留已加载统计。 -->
+      <section v-if="loadError" class="card flex flex-wrap items-center gap-3 p-4" role="alert">
+        <Icon name="exclamationCircle" size="md" class="shrink-0 text-red-500" />
+        <p class="min-w-0 flex-1">{{ t('admin.dashboard.failedToLoad') }}</p>
+        <button type="button" class="btn btn-secondary" :disabled="chartsLoading" :aria-busy="chartsLoading" @click="loadDashboardStats">
+          {{ t('common.tryAgain') }}
+        </button>
+      </section>
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <LoadingSpinner />
@@ -12,14 +21,15 @@
           <!-- Total API Keys -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
                 <Icon name="key" size="md" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.apiKeys') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.total_api_keys }}
                 </p>
                 <p class="text-xs text-green-600 dark:text-green-400">
@@ -32,14 +42,15 @@
           <!-- Service Accounts -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
                 <Icon name="server" size="md" class="text-purple-600 dark:text-purple-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.accounts') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.total_accounts }}
                 </p>
                 <p class="text-xs">
@@ -57,14 +68,15 @@
           <!-- Today Requests -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
                 <Icon name="chart" size="md" class="text-green-600 dark:text-green-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.todayRequests') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                   {{ stats.today_requests }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -77,14 +89,15 @@
           <!-- New Users Today -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-emerald-100 p-2 dark:bg-emerald-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-emerald-100 p-2 dark:bg-emerald-900/30">
                 <Icon name="userPlus" size="md" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.users') }}
                 </p>
-                <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                <p class="kreepai-dashboard-value text-xl font-bold text-emerald-600 dark:text-emerald-400">
                   +{{ stats.today_new_users }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -100,14 +113,15 @@
           <!-- Today Tokens -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
                 <Icon name="cube" size="md" class="text-amber-600 dark:text-amber-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.todayTokens') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatTokens(stats.today_tokens) }}
                 </p>
                 <p class="text-xs">
@@ -136,14 +150,15 @@
           <!-- Total Tokens -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-indigo-100 p-2 dark:bg-indigo-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-indigo-100 p-2 dark:bg-indigo-900/30">
                 <Icon name="database" size="md" class="text-indigo-600 dark:text-indigo-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.totalTokens') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatTokens(stats.total_tokens) }}
                 </p>
                 <p class="text-xs">
@@ -172,7 +187,8 @@
           <!-- Performance (RPM/TPM) -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-violet-100 p-2 dark:bg-violet-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-violet-100 p-2 dark:bg-violet-900/30">
                 <Icon name="bolt" size="md" class="text-violet-600 dark:text-violet-400" :stroke-width="2" />
               </div>
               <div class="flex-1">
@@ -180,7 +196,7 @@
                   {{ t('admin.dashboard.performance') }}
                 </p>
                 <div class="flex items-baseline gap-2">
-                  <p class="text-xl font-bold text-gray-900 dark:text-white">
+                  <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                     {{ formatTokens(stats.rpm) }}
                   </p>
                   <span class="text-xs text-gray-500 dark:text-gray-400">RPM</span>
@@ -198,14 +214,15 @@
           <!-- Avg Response Time -->
           <div class="card p-4">
             <div class="flex items-center gap-3">
-              <div class="rounded-lg bg-rose-100 p-2 dark:bg-rose-900/30">
+              <!-- 卡片SVG / 图标底框：嵌入摘要图标中性，状态继续由数值说明表达。 -->
+              <div class="kreepai-dashboard-icon rounded-lg bg-rose-100 p-2 dark:bg-rose-900/30">
                 <Icon name="clock" size="md" class="text-rose-600 dark:text-rose-400" :stroke-width="2" />
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
                   {{ t('admin.dashboard.avgResponse') }}
                 </p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white">
+                <p class="kreepai-dashboard-value text-xl font-bold text-gray-900 dark:text-white">
                   {{ formatDuration(stats.average_duration_ms) }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -279,9 +296,8 @@
                   @change="onDateRangeChange"
                 />
               </div>
-              <button @click="loadDashboardStats" :disabled="chartsLoading" class="btn btn-secondary">
-                {{ t('common.refresh') }}
-              </button>
+              <!-- 普通按钮 / 悬浮效果：原刷新回调与请求状态，标准SVG不改变按钮位置。 -->
+            <RefreshButton :label="t('common.refresh')" @refresh="loadDashboardStats" :loading="chartsLoading" />
               <div class="ml-auto flex items-center gap-2">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t('admin.dashboard.granularity') }}:</span
@@ -320,19 +336,14 @@
           <div class="card p-4">
             <div class="mb-4 flex items-center justify-between gap-3">
               <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('admin.dashboard.recentUsage') }} (Top 12)</h3>
-              <div class="flex gap-1" role="group" :aria-label="t('admin.dashboard.recentUsage')">
-                <button v-for="metric in (['tokens', 'actual_cost'] as const)" :key="metric" type="button"
-                  class="rounded px-2 py-1 text-xs" :class="userTrendMetric === metric ? 'bg-blue-600 text-white' : 'text-gray-600 dark:text-gray-300'"
-                  :aria-pressed="userTrendMetric === metric" @click="setUserTrendMetric(metric)">
-                  {{ t(metric === 'tokens' ? 'admin.dashboard.tokens' : 'admin.dashboard.actualSpending') }}
-                </button>
-              </div>
+              <!-- 路由切换组件：最近使用保留原tokens/actual_cost查询。 -->
+              <RouteSwitch :model-value="userTrendMetric" :label="t('admin.dashboard.recentUsage')" :options="[{ value:'tokens',label:t('admin.dashboard.tokens') },{ value:'actual_cost',label:t('admin.dashboard.actualSpending') }]" @update:model-value="setUserTrendMetric($event as 'tokens' | 'actual_cost')" />
             </div>
-            <div class="h-64">
+            <div class="kreepai-users-plot h-64">
               <div v-if="userTrendLoading" class="flex h-full items-center justify-center">
                 <LoadingSpinner size="md" />
               </div>
-              <Line v-else-if="userTrendChartData" :data="userTrendChartData" :options="lineOptions" />
+              <Line :plugins="embeddedChartPlugins" role="img" aria-label="用户用量趋势图" v-else-if="userTrendChartData" :data="userTrendChartData" :options="lineOptions" />
               <div
                 v-else
                 class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
@@ -348,7 +359,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import RefreshButton from '@/components/common/RefreshButton.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
+import { consoleChartPlugins, consoleSeriesColors } from '@/styles/design-system/chart-style'
+const embeddedChartPlugins = consoleChartPlugins()
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
@@ -399,6 +414,7 @@ const router = useRouter()
 const { canUseBatchImage, refreshBatchImageAccess } = useBatchImageAccess()
 const stats = ref<DashboardStats | null>(null)
 const loading = ref(false)
+const loadError = ref(false)
 const chartsLoading = ref(false)
 const userTrendLoading = ref(false)
 const rankingLoading = ref(false)
@@ -548,7 +564,7 @@ const userTrendChartData = computed(() => {
   })
 
   const sortedDates = Array.from(allDates).sort()
-  const colors = [
+  const colors = consoleSeriesColors([
     '#3b82f6',
     '#10b981',
     '#f59e0b',
@@ -561,7 +577,7 @@ const userTrendChartData = computed(() => {
     '#84cc16',
     '#06b6d4',
     '#a855f7'
-  ]
+  ])
 
   const datasets = Array.from(userGroups.values()).map((group, idx) => ({
     label: group.name,
@@ -676,10 +692,13 @@ const loadDashboardSnapshot = async (includeStats: boolean) => {
     if (includeStats && response.stats) {
       stats.value = response.stats
     }
+    if (!stats.value) throw new Error('Dashboard snapshot did not contain statistics')
+    loadError.value = false
     trendData.value = response.trend || []
     modelStats.value = response.models || []
   } catch (error) {
     if (currentSeq !== chartLoadSeq) return
+    loadError.value = true
     appStore.showError(t('admin.dashboard.failedToLoad'))
     console.error('Error loading dashboard snapshot:', error)
   } finally {
@@ -767,10 +786,22 @@ const loadChartData = async () => {
   ])
 }
 
+const recoverDashboard = () => {
+  if (loadError.value && !chartsLoading.value) void loadDashboardStats()
+}
+
 onMounted(() => {
+  window.addEventListener('online', recoverDashboard)
   void refreshBatchImageAccess()
   loadDashboardStats()
 })
+onBeforeUnmount(() => {
+  window.removeEventListener('online', recoverDashboard)
+  chartLoadSeq++
+  usersTrendLoadSeq++
+  rankingLoadSeq++
+})
+// 顶栏 / 普通按钮：刷新仍调用原统计/趋势请求，不复制业务流程。
 </script>
 
 <style scoped>

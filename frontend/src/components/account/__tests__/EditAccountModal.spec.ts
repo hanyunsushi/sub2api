@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import {
   BUILTIN_PLATFORM_CATALOG,
   resetPlatformCatalog,
@@ -43,6 +43,12 @@ vi.mock('@/api/admin', () => ({
       list: vi.fn().mockResolvedValue([])
     }
   }
+}))
+
+vi.mock('@/api/auth', () => ({ getPublicSettings: vi.fn().mockResolvedValue({}) }))
+vi.mock('@/api/aiLogoPresets', () => ({
+  appendCustomAILogoPreset: vi.fn().mockResolvedValue({ custom_ai_logo_presets: [] }),
+  deleteCustomAILogoPreset: vi.fn().mockResolvedValue({ custom_ai_logo_presets: [] })
 }))
 
 vi.mock('@/api/admin/accounts', () => ({
@@ -335,6 +341,59 @@ describe('EditAccountModal', () => {
   })
 
   afterEach(() => vi.useRealTimers())
+
+  it.each(['custom_logo_url', 'logo_url'])('restores %s and saves a custom logo without losing other metadata', async key => {
+    const account = buildAccount()
+    account.extra = { [key]: 'https://example.com/old.png', retained_metadata: { enabled: true } }
+    updateAccountMock.mockReset().mockResolvedValue(account)
+    checkMixedChannelRiskMock.mockReset().mockResolvedValue({ has_risk: false })
+    const wrapper = mountModal(account)
+    const input = wrapper.get<HTMLInputElement>('[data-testid="edit-account-logo-url"]')
+    expect(input.element.value).toBe('https://example.com/old.png')
+    await input.setValue('https://example.com/new.png')
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+    const payload = updateAccountMock.mock.calls[0][1]
+    expect(payload.extra.custom_logo_url).toBe('https://example.com/new.png')
+    expect(payload.extra).not.toHaveProperty('logo_url')
+    expect(payload.extra.retained_metadata).toEqual({ enabled: true })
+    expect(account.extra[key]).toBe('https://example.com/old.png')
+    wrapper.unmount()
+  })
+
+  it('keeps the original logo preset picker and can clear both logo aliases to restore automatic matching', async () => {
+    const account = buildAccount()
+    account.extra = { custom_logo_url: 'https://example.com/old.png', logo_url: 'https://example.com/legacy.png', retained_metadata: true }
+    updateAccountMock.mockReset().mockResolvedValue(account)
+    checkMixedChannelRiskMock.mockReset().mockResolvedValue({ has_risk: false })
+    const wrapper = mountModal(account)
+    await flushPromises()
+    const preset = wrapper.get('[data-testid="common-logo-picker-button-select-preset-preset-url"]')
+    const presetURL = preset.get('img').attributes('src')
+    await preset.trigger('click')
+    expect(wrapper.get<HTMLInputElement>('[data-testid="edit-account-logo-url"]').element.value).toBe(presetURL)
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+    expect(updateAccountMock.mock.calls[0][1].extra.custom_logo_url).toBe(presetURL)
+    updateAccountMock.mockClear()
+    await wrapper.get('[data-testid="edit-account-logo-url"]').setValue('')
+    await wrapper.get('form#edit-account-form').trigger('submit.prevent')
+    expect(updateAccountMock.mock.calls[0][1].extra).not.toHaveProperty('custom_logo_url')
+    expect(updateAccountMock.mock.calls[0][1].extra).not.toHaveProperty('logo_url')
+    expect(updateAccountMock.mock.calls[0][1].extra.retained_metadata).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('resets unsaved logo changes when reopening or switching accounts', async () => {
+    const account = buildAccount()
+    account.extra = { custom_logo_url: 'https://example.com/first.png' }
+    const wrapper = mountModal(account)
+    await wrapper.get('[data-testid="edit-account-logo-url"]').setValue('https://example.com/unsaved.png')
+    await wrapper.setProps({ show: false })
+    await wrapper.setProps({ show: true })
+    expect(wrapper.get<HTMLInputElement>('[data-testid="edit-account-logo-url"]').element.value).toBe('https://example.com/first.png')
+    await wrapper.setProps({ account: { ...account, id: 2, extra: { logo_url: 'https://example.com/second.png' } } })
+    expect(wrapper.get<HTMLInputElement>('[data-testid="edit-account-logo-url"]').element.value).toBe('https://example.com/second.png')
+    wrapper.unmount()
+  })
 
   it('passes existing non-identity mappings to the whitelist selector and preserves them on save', async () => {
     const account = buildAccount()

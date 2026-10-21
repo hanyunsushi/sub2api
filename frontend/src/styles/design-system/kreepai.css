@@ -1,0 +1,498 @@
+@import './fonts.css';
+@import './loading.css';
+
+/* 展示信息模块：AI本身的共享视觉合同：独立站与Console使用同一份；仅MFE构建在产物边界增加CSS作用域。 */
+:root.kreepai-design-system {
+  --bg: #fff;
+  --card: #fafafa;
+  --card-hover: #f0f0f0;
+  --border: oklch(92% 0 0);
+  --border-strong: oklch(87% 0 0);
+  --text: oklch(21% 0 0);
+  --text-2: oklch(37% 0 0);
+  --text-3: oklch(55.6% 0 0);
+  --accent: #007aff;
+  --accent-button-hover: #298fff;
+  --ff-heading: 'Fraunces', 'Source Han Serif SC', serif;
+  --ff-body: 'Inter', 'Resource Han Rounded CN', sans-serif;
+  --ff-mono: 'Courier Prime', ui-monospace, Menlo, Consolas, monospace;
+  --button-height: 32px;
+  font: 400 14px/20px var(--ff-body);
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: light;
+  min-width: 0;
+}
+:root.kreepai-design-system button, :root.kreepai-design-system input, :root.kreepai-design-system textarea, :root.kreepai-design-system select { font-family: var(--ff-body); }
+:root.kreepai-design-system h1, :root.kreepai-design-system h2, :root.kreepai-design-system h3, :root.kreepai-design-system h4, :root.kreepai-design-system .modal-title { font-family: var(--ff-heading); color: var(--text); letter-spacing: 0; }
+:root.kreepai-design-system h1 { font-size: 24px; line-height: 30px; font-weight: 650; }
+:root.kreepai-design-system h2 { font-size: 20px; line-height: 24px; }
+:root.kreepai-design-system h3 { font-size: 18px; line-height: 22px; }
+/* 数字展示：仅数值、代码和明确的原等宽节点使用等宽；单位和说明仍为正文。 */
+:root.kreepai-design-system .font-mono, :root.kreepai-design-system code, :root.kreepai-design-system pre, :root.kreepai-design-system .stat-value { font-family: var(--ff-mono); font-variant-numeric: tabular-nums; }
+:root.kreepai-design-system ::selection { background: rgba(0,122,255,.2); color: inherit; }
+/* 项目超链接：保留原 href、router 与可访问名称。 */
+:root.kreepai-design-system a.project-link { color: var(--accent); }
+:root.kreepai-design-system a.project-link:is(:hover, :focus-visible) { color: #033160; text-decoration: underline; text-underline-offset: 3px; }
+:root.kreepai-design-system :where(button, a, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 普通按钮 / 标准默认弧边按钮：同组32px，禁用/等待沿用原业务状态，按下不位移。 */
+:root.kreepai-design-system .btn, :root.kreepai-design-system .kreepai-confirm-cancel, :root.kreepai-design-system .kreepai-confirm-primary {
+  min-height: var(--button-height); height: auto; padding: 5px 10px;
+  font-size: 13px; line-height: 20px; font-weight: 500;
+  border-radius: 8px; border: 0;
+  background-image: none; box-shadow: 0 0 0 1px var(--border); transform: none;
+  transition: box-shadow .4s ease, opacity .4s ease;
+}
+:root.kreepai-design-system .btn:is(:hover, :active, :focus), :root.kreepai-design-system .kreepai-confirm-cancel:is(:hover, :active) { transform: none; background-image: none; }
+:root.kreepai-design-system .btn-secondary, :root.kreepai-design-system .btn-ghost, :root.kreepai-design-system .kreepai-confirm-cancel { color: var(--text-2); background: transparent; }
+:root.kreepai-design-system .btn-secondary:is(:hover, :active), :root.kreepai-design-system .kreepai-confirm-cancel:is(:hover, :active) {
+  color: var(--text-2); background: transparent; box-shadow: 0 0 0 1px var(--border);
+}
+/* 标准默认弧边按钮：只在原操作明确需要弧边时采用18px，不把普通工具按钮全部胶囊化。 */
+:root.kreepai-design-system .btn-arc, :root.kreepai-design-system .kreepai-confirm-cancel { border-radius: 18px; }
+/* 强调按钮：页面创建等普通主操作8px角，固定蓝底与1px外环，悬浮仅播放共享白色内光。 */
+:root.kreepai-design-system .btn-primary, :root.kreepai-design-system .btn-success, :root.kreepai-design-system .btn-warning, :root.kreepai-design-system .kreepai-confirm-primary {
+  color: #fff; background: var(--accent); border-color: var(--accent); border-radius: 8px; box-shadow: 0 0 0 1px var(--accent);
+}
+:root.kreepai-design-system :is(.btn-primary, .btn-success, .btn-warning, .kreepai-confirm-primary):is(:hover, :focus-visible, :active) {
+  color: #fff; background: var(--accent); border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+/* 高亮弧边按钮：显式风险/确认动作保留18px角，不能把所有primary强制归入弧边。 */
+:root.kreepai-design-system :is(.btn-highlight-arc, .btn-warning, .kreepai-confirm-primary) { border-radius: 18px; }
+:root.kreepai-design-system :is(.btn-highlight-arc, .btn-warning, .kreepai-confirm-primary):focus { background: var(--accent); }
+:root.kreepai-design-system .btn:focus:not(:focus-visible) { outline: none; }
+:root.kreepai-design-system .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:root.kreepai-design-system .btn:disabled { box-shadow: 0 0 0 1px var(--border); }
+/* 删除按钮：红字透明底，与取消/编辑共享几何，不再使用渐变实红。 */
+:root.kreepai-design-system .btn-danger { border-radius: 18px; color: #ff3b30; background: transparent; border-color: transparent; box-shadow: none; }
+:root.kreepai-design-system .btn-danger:is(:hover, :focus) { color: #ff3b30; background: rgba(46,51,56,.09); border-color: transparent; box-shadow: none; }
+:root.kreepai-design-system .btn-danger:active { background: rgba(46,51,56,.13); }
+:root.kreepai-design-system button:disabled { cursor: not-allowed; opacity: .5; transform: none; }
+/* 普通按钮：明确的图标按钮使用方形命中区，避免图标加文字内距后变成36px宽。 */
+:root.kreepai-design-system .btn.btn-icon { width: var(--button-height); min-width: var(--button-height); height: var(--button-height); padding: 0; flex-shrink: 0; }
+:root.kreepai-design-system .btn.btn-icon > svg { flex-shrink: 0; }
+
+/* 普通按钮 / 标准默认弧边按钮 / 顶栏触发器：灰色内阴影进出均400ms，不加深文字、不扩散边框。 */
+:root.kreepai-design-system :is(.btn-secondary, .btn-ghost, .kreepai-confirm-cancel) {
+  --button-hover-rest: inset 0 0 rgb(0 7 7 / .12);
+  --button-hover-fill: inset 0 0 32px rgb(0 7 7 / .12);
+}
+/* 强调按钮 / 高亮弧边按钮 / 复制按钮：蓝底白字，32px/32%白色内光；不影响真实loading或原几何。 */
+:root.kreepai-design-system :is(.btn-primary, .btn-success, .btn-warning, .kreepai-confirm-primary) {
+  --button-hover-rest: inset 0 0 #ffffff26;
+  --button-hover-fill: inset 0 0 32px rgb(255 255 255 / .32);
+}
+:root.kreepai-design-system :is(.btn-secondary, .btn-ghost, .kreepai-confirm-cancel, .btn-primary, .btn-success, .btn-warning, .kreepai-confirm-primary),
+:root.kreepai-design-system .kreepai-header-controls > a,
+:root.kreepai-design-system .kreepai-header-controls > div > button {
+  position: relative; isolation: isolate;
+}
+:root.kreepai-design-system :is(.btn-secondary, .btn-ghost, .kreepai-confirm-cancel, .btn-primary, .btn-success, .btn-warning, .kreepai-confirm-primary)::after,
+:root.kreepai-design-system .kreepai-header-controls > a::after,
+:root.kreepai-design-system .kreepai-header-controls > div > button::after {
+  content: ''; position: absolute; inset: -1px; z-index: -1; border-radius: inherit; pointer-events: none;
+  box-shadow: var(--button-hover-rest, inset 0 0 rgb(0 7 7 / .12));
+  transition: box-shadow .4s ease;
+}
+:root.kreepai-design-system :is(.btn-secondary, .btn-ghost, .kreepai-confirm-cancel, .btn-primary, .btn-success, .btn-warning, .kreepai-confirm-primary):not(:disabled):is(:hover, :active, :focus-visible)::after,
+:root.kreepai-design-system .kreepai-header-controls > a:hover::after,
+:root.kreepai-design-system .kreepai-header-controls > div > button:not(:disabled):hover::after {
+  box-shadow: var(--button-hover-fill, inset 0 0 32px rgb(0 7 7 / .12));
+}
+@media (prefers-reduced-motion: reduce) {
+  :root.kreepai-design-system :is(.btn, .kreepai-confirm-cancel, .kreepai-confirm-primary)::after,
+  :root.kreepai-design-system .kreepai-header-controls > a::after,
+  :root.kreepai-design-system .kreepai-header-controls > div > button::after { transition: none; }
+}
+
+/* 填写框：蓝色内边线，无外扩光晕；选择器展开保持中性。 */
+:root.kreepai-design-system .input, :root.kreepai-design-system .select-trigger, :root.kreepai-design-system .select-search-input {
+  font-size: 14px; line-height: 20px; min-height: 34px; max-width: 100%;
+  border-radius: 18px; border: 1px solid #d1cfc5;
+  background: var(--bg); color: var(--text); box-shadow: none;
+  transition: border-color .25s, box-shadow .25s;
+}
+:root.kreepai-design-system .input:focus { border-color: var(--accent); outline: none; box-shadow: inset 0 0 0 1px var(--accent); }
+:root.kreepai-design-system .input[readonly]:focus { border-color: #d1cfc5; box-shadow: none; }
+:root.kreepai-design-system .input-error, :root.kreepai-design-system .input-error:focus { border-color: #ff3b30; }
+:root.kreepai-design-system .input-label { color: var(--text-2); font-weight: 560; }
+:root.kreepai-design-system .select-trigger:is(:hover, :focus, .select-trigger-open) { border-color: #d1cfc5; box-shadow: none; }
+/* 下拉选择菜单：只更改面板与选项，原搜索、键盘、disabled和定位逻辑不变。 */
+:root.kreepai-design-system .select-dropdown-portal, :root.kreepai-design-system .select-dropdown, :root.kreepai-design-system .dropdown {
+  border-radius: 16px; padding: 12px; background: var(--bg);
+  border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(0,0,0,.05);
+  max-width: calc(100vw - 16px);
+}
+:root.kreepai-design-system .select-option, :root.kreepai-design-system .dropdown-item { border-radius: 8px; min-height: 40px; padding: 8px 12px; white-space: normal; overflow-wrap: anywhere; }
+:root.kreepai-design-system .select-option:is(:hover, .select-option-selected, .select-option-focused), :root.kreepai-design-system .dropdown-item:hover { color: var(--text); background: var(--card-hover); }
+:root.kreepai-design-system .select-option-disabled { opacity: .5; }
+
+/* 展示卡片 / 展示信息模块：页面白、一级250；二级独立卡白，透明布局不增加层级。 */
+:root.kreepai-design-system .sub2api-microfrontend-content, :root.kreepai-design-system .sub2api-microfrontend-content > div { min-height: 0; background: var(--bg); }
+:root.kreepai-design-system .card, :root.kreepai-design-system .glass-card, :root.kreepai-design-system .stat-card, :root.kreepai-design-system .kreepai-data-card {
+  background: var(--card); border-radius: 18px; border: 0; box-shadow: none;
+  backdrop-filter: none;
+}
+:root.kreepai-design-system .card .card, :root.kreepai-design-system .card .kreepai-data-card { background: var(--bg); }
+/* 悬浮效果：进入与离开都连续插值阴影，不改变卡片底色、位置或尺寸。 */
+:root.kreepai-design-system .card-hover, :root.kreepai-design-system .kreepai-data-card {
+  transition: box-shadow .25s ease;
+}
+:root.kreepai-design-system .card-hover:is(:hover, :focus-visible), :root.kreepai-design-system .kreepai-data-card:is(:hover, :focus-within) {
+  transform: none; box-shadow: 0 8px 28px rgba(0,0,0,.08);
+}
+:root.kreepai-design-system .stat-card { padding: 14px 16px 12px; gap: 12px; }
+/* 卡片SVG / 图标底框：摘要图标中性，不用健康色装饰普通统计。 */
+:root.kreepai-design-system .stat-icon { width: 42px; height: 42px; border-radius: 12px; color: var(--text-2); background: var(--card-hover); flex-shrink: 0; }
+:root.kreepai-design-system .stat-label { color: var(--text-3); font-size: 12.5px; line-height: 18px; font-weight: 550; }
+:root.kreepai-design-system .stat-value { font-size: 26px; line-height: 1.15; font-weight: 700; }
+
+/* 区分-状态牌 / 区分-信息牌：统一6px标签几何，业务状态与身份不混淆。 */
+:root.kreepai-design-system .badge, :root.kreepai-design-system .kreepai-status {
+  display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 6px;
+  padding: 3px 10px; font: 600 13px/20px var(--ff-body); max-width: 100%;
+}
+:root.kreepai-design-system .kreepai-status > span:first-child { display: none; }
+:root.kreepai-design-system .kreepai-status > span:last-child { font: inherit; color: inherit; }
+:root.kreepai-design-system .badge-primary { background: rgba(0,122,255,.18); color: #0066cc; }
+:root.kreepai-design-system .badge-success, :root.kreepai-design-system .kreepai-status:is([data-status=active], [data-status=success]) { background: rgba(52,199,89,.18); color: #12a652; }
+:root.kreepai-design-system .badge-warning, :root.kreepai-design-system .kreepai-status[data-status=warning] { background: rgba(255,149,0,.2); color: #e37100; }
+:root.kreepai-design-system .badge-danger, :root.kreepai-design-system .kreepai-status:is([data-status=error], [data-status=danger]) { background: rgba(255,59,48,.18); color: #dd3730; }
+:root.kreepai-design-system .badge-gray, :root.kreepai-design-system .kreepai-status:is([data-status=disabled], [data-status=inactive]) { background: rgba(142,142,147,.2); color: #828282; }
+
+/* 展示信息模块：保留表格虚拟化的独立纵向滚动；页面内容仍由Host原生滚动承载。 */
+:root.kreepai-design-system .table-page-layout { min-width: 0; max-width: 100%; gap: 18px; }
+:root.kreepai-design-system .table-scroll-container { border: 0; border-radius: 18px; box-shadow: none; background: var(--card); }
+:root.kreepai-design-system .table-wrapper { max-width: 100%; }
+:root.kreepai-design-system .table-header, :root.kreepai-design-system .table th { background: var(--card); color: var(--text-2); font-weight: 600; }
+:root.kreepai-design-system .table-body { background: var(--bg); }
+/* 分页：外置分页不被表格圆角裁切；8px按钮，活动Apple蓝，手机原模型不变。 */
+:root.kreepai-design-system .kreepai-pagination { border: 0; background: transparent; padding: 12px 0; gap: 12px; flex-wrap: wrap; overflow: visible; }
+:root.kreepai-design-system .kreepai-pagination nav { gap: 4px; box-shadow: none; flex-wrap: wrap; }
+:root.kreepai-design-system .kreepai-pagination button { border-radius: 8px; margin-left: 0; min-width: 32px; min-height: var(--button-height); box-shadow: none; }
+:root.kreepai-design-system .kreepai-pagination [aria-current=page] { background: var(--accent); color: #fff; border-color: var(--accent); }
+:root.kreepai-design-system .kreepai-pagination [aria-current=page]:is(:hover, :focus) { background: var(--accent-button-hover); color: #fff; }
+/* 切换开关：40×23轨道与17px滑块；复用原生button布尔模型和可访问名称。 */
+:root.kreepai-design-system .kreepai-switch { width: 40px; height: 23px; border: 3px solid transparent; box-shadow: none; }
+:root.kreepai-design-system .kreepai-switch > span { width: 17px; height: 17px; transition: transform .5s cubic-bezier(.68,-.55,.265,1.55); }
+:root.kreepai-design-system .kreepai-switch[aria-checked=true] > span { transform: translateX(17px); }
+:root.kreepai-design-system .kreepai-switch[aria-checked=false] > span { transform: translateX(0); }
+/* 复选框 / 单选框：保留原生选择和键盘模型，鼠标不产生外晕。 */
+:root.kreepai-design-system input[type=checkbox] { border-radius: 4px; accent-color: var(--accent); box-shadow: none; }
+:root.kreepai-design-system input[type=radio] { accent-color: var(--accent); }
+
+/* 提示信息 / 浮层：表单、焦点陷阱和确认回调保留原组件；浮层独立在应用overlay根。 */
+:root.kreepai-design-system .modal-overlay, :root.kreepai-design-system .dialog-overlay { border-radius: 0; }
+:root.kreepai-design-system .modal-content, :root.kreepai-design-system .dialog-container { border-radius: 18px; background: var(--card); border: 1px solid var(--border); box-shadow: 0 4px 16px rgba(0,7,7,.16); }
+:root.kreepai-design-system .modal-header, :root.kreepai-design-system .modal-footer, :root.kreepai-design-system .dialog-header, :root.kreepai-design-system .dialog-footer { border-color: var(--border); gap: 8px; flex-wrap: wrap; }
+:root.kreepai-design-system .modal-title { font-size: 20px; line-height: 24px; }
+:root.kreepai-design-system .modal-body, :root.kreepai-design-system .dialog-body { min-width: 0; overscroll-behavior: contain; }
+:root.kreepai-design-system .toast { min-width: 0; max-width: min(420px, calc(100vw - 32px)); border-radius: 18px; }
+
+@media (max-width: 768px) {
+  /* 展示信息模块：窄屏不压缩数据内容，原移动卡片完整展示，动作可换行。 */
+  :root.kreepai-design-system h1 { font-size: 20px; line-height: 24px; }
+  :root.kreepai-design-system .stat-icon { width: 38px; height: 38px; }
+  :root.kreepai-design-system .kreepai-data-card { padding: 14px; }
+  :root.kreepai-design-system .modal-header, :root.kreepai-design-system .modal-footer, :root.kreepai-design-system .modal-body { padding: 14px; }
+  :root.kreepai-design-system .modal-footer > *, :root.kreepai-design-system .dialog-footer > * { max-width: 100%; }
+  :root.kreepai-design-system .kreepai-pagination { font-size: 12px; }
+}
+@media (pointer: coarse) {
+  /* 普通按钮 / 填写框 / 分页：触摸命中区44px，不放大原图标与字体。 */
+  :root.kreepai-design-system { --button-height: 44px; }
+  :root.kreepai-design-system .btn, :root.kreepai-design-system .kreepai-confirm-cancel, :root.kreepai-design-system .kreepai-confirm-primary { padding-block: 11px; }
+  :root.kreepai-design-system .input, :root.kreepai-design-system .select-trigger { min-height: 44px; }
+  :root.kreepai-design-system .kreepai-pagination button { min-width: 44px; }
+  :root.kreepai-design-system .kreepai-switch::before { content: ''; position: absolute; inset: -11px -2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* 组件绘制动画：低动态直接显示有效状态，不改变真实等待/禁用含义。 */
+  :root.kreepai-design-system *, :root.kreepai-design-system *::before, :root.kreepai-design-system *::after { scroll-behavior: auto; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* 展示信息模块 / 品牌标识：认证专项0.9/1.1分栏，860px转单列；不是控制台卡片。 */
+:root.kreepai-design-system .kreepai-auth { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: 100dvh; background: var(--bg); border-radius: 0; }
+:root.kreepai-design-system .kreepai-auth-aside { align-self: start; position: sticky; top: var(--auth-top-offset, 0px); height: var(--console-page-height, 100dvh); display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: clamp(32px, 5vw, 72px); background: var(--text); color: #fff; border-radius: 0; }
+:root.kreepai-design-system .kreepai-auth-aside h1 { color: #fff; font-size: clamp(40px, 4.5vw, 64px); line-height: 1.04; max-width: 440px; }
+:root.kreepai-design-system .kreepai-auth-aside p { max-width: 440px; line-height: 1.65; }
+:root.kreepai-design-system .kreepai-auth-eyebrow { font-size: 12px; }
+:root.kreepai-design-system .kreepai-auth-main { display: grid; place-items: center; padding: 32px clamp(20px, 3vw, 44px); min-width: 0; border-radius: 0; }
+:root.kreepai-design-system .kreepai-auth-form { width: 100%; max-width: 460px; min-width: 0; }
+:root.kreepai-design-system .kreepai-auth-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font: 500 20px/24px var(--ff-heading); }
+:root.kreepai-design-system .kreepai-auth-brand img { border-radius: 8px; object-fit: contain; }
+:root.kreepai-design-system .kreepai-auth-footer { margin-top: 24px; text-align: center; }
+/* 展示卡片 / 数字展示 / 区分-信息牌：外部订阅页的业务派生容器，不根据请求成功染色。 */
+:root.kreepai-design-system .external-subscription-card { background: var(--card); border: 0; box-shadow: none; border-radius: 18px; }
+:root.kreepai-design-system .external-subscription-balance-value { font-family: var(--ff-mono); }
+:root.kreepai-design-system :is(.external-subscription-template-chip, .external-subscription-keyword) { border-radius: 6px; padding: 3px 10px; font-size: 13px; font-weight: 600; background: rgba(0,122,255,.18); color: #0066cc; }
+@media (max-width: 860px) {
+  :root.kreepai-design-system .kreepai-auth { grid-template-columns: minmax(0, 1fr); }
+  :root.kreepai-design-system .kreepai-auth-aside { display: none; }
+  :root.kreepai-design-system .kreepai-auth-main { align-items: start; padding: 32px 20px; }
+}
+
+/* 展示卡片：账号页table-scroll-container是透明布局包装，账号卡仍是一级250，不多算嵌套。 */
+:root.kreepai-design-system .accounts-page .kreepai-data-card { background: var(--card); border-radius: 18px; }
+
+/* 普通按钮 / 删除按钮：账号行显式使用共享btn语义，文字与图标同一基线；行内组可换行。 */
+:root.kreepai-design-system .account-card-actions > button > span { font: inherit; }
+/* 填写框 / 品牌标识：认证页标题与标签遵循认证专项，不沿用控制台容器标题刻度。 */
+:root.kreepai-design-system .kreepai-auth-form h2 { font-size: clamp(32px, 3.2vw, 44px); line-height: 1.05; font-weight: 650; }
+:root.kreepai-design-system .kreepai-auth-form .input-label { font-size: 13px; font-weight: 560; margin-bottom: 6px; }
+
+/* 展示信息模块 / 数字展示：仪表盘摘要不借用分类色表达健康；真实数值和状态说明保持。 */
+:root.kreepai-design-system .kreepai-dashboard-value { font-family: var(--ff-mono); font-variant-numeric: tabular-nums; }
+:root.kreepai-design-system .kreepai-dashboard-icon { width: 42px; height: 42px; display: grid; place-items: center; flex-shrink: 0; border-radius: 12px; background: var(--card-hover); }
+:root.kreepai-design-system .kreepai-dashboard-icon svg { color: var(--text-2); }
+:root.kreepai-design-system .kreepai-token-trend .h-48,
+:root.kreepai-design-system .kreepai-users-plot { height: 260px; min-width: 0; }
+/* 展示信息模块：按卡片可用宽度重排图与完整表格；数字不挤叠，横向滚动只在明细内部。 */
+:root.kreepai-design-system .kreepai-model-distribution { container-type: inline-size; min-width: 0; }
+:root.kreepai-design-system .kreepai-chart-heading { flex-wrap: wrap; }
+:root.kreepai-design-system .kreepai-model-distribution table { min-width: 480px; }
+:root.kreepai-design-system .kreepai-model-distribution :is(th, td) { padding-inline: 6px; white-space: nowrap; }
+@container (max-width: 640px) {
+  :root.kreepai-design-system .kreepai-distribution-layout { flex-direction: column; gap: 16px; }
+}
+/* 提示信息：图形长尾聚合说明与完整明细并存，不伪称删除了业务数据。 */
+:root.kreepai-design-system .kreepai-chart-note { margin: 10px 0 0; color: var(--text-3); font: 400 12px/16px var(--ff-body); overflow-wrap: anywhere; }
+@media (max-width: 768px) {
+  :root.kreepai-design-system .kreepai-dashboard-icon { width: 38px; height: 38px; }
+}
+
+/* 加载反馈：只准备右侧表单，点阵与内容同一区域，左侧说明不参与加载。 */
+:root.kreepai-design-system .kreepai-auth-pane { position: relative; }
+:root.kreepai-design-system .kreepai-auth-pending { visibility: hidden; }
+:root.kreepai-design-system .kreepai-auth-loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--accent); pointer-events: none; }
+/* 二级切换路由：认证专项中性基线与2px活动底线，不使用卡片或侧边标记。 */
+:root.kreepai-design-system .kreepai-auth-mode-nav { display: flex; gap: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+:root.kreepai-design-system .kreepai-auth-mode-nav a { position: relative; padding: 0 0 10px; color: var(--text-3); font-size: 14px; text-decoration: none; }
+:root.kreepai-design-system .kreepai-auth-mode-nav a::after { position: absolute; inset: auto 0 -1px; height: 2px; content: ''; background: transparent; }
+:root.kreepai-design-system .kreepai-auth-mode-nav a:is(:hover, :focus-visible, .active) { color: var(--text); }
+:root.kreepai-design-system .kreepai-auth-mode-nav a.active::after { background: var(--accent); }
+
+/* 顶栏 / 普通按钮 / 数字展示：独立站和Console复用32px/12px触发器与数字字体；外层几何由各自Shell负责。 */
+.kreepai-original-header { position: static; display: contents; background: transparent; border: 0; backdrop-filter: none; }
+:root.kreepai-design-system .kreepai-original-header .kreepai-header-inner { display: contents; }
+:root.kreepai-design-system .kreepai-header-controls { gap: 8px; }
+:root.kreepai-design-system .kreepai-header-controls > a,
+:root.kreepai-design-system .kreepai-header-controls > div > button,
+:root.kreepai-design-system .kreepai-header-balance {
+  height: 32px; min-height: 32px; border: 1px solid var(--border-strong); border-radius: 12px;
+  padding: 0 10px; gap: 7px; background: rgba(255,255,255,.16); color: var(--text-2);
+  font: 500 13px/20px var(--ff-body); box-shadow: none; transform: none;
+}
+:root.kreepai-design-system .kreepai-header-controls :is(button,a):hover { transform: none; text-decoration: none; }
+:root.kreepai-design-system .kreepai-header-controls > a:hover,
+:root.kreepai-design-system .kreepai-header-controls > div > button:hover { background: rgba(255,255,255,.16); color: var(--text-2); }
+:root.kreepai-design-system .kreepai-header-controls > div > button > svg,
+:root.kreepai-design-system .kreepai-header-controls > a > svg { width: 18px; height: 18px; flex-shrink: 0; }
+:root.kreepai-design-system .kreepai-header-controls > div > button:has(> svg:only-child) { width: 34px; padding: 0; }
+:root.kreepai-design-system .kreepai-header-balance > span { white-space: nowrap; }
+/* 品牌标识 / 区分-身份牌：保留真实头像与角色，账户触发器按顶栏几何。 */
+:root.kreepai-design-system .kreepai-header-account > button > div:first-child { height: 22px; width: 22px; border-radius: 6px; flex-shrink: 0; box-shadow: none; }
+:root.kreepai-design-system .kreepai-header-account > button > div:nth-child(2) > div { font: 500 12px/14px var(--ff-body); }
+/* 悬浮下拉菜单：不透明16px面板、8px选项、8px透明命中桥；保留原选项/业务条件。 */
+:root.kreepai-design-system .kreepai-header-controls .dropdown,
+:root.kreepai-design-system .kreepai-header-controls > .relative > .absolute {
+  z-index: 1100; max-width: calc(100vw - 16px); border-radius: 16px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  box-shadow: 0 4px 24px rgba(0,0,0,.05);
+}
+:root.kreepai-design-system .kreepai-header-account > .dropdown { padding: 12px; }
+:root.kreepai-design-system .kreepai-header-account > .dropdown::before { content: ''; position: absolute; left: 0; right: 0; height: 8px; top: -9px; }
+:root.kreepai-design-system .kreepai-header-controls .dropdown-item { min-height: 40px; padding: 8px 12px; border-radius: 8px; font: 400 14px/20px var(--ff-body); color: var(--text); }
+:root.kreepai-design-system .kreepai-header-controls .dropdown-item:hover { background: var(--card-hover); }
+/* 顶栏：竖屏有功能SVG仅留图标，纯文字不隐藏；余额进入原账户菜单。 */
+@media (orientation: portrait), (max-width: 768px) {
+  :root.kreepai-design-system .kreepai-header-controls { gap: 4px; }
+  :root.kreepai-design-system .kreepai-header-controls > a:has(svg) > span { display: none; }
+  :root.kreepai-design-system .kreepai-header-controls > a:has(svg) { display: inline-flex; align-items: center; justify-content: center; width: 34px; padding: 0; }
+  :root.kreepai-design-system .kreepai-header-account > button > :not(:first-child) { display: none; }
+  :root.kreepai-design-system .kreepai-header-account > button { width: 34px; padding: 0; justify-content: center; }
+  :root.kreepai-design-system .kreepai-header-balance { display: none; }
+  :root.kreepai-design-system .kreepai-header-account .sm\:hidden { display: block; }
+}
+@media (pointer: coarse) {
+  :root.kreepai-design-system .kreepai-header-controls > a,
+  :root.kreepai-design-system .kreepai-header-controls > div > button { min-height: 44px; min-width: 44px; }
+}
+
+/* 展示信息模块：独立站和嵌入共用0层白/1层250/2层白；布局包装不增加模块深度。 */
+:root.kreepai-design-system body { font: 400 14px/20px var(--ff-body); color: var(--text); background: var(--bg); }
+:root.kreepai-design-system .kreepai-layout { background: var(--bg); }
+:root.kreepai-design-system .kreepai-layout-main { margin-left: 264px; min-width: 0; }
+:root.kreepai-design-system .kreepai-layout-main.is-collapsed { margin-left: 72px; }
+/* 展示信息模块：保留AI原16/24/32px响应式留白，正文通栏；断点按实际可用宽度判断。 */
+:root.kreepai-design-system :is(.kreepai-layout-main, .sub2api-microfrontend-content > div) { container: kreepai-content / inline-size; }
+:root.kreepai-design-system .kreepai-layout-content { max-width: none; margin: 0; padding: 16px; min-width: 0; }
+@container kreepai-content (min-width: 768px) { :root.kreepai-design-system .kreepai-layout-content { padding: 24px; } }
+@container kreepai-content (min-width: 1024px) { :root.kreepai-design-system .kreepai-layout-content { padding: 32px; } }
+:root.kreepai-design-system .page-title { color: var(--text); font: 650 24px/30px var(--ff-heading); letter-spacing: 0; }
+:root.kreepai-design-system .page-description { color: var(--text-3); font-size: 13px; line-height: 1.65; }
+:root.kreepai-design-system .card-glass { background: var(--card); border: 0; border-radius: 18px; box-shadow: none; backdrop-filter: none; }
+:root.kreepai-design-system .kreepai-dashboard-value { overflow-wrap: anywhere; }
+:root.kreepai-design-system .kreepai-dashboard-icon { display: grid; place-items: center; }
+:root.kreepai-design-system .kreepai-dashboard-icon :is(svg, path) { color: var(--text-2); }
+:root.kreepai-design-system .card :is(.stat-card, .card, .card-glass) { background: var(--bg); }
+
+/* 侧边栏 / 品牌标识：264/72轨道，64px品牌，8px导航，原图标、分组、滚动和路由保持。 */
+:root.kreepai-design-system .sidebar { width: 264px; background: var(--bg); border-right: 1px solid var(--border); box-shadow: none; backdrop-filter: none; z-index: 140; }
+:root.kreepai-design-system .sidebar.w-\[72px\] { width: 72px; }
+:root.kreepai-design-system .sidebar-header { height: 64px; min-height: 64px; padding: 0 16px; gap: 10px; border-bottom: 1px solid rgba(0,0,0,.12); background: var(--topbar-surface); }
+:root.kreepai-design-system .sidebar-logo { width: 40px; height: 40px; border-radius: 8px; box-shadow: none; flex-shrink: 0; }
+:root.kreepai-design-system .sidebar-brand-title { font: 500 16px/20px var(--ff-heading); color: var(--text); }
+:root.kreepai-design-system .sidebar-nav { padding: 10px 16px; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+:root.kreepai-design-system .sidebar-section { margin-bottom: 8px; }
+:root.kreepai-design-system .sidebar-link { height: auto; min-height: 32px; border-radius: 8px; padding: 6px 12px; margin-bottom: 0; gap: 8px; font: 400 14px/20px var(--ff-body); color: var(--text-3); transform: none; }
+:root.kreepai-design-system .sidebar-link > svg, :root.kreepai-design-system .sidebar-svg-icon { width: 16px; height: 16px; }
+:root.kreepai-design-system .sidebar-link:hover, :root.kreepai-design-system .sidebar-link-active { color: var(--text); background: var(--card-hover); box-shadow: none; text-decoration: none; }
+:root.kreepai-design-system .sidebar-link-active::before { content: none; }
+:root.kreepai-design-system .sidebar-section-title { margin: 4px 0; padding: 3px 12px; text-transform: none; letter-spacing: 0; font: 400 12px/18px var(--ff-body); color: var(--text-3); }
+:root.kreepai-design-system .kreepai-sidebar-filter { margin: 20px 16px 0; }
+:root.kreepai-design-system .kreepai-sidebar-filter input { width: 100%; height: 34px; min-width: 0; border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; background: var(--bg); font: 400 14px/20px var(--ff-body); color: var(--text); }
+:root.kreepai-design-system .kreepai-sidebar-filter input:focus { outline: none; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* 顶栏：独立站原内容使用共享玻璃和控件，Console外层仍归Host。 */
+:root.kreepai-design-system { --topbar-surface: linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.5) 42%,rgba(252,252,252,.93) 100%); --topbar-backdrop-filter: blur(22px) saturate(1.5); }
+:root.kreepai-design-system .kreepai-app-header:not(.kreepai-original-header) { height: 64px; position: sticky; top: 0; z-index: 130; border-bottom: 1px solid rgba(0,0,0,.12); background: var(--topbar-surface); backdrop-filter: var(--topbar-backdrop-filter); -webkit-backdrop-filter: var(--topbar-backdrop-filter); }
+:root.kreepai-design-system .kreepai-header-inner { min-width: 0; padding: 0 24px; }
+:root.kreepai-design-system .kreepai-header-title { min-width: 0; }
+:root.kreepai-design-system .kreepai-header-title h1 { font: 650 16px/20px var(--ff-heading); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root.kreepai-design-system .kreepai-header-title p { font-size: 12px; line-height: 16px; color: var(--text-3); }
+:root.kreepai-design-system .kreepai-header-controls .dropdown-item { color: var(--text); }
+:root.kreepai-design-system .kreepai-header-controls .dropdown-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* 选择下拉菜单：覆盖实际Teleport portal，原搜索/选中/禁用/键盘/位置不变。 */
+:root.kreepai-design-system .select-dropdown-portal { border: 1px solid var(--border); border-radius: 16px; padding: 12px; background: var(--bg); box-shadow: 0 4px 24px rgba(0,0,0,.05); }
+:root.kreepai-design-system .select-dropdown-portal .select-options { display: grid; gap: 2px; padding: 0; }
+:root.kreepai-design-system .select-dropdown-portal .select-option { min-height: 40px; padding: 8px 12px; border-radius: 8px; font: 400 14px/20px var(--ff-body); }
+:root.kreepai-design-system .select-dropdown-portal .select-option-label { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+:root.kreepai-design-system .select-dropdown-portal :is(.select-option-selected,.select-option-focused,.select-option:hover) { background: var(--card-hover); color: var(--text); }
+:root.kreepai-design-system .select-search-input { min-width: 0; }
+/* 复选框 / 单选框：真实表单模型与半选保留，鼠标无外晕，键盘静态焦点。 */
+:root.kreepai-design-system input:is([type=checkbox],[type=radio]) { width: 16px; height: 16px; flex-shrink: 0; box-shadow: none; accent-color: var(--accent); }
+/* 复选框：显式绘制16px/4px方框，避免原生appearance忽略圆角；勾选/半选仍由原input驱动。 */
+:root.kreepai-design-system input[type=checkbox] { appearance: none; display: inline-block; vertical-align: middle; margin: 0; padding: 0; border: 1px solid var(--border-strong); border-radius: 4px; background: var(--bg) center / 14px 14px no-repeat; cursor: pointer; }
+:root.kreepai-design-system input[type=checkbox]:is(:checked,:indeterminate) { border-color: var(--accent); background-color: var(--accent); }
+:root.kreepai-design-system input[type=checkbox]:checked { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m3.5 8 3 3 6-6' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+:root.kreepai-design-system input[type=checkbox]:indeterminate { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+:root.kreepai-design-system input[type=checkbox]:disabled { opacity: .5; cursor: not-allowed; }
+:root.kreepai-design-system input[type=checkbox]:is(:focus,:active) { box-shadow: none; }
+@media (forced-colors: active) { :root.kreepai-design-system input[type=checkbox] { appearance: auto; background-image: none; } }
+:root.kreepai-design-system input[type=checkbox]:not(:checked):hover { border-color: var(--border-strong); }
+:root.kreepai-design-system input:is([type=checkbox],[type=radio]):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* 填写框：错误语义不被通用蓝focus覆盖；只读复制保持无过渡。 */
+:root.kreepai-design-system .input[aria-invalid=true], :root.kreepai-design-system .input-error { border-color: #ff3b30; }
+:root.kreepai-design-system .input[readonly] { caret-color: transparent; transition: none; }
+/* 区分-状态牌：未知值中性，不把未知状态暗示为健康。 */
+:root.kreepai-design-system .kreepai-status { background: rgba(142,142,147,.2); color: #828282; }
+:root.kreepai-design-system .badge-purple { background: rgba(175,82,222,.18); color: #8944ab; }
+/* 展示信息模块 / 品牌标识：认证专项保持0圆角及稳定左侧。 */
+:root.kreepai-design-system .kreepai-auth-features { list-style: none; margin: 0; padding: 0; counter-reset: features; display: grid; gap: 12px; }
+:root.kreepai-design-system .kreepai-auth-features li { counter-increment: features; display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+:root.kreepai-design-system .kreepai-auth-features li::before { content: '0' counter(features); opacity: .6; font-family: var(--ff-mono); }
+
+@media (max-width: 768px) {
+  /* 展示信息模块 / 顶栏：触摸正文14/12，原侧栏抽屉继续使用；窄屏内容可换行。 */
+  :root.kreepai-design-system .kreepai-layout-main, :root.kreepai-design-system .kreepai-layout-main.is-collapsed { margin-left: 0; }
+  :root.kreepai-design-system .kreepai-header-inner { padding: 0 12px; }
+  :root.kreepai-design-system .kreepai-header-title { display: none; }
+  :root.kreepai-design-system .sidebar { width: 300px; border-radius: 0; }
+}
+@media (min-width: 769px) {
+  :root.kreepai-design-system .sidebar { transform: none; }
+  :root.kreepai-design-system .kreepai-header-inner > div:first-child > button { display: none; }
+}
+@media (pointer: coarse) {
+  /* 普通按钮 / 删除按钮：操作组内44px命中保持一致，不用高度冲突的5px内距覆盖。 */
+  :root.kreepai-design-system .kreepai-header-controls > a, :root.kreepai-design-system .kreepai-header-controls > div > button { height: 44px; }
+  :root.kreepai-design-system .sidebar-link { min-height: 44px; }
+}
+
+/* 填写框 / 选择下拉菜单：原选择器实际类名，单行34px与18px角；多行输入不强压。 */
+:root.kreepai-design-system .select-trigger { min-height: 34px; border-radius: 18px; border: 1px solid #d1cfc5; background: var(--bg); color: var(--text); box-shadow: none; font: 400 14px/20px var(--ff-body); }
+:root.kreepai-design-system .select-trigger:is(:hover,:focus,.select-trigger-open) { border-color: #d1cfc5; box-shadow: none; }
+:root.kreepai-design-system .input:not(textarea) { height: 34px; padding-block: 6px; }
+/* 提示信息：toast在360px内保留完整文案和关闭入口，不固定320px最小宽。 */
+:root.kreepai-design-system .kreepai-toast { min-width: min(320px,calc(100vw - 32px)); max-width: calc(100vw - 32px); border-radius: 18px; }
+@media (pointer: coarse) {
+  :root.kreepai-design-system .input:not(textarea), :root.kreepai-design-system .select-trigger { min-height: 44px; height: 44px; }
+}
+
+/* 展示信息模块：延续AI原有深色偏好，沿用原深色中性值；不作为第一设计系统新增全局主题。 */
+:root.kreepai-design-system.dark { --bg: #020617; --card: #0f172a; --card-hover: #1e293b; --border: #334155; --border-strong: #475569; --text: #f1f5f9; --text-2: #cbd5e1; --text-3: #94a3b8; --topbar-surface: linear-gradient(180deg,rgba(15,23,42,.78),rgba(15,23,42,.96)); color-scheme: dark; }
+/* 填写框：文本框与选择器共享垂直几何；错误/禁用保留真实语义。 */
+:root.kreepai-design-system .select-trigger { padding-block: 6px; }
+:root.kreepai-design-system .select-trigger-error { border-color: #ff3b30; }
+:root.kreepai-design-system .kreepai-switch { position: relative; box-shadow: none; }
+:root.kreepai-design-system .kreepai-switch:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+/* 提示信息 / 浮层：遮罩位于常驻顶栏上方，正文保持内部滚动。 */
+:root.kreepai-design-system .modal-overlay { border-radius: 0; }
+
+/* 提示信息：原服务端认证失败与字段校验原文保持，换模式随原视图销毁。 */
+:root.kreepai-design-system .kreepai-auth-error { margin: 12px 0; padding: 12px 14px; border-radius: 18px; background: rgba(255,59,48,.18); color: #dd3730; font: 400 13px/20px var(--ff-body); overflow-wrap: anywhere; }
+/* 区分-身份牌 / 区分-信息牌：平台身份、凭据类别、并发数同款几何；不重写原业务颜色。 */
+:root.kreepai-design-system .kreepai-platform-badges > div:not(:last-child), :root.kreepai-design-system .kreepai-platform-badges > div.inline-flex { overflow: visible; flex-wrap: wrap; border-radius: 6px; gap: 4px; }
+:root.kreepai-design-system .kreepai-platform-badges > div.inline-flex > span, :root.kreepai-design-system .kreepai-capacity-badge { border-radius: 6px; padding: 3px 10px; font: 600 13px/20px var(--ff-body); max-width: 100%; }
+:root.kreepai-design-system .kreepai-platform-badges > div.inline-flex > span { flex-wrap: wrap; overflow-wrap: anywhere; }
+
+/* 选择下拉菜单：公共语言与定时刷新保持16/12/8，纯文字语言控件在手机仍显示语言名称。 */
+:root.kreepai-design-system .kreepai-header-controls [role=menu] { padding: 12px; }
+:root.kreepai-design-system .kreepai-header-controls [role=menu] > button { min-height: 40px; padding: 8px 12px; border-radius: 8px; font: 400 14px/20px var(--ff-body); color: var(--text); }
+:root.kreepai-design-system .kreepai-header-controls [role=menu] > button:is(:hover,:focus-visible) { background: var(--card-hover); }
+/* 悬浮下拉菜单：语言选中保持中性面，蓝色仅保留已有选择标记；不引入信息蓝整行。 */
+:root.kreepai-design-system .kreepai-header-controls [role=menu] > button[aria-current=true] { background: var(--card-hover); color: var(--text); }
+:root.kreepai-design-system .kreepai-auto-refresh > button svg { flex-shrink: 0; }
+:root.kreepai-design-system .btn-ghost { border-color: transparent; box-shadow: none; }
+:root.kreepai-design-system .btn-ghost:is(:hover,:focus) { border-color: transparent; background: transparent; color: var(--text-2); box-shadow: none; }
+@media (pointer: coarse) {
+  :root.kreepai-design-system .select-dropdown-portal .select-option, :root.kreepai-design-system .dropdown-item, :root.kreepai-design-system .kreepai-header-controls [role=menu] > button { min-height: 44px; }
+}
+
+/* 顶栏：长页面说明只能在标题列收缩，不能把原账户控件推出可用视口。 */
+:root.kreepai-design-system .kreepai-header-heading { flex: 1 1 0; min-width: 0; }
+:root.kreepai-design-system .kreepai-header-heading > button { flex-shrink: 0; }
+:root.kreepai-design-system .kreepai-header-title p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root.kreepai-design-system .kreepai-header-controls { flex-shrink: 0; }
+
+/* 填写框 / 选择下拉菜单：真实错误状态优先于中性展开态，输入仍为内部错误边线。 */
+:root.kreepai-design-system .select-trigger-error:is(:hover,:focus,.select-trigger-open) { border-color: #ff3b30; box-shadow: none; }
+:root.kreepai-design-system .input:is(.input-error,[aria-invalid=true]):focus { border-color: #ff3b30; box-shadow: inset 0 0 0 1px #ff3b30; }
+/* 分页：活动页按下保持同一提亮面与白字，位置不变。 */
+:root.kreepai-design-system .kreepai-pagination [aria-current=page]:active { background: var(--accent-button-hover); color: #fff; border-color: var(--accent-button-hover); transform: none; }
+
+/* 展示信息模块 / 滚动边界：表格按实际内容决定滚动，不为空表预留垂直槽。 */
+:root.kreepai-design-system .table-wrapper { scrollbar-gutter: auto; }
+/* 下拉选择菜单：单一待选面，鼠标离开恢复已选项；不叠加残留的hover背景。 */
+:root.kreepai-design-system .select-dropdown-portal .select-option { background: transparent; }
+:root.kreepai-design-system .select-dropdown-portal :is(.select-option-selected,.select-option-focused) { background: var(--card-hover); color: var(--text); }
+
+/* 悬浮下拉菜单：语言选项之间保留2px空隙，账户箭头只跟随自己的真实展开状态。 */
+:root.kreepai-design-system [data-testid=locale-menu] { display: grid; gap: 2px; }
+:root.kreepai-design-system .kreepai-account-chevron { transform: rotate(0deg); transition: transform .2s ease; }
+:root.kreepai-design-system .kreepai-account-chevron.is-open { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { :root.kreepai-design-system .kreepai-account-chevron { transition: none; } }
+
+/* 数字展示：顶栏余额按用户表余额的正文数字样式，取消强制等宽和负字距。 */
+:root.kreepai-design-system .kreepai-header-balance > .kreepai-header-balance-value { font-family: var(--ff-body); letter-spacing: normal; }
+/* 可跳转展示卡片 / 悬浮效果：监控卡所有状态保持表面/几何，只有250ms中性阴影。 */
+:root.kreepai-design-system .kreepai-monitor-card { background: var(--card); border: 0; backdrop-filter: none; transform: none; }
+:root.kreepai-design-system .kreepai-monitor-card:is(:hover,:focus-visible) { background: var(--card); transform: none; box-shadow: 0 8px 28px rgba(0,0,0,.08); }
+
+/* 提示信息 / 展示信息模块：原业务弹窗宽度分级保留，统一表面不压缩宽表单。 */
+:root.kreepai-design-system .kf-feedback-panel.modal-content { width: calc(100vw - 32px); max-width: 512px; }
+:root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-narrow { max-width: 448px; }
+:root.kreepai-design-system .kf-feedback-panel:is(.kf-dialog-width-wide,.kf-dialog-width-extra-wide,.kf-dialog-width-full) { max-width: calc(100vw - 32px); }
+@media(min-width:640px) { :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-wide { max-width:672px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-extra-wide { max-width:768px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-full { max-width:896px; } }
+@media(min-width:768px) { :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-wide { max-width:768px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-extra-wide { max-width:896px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-full { max-width:1024px; } }
+@media(min-width:1024px) { :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-wide { max-width:896px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-extra-wide { max-width:1024px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-full { max-width:1152px; } }
+@media(min-width:1280px) { :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-extra-wide { max-width:1152px; } :root.kreepai-design-system .kf-feedback-panel.kf-dialog-width-full { max-width:1280px; } }
+
+/* 填写框 / 警告信息：原字段校验直接可读，无原生气泡或新增操作按钮。 */
+:root.kreepai-design-system .kreepai-field-error { margin: 6px 0 0; color: #ff3b30; font: 400 13px/20px var(--ff-body); overflow-wrap: anywhere; }
+:root.kreepai-design-system .kreepai-agreement-checkbox { margin-top: 2px; }
+@media (pointer: coarse) { :root.kreepai-design-system .kreepai-agreement-choice label { display: inline-flex; align-items: center; min-height: 44px; } }

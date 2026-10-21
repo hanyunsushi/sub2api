@@ -218,6 +218,11 @@ export default {
 
   // Auth
   auth: {
+    gatewayHeadline: '连接每个模型，专注每次创造。',
+    gatewayKeys: '统一管理 API 密钥',
+    gatewayUsage: '随时掌握用量与余额',
+    gatewayModels: '灵活选择模型与服务',
+
     welcomeBack: '欢迎回来',
     signInToAccount: '登录您的账户以继续',
     signIn: '登录',

@@ -1,7 +1,8 @@
 <template>
+  <!-- 可跳转展示卡片 / 悬浮效果：一级浅灰面静止，hover仅连续增加中性阴影。 -->
   <button
     type="button"
-    class="group text-left p-5 rounded-2xl min-h-[280px] w-full bg-white/70 backdrop-blur-xl border border-gray-200/80 shadow-card dark:bg-dark-800/60 dark:border-dark-700/70 hover:-translate-y-1 hover:shadow-card-hover dark:hover:border-primary-500/30 hover:border-gray-300 transition-all duration-300 ease-out flex flex-col"
+    class="kreepai-monitor-card card card-hover group text-left p-5 min-h-[280px] w-full flex flex-col"
     @click="emit('click')"
   >
     <!-- Header: icon + name/model + status chip -->
@@ -10,7 +11,8 @@
         class="w-9 h-9 rounded-xl ring-1 ring-black/5 dark:ring-white/10 grid place-items-center flex-shrink-0"
         :class="[providerGradient(item.provider), providerTintClass]"
       >
-        <ProviderBrandIcon v-if="item.logo_url" :provider="item.provider" :logo-url="item.logo_url" /><ProviderIcon v-else :provider="item.provider" :size="20" />
+        <!-- 品牌标识：显式监控Logo优先；缺省时按名称识别供应商，再回退平台/模型，复用账号页共享解析。 -->
+        <ProviderBrandIcon :provider="item.name" :model="item.provider" :logo-url="item.logo_url" />
       </span>
       <div class="flex-1 min-w-0">
         <div class="text-base font-semibold truncate text-gray-900 dark:text-gray-100">
@@ -86,7 +88,6 @@ import {
   providerGradient,
 } from '@/composables/useChannelMonitorFormat'
 import { isChannelMonitorQuotaVisible } from '@/utils/featureFlags'
-import ProviderIcon from './ProviderIcon.vue'
 import MonitorMetricPair from './MonitorMetricPair.vue'
 import MonitorAvailabilityRow from './MonitorAvailabilityRow.vue'
 import MonitorTimeline from './MonitorTimeline.vue'

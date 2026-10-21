@@ -1,10 +1,12 @@
 <template>
+  <!-- 分页：共享层负责8px角、蓝色选中与32/44px命中；内部换行不裁切表外导航。 -->
   <div
-    class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 dark:border-dark-700 dark:bg-dark-800 sm:px-6"
+    class="kreepai-pagination flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 dark:border-dark-700 dark:bg-dark-800 sm:px-6"
   >
-    <div class="flex flex-1 items-center justify-between sm:hidden">
-      <!-- Mobile pagination -->
+    <div class="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2 sm:hidden">
+      <!-- 分页：移动端保留上一页、页数和下一页，沿用原禁用边界。 -->
       <button
+        type="button"
         @click="goToPage(page - 1)"
         :disabled="page === 1"
         class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:bg-dark-600"
@@ -15,6 +17,7 @@
         {{ t('pagination.pageOf', { page, total: totalPages }) }}
       </span>
       <button
+        type="button"
         @click="goToPage(page + 1)"
         :disabled="page === totalPages"
         class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:bg-dark-600"
@@ -23,9 +26,9 @@
       </button>
     </div>
 
-    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-      <!-- Desktop pagination info -->
-      <div class="flex items-center space-x-4">
+    <div class="hidden min-w-0 flex-wrap gap-3 sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <!-- 数字展示：总数和页数保留完整文本，摘要与筛选按可用宽度换行。 -->
+      <div class="flex min-w-0 flex-wrap items-center gap-4">
         <p class="text-sm text-gray-700 dark:text-gray-300">
           {{ t('pagination.showing') }}
           <span class="font-medium">{{ fromItem }}</span>
@@ -36,7 +39,7 @@
           {{ t('pagination.results') }}
         </p>
 
-        <!-- Page size selector -->
+        <!-- 选择下拉菜单：每页条数沿用 Select 与持久化，不挤压结果摘要。 -->
         <div v-if="showPageSizeSelector" class="flex items-center space-x-2">
           <span class="text-sm text-gray-700 dark:text-gray-300"
             >{{ t('pagination.perPage') }}:</span
@@ -50,14 +53,16 @@
           </div>
         </div>
 
-        <div v-if="showJump" class="flex items-center space-x-2">
+        <!-- 分页 / 填写框：跳转字段与动作同高，数字范围及 Enter 提交沿用原逻辑。 -->
+        <div v-if="showJump" class="flex flex-wrap items-center gap-2">
           <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('pagination.jumpTo') }}</span>
           <input
             v-model="jumpPage"
             type="number"
             min="1"
             :max="totalPages"
-            class="input w-20 text-sm"
+            class="input pagination-jump-input min-w-0 w-20 text-sm"
+            :aria-label="t('pagination.jumpTo')"
             :placeholder="t('pagination.jumpPlaceholder')"
             @keyup.enter="submitJump"
           />
@@ -67,13 +72,14 @@
         </div>
       </div>
 
-      <!-- Desktop pagination buttons -->
+      <!-- 分页：页码、不可选省略号与前后翻页保留 aria-current 和禁用语义。 -->
       <nav
-        class="relative z-0 inline-flex -space-x-px rounded-md shadow-sm"
+        class="relative z-0 inline-flex max-w-full -space-x-px rounded-md shadow-sm"
         aria-label="Pagination"
       >
         <!-- Previous button -->
         <button
+          type="button"
           @click="goToPage(page - 1)"
           :disabled="page === 1"
           class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600"
@@ -84,6 +90,7 @@
 
         <!-- Page numbers -->
         <button
+          type="button"
           v-for="(pageNum, index) in visiblePages"
           :key="`${pageNum}-${index}`"
           @click="typeof pageNum === 'number' && goToPage(pageNum)"
@@ -105,6 +112,7 @@
 
         <!-- Next button -->
         <button
+          type="button"
           @click="goToPage(page + 1)"
           :disabled="page === totalPages"
           class="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600"
@@ -241,7 +249,29 @@ const submitJump = () => {
 </script>
 
 <style scoped>
+/* 选择下拉菜单：原条数选择器兜底；系统模式只把内嵌控件与分页按钮对齐。 */
 .page-size-select :deep(.select-trigger) {
   @apply px-3 py-1.5 text-sm;
+}
+
+/* 分页：共享层已有圆角、选中、禁用与最小命中；这里只消除旧 py-2 造成的额外高度。 */
+:root.kreepai-design-system .kreepai-pagination button {
+  padding: 5px 10px;
+  font-size: 13px;
+  line-height: 20px;
+  transform: none;
+}
+
+:root.kreepai-design-system .kreepai-pagination nav > button:first-child,
+:root.kreepai-design-system .kreepai-pagination nav > button:last-child {
+  padding-inline: 5px;
+}
+
+/* 填写框 / 分页：跳转与条数选择器跟随同组按钮高度，触摸自动使用44px。 */
+:root.kreepai-design-system .pagination-jump-input,
+:root.kreepai-design-system .page-size-select :deep(.select-trigger) {
+  height: var(--button-height);
+  min-height: var(--button-height);
+  padding-block: 5px;
 }
 </style>

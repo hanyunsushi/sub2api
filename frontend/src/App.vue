@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import { isMicrofrontend } from '@/runtime/environment'
 import { RouterView, useRouter, useRoute } from 'vue-router'
-import { computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watch, nextTick, ref } from 'vue'
+import { pageLoading, pageLoadingTarget, cancelPageLoad } from '@/utils/page-loading'
+import { runShift5Enter, resetShift5Transition } from '@/utils/shift5'
+import '@/styles/design-system/motion.css'
 import Toast from '@/components/common/Toast.vue'
 import NavigationProgress from '@/components/common/NavigationProgress.vue'
+import PageScrollbar from '@/components/common/PageScrollbar.vue'
+import AuthLayout from '@/components/layout/AuthLayout.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AdminComplianceDialog from '@/components/admin/AdminComplianceDialog.vue'
 import { resolveRouteDocumentTitle } from '@/router/title'
 import AnnouncementPopup from '@/components/common/AnnouncementPopup.vue'
@@ -14,6 +21,19 @@ import { resolveSiteBillingMode } from '@/utils/siteBillingMode'
 
 const router = useRouter()
 const route = useRoute()
+const embeddedAuthShell = computed(() => ['Login', 'Register', 'ForgotPassword'].includes(String(route.name)))
+const routeShell = ref<HTMLElement | null>(null)
+let shellMounted = false
+async function enterRoute() {
+  await nextTick()
+  if (!shellMounted || !routeShell.value || !pageLoading.value) return
+  const root = routeShell.value
+  const target = root.querySelector<HTMLElement>('.kreepai-auth-content, .kreepai-layout-content, .sub2api-microfrontend-content main') || root.firstElementChild as HTMLElement || root
+  await runShift5Enter(target, !embeddedAuthShell.value)
+}
+watch(() => route.fullPath, enterRoute, { flush: 'post' })
+onMounted(() => { shellMounted = true; void enterRoute() })
+onBeforeUnmount(() => { shellMounted = false; resetShift5Transition(); cancelPageLoad() })
 const appStore = useAppStore()
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -22,6 +42,7 @@ const adminComplianceStore = useAdminComplianceStore()
 const adminSettingsStore = useAdminSettingsStore()
 
 function updateDocumentTitle() {
+  if (isMicrofrontend()) return
   const customMenuItems = [
     ...(appStore.cachedPublicSettings?.custom_menu_items ?? []),
     ...(authStore.isAdmin ? adminSettingsStore.customMenuItems : []),
@@ -35,7 +56,7 @@ function updateDocumentTitle() {
 watch(
   () => appStore.siteLogo,
   (newLogo) => {
-    if (newLogo) {
+    if (newLogo && !isMicrofrontend()) {
       updateFavicon(newLogo)
     }
   },
@@ -58,6 +79,7 @@ watch(
   { deep: true }
 )
 
+let announcementTimer: ReturnType<typeof setTimeout> | null = null
 // Watch for authentication state and manage subscription data + announcements
 function onVisibilityChange() {
   if (document.visibilityState === 'visible' && authStore.isAuthenticated) {
@@ -108,7 +130,7 @@ watch(
       // Announcements: new login vs page refresh restore
       if (oldValue === false) {
         // New login: delay 3s then force fetch
-        setTimeout(() => announcementStore.fetchAnnouncements(true), 3000)
+        announcementTimer = setTimeout(() => announcementStore.fetchAnnouncements(true), 3000)
       } else {
         // Page refresh restore (oldValue was undefined)
         announcementStore.fetchAnnouncements()
@@ -128,13 +150,16 @@ watch(
 )
 
 // Route change trigger (throttled by store)
-router.afterEach(() => {
+const removeAnnouncementNavigation = router.afterEach(() => {
   if (authStore.isAuthenticated) {
     announcementStore.fetchAnnouncements()
   }
 })
 
 onBeforeUnmount(() => {
+  removeAnnouncementNavigation()
+  if (announcementTimer) clearTimeout(announcementTimer)
+  subscriptionStore.stopPolling()
   document.removeEventListener('visibilitychange', onVisibilityChange)
   window.removeEventListener('admin-compliance-required', onAdminComplianceRequired)
 })
@@ -162,8 +187,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <NavigationProgress />
-  <RouterView />
+  <!-- 多项目路由导航：无头原菜单常驻应用，公开首页也能发布同一权限树。 -->
+  <AppSidebar v-if="isMicrofrontend()" headless />
+  <NavigationProgress v-if="!embeddedAuthShell" />
+  <PageScrollbar v-if="!isMicrofrontend()" />
+  <div ref="routeShell" class="kreepai-route-shell" :class="{ 'is-preparing': pageLoading && !pageLoadingTarget?.classList.contains('settings-main') }">
+  <!-- 展示信息模块：认证模式只切换右侧原表单，左侧说明和品牌始终保留。 -->
+  <AuthLayout v-if="embeddedAuthShell"><RouterView /></AuthLayout>
+  <RouterView v-else />
+  </div>
   <Toast />
   <AnnouncementPopup />
   <AdminComplianceDialog />

@@ -18,7 +18,8 @@
     data-testid="compact-home"
     class="flex min-h-screen flex-col bg-gray-50 text-gray-900 dark:bg-dark-950 dark:text-white"
   >
-    <header class="border-b border-gray-200 px-4 py-4 sm:px-6 dark:border-dark-800">
+    <!-- 顶栏：嵌入模式由宿主管理，独立站保留原导航。 -->
+    <header v-if="!embedded" class="border-b border-gray-200 px-4 py-4 sm:px-6 dark:border-dark-800">
       <nav class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 sm:gap-4">
         <div class="flex min-w-0 flex-1 items-center gap-3">
           <img
@@ -93,39 +94,21 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+    class="home-page min-h-screen"
   >
-    <!-- Background Decorations -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        class="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-primary-400/20 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary-500/15 blur-3xl"
-      ></div>
-      <div
-        class="absolute left-1/3 top-1/4 h-72 w-72 rounded-full bg-primary-300/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-primary-400/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
-      ></div>
-    </div>
-
     <!-- Header -->
-    <header class="relative z-20 px-6 py-4">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between">
+    <!-- 顶栏：嵌入模式由宿主管理，独立站保留原导航。 -->
+    <header v-if="!embedded" class="relative z-20 px-6 py-4">
+      <nav class="home-navigation mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
         <!-- Logo -->
         <div class="flex items-center">
-          <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
+          <div class="h-10 w-10 overflow-hidden rounded-lg">
             <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
           </div>
         </div>
 
         <!-- Nav Actions -->
-        <div class="flex items-center gap-3">
+        <div class="flex max-w-full flex-wrap items-center gap-3">
           <!-- Language Switcher -->
           <LocaleSwitcher />
 
@@ -169,7 +152,7 @@
             class="inline-flex items-center gap-1.5 rounded-full bg-gray-900 py-1 pl-1 pr-2.5 transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
           >
             <span
-              class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-[10px] font-semibold text-white"
+              class="flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-[10px] font-semibold text-white"
             >
               {{ userInitial }}
             </span>
@@ -199,45 +182,41 @@
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex-1 px-6 py-16">
-      <div class="mx-auto max-w-6xl">
+    <!-- 展示信息模块：默认公开首页按原内容留白排版，页面底面无渐变。 -->
+    <main class="home-main">
+      <div class="home-content">
         <!-- Hero Section - Left/Right Layout -->
-        <div class="mb-12 flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-16">
+        <div class="home-hero">
           <!-- Left: Text Content -->
-          <div class="flex-1 text-center lg:text-left">
+          <div class="home-hero-copy">
             <h1
-              class="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl lg:text-6xl"
+              class="home-title mb-4"
             >
               {{ siteName }}
             </h1>
-            <p class="mb-8 text-lg text-gray-600 dark:text-dark-300 md:text-xl">
+            <p class="home-subtitle mb-8">
               {{ siteSubtitle }}
             </p>
 
-            <!-- CTA Button -->
+            <!-- 强调按钮：沿用原登录/控制台目的地与公共按钮连续外环。 -->
             <div>
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
-                class="btn btn-primary px-8 py-3 text-base shadow-lg shadow-primary-500/30"
+                class="btn btn-primary"
               >
                 {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
-                <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
+                <Icon name="arrowRight" size="md" :stroke-width="2" />
               </router-link>
             </div>
           </div>
 
-          <!-- Right: Terminal Animation -->
-          <div class="flex flex-1 justify-center lg:justify-end">
+          <!-- 展示信息模块 / 数字展示：代码深色表面例外，等宽字与静止几何。 -->
+          <div class="home-terminal-column">
             <div class="terminal-container">
               <div class="terminal-window">
                 <!-- Window header -->
                 <div class="terminal-header">
-                  <div class="terminal-buttons">
-                    <span class="btn-close"></span>
-                    <span class="btn-minimize"></span>
-                    <span class="btn-maximize"></span>
-                  </div>
+                  <Icon name="terminal" size="sm" aria-hidden="true" />
                   <span class="terminal-title">terminal</span>
                 </div>
                 <!-- Terminal content -->
@@ -265,62 +244,64 @@
           </div>
         </div>
 
-        <!-- Feature Tags - Centered -->
-        <div class="mb-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
+        <!-- 区分-信息牌：能力说明，不用状态或健康色。 -->
+        <div class="home-tags">
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="badge badge-primary"
           >
-            <Icon name="swap" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
+            <Icon name="swap" size="sm" aria-hidden="true" />
+            <span>{{
               t('home.tags.subscriptionToApi')
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="badge badge-primary"
           >
-            <Icon name="shield" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
+            <Icon name="shield" size="sm" aria-hidden="true" />
+            <span>{{
               t('home.tags.stickySession')
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="badge badge-primary"
           >
-            <Icon name="chart" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
+            <Icon name="chart" size="sm" aria-hidden="true" />
+            <span>{{
               t('home.tags.realtimeBilling')
             }}</span>
           </div>
         </div>
 
-        <!-- Features Grid -->
-        <div class="mb-12 grid gap-6 md:grid-cols-3">
+        <!-- 展示卡片 / 悬浮效果：一级浅灰模块，共用250ms中性阴影，无位移与彩色光晕。 -->
+        <div class="home-features">
+          <!-- 卡片SVG：三项功能均为中性单色描边SVG，图标不表达业务状态。 -->
           <!-- Feature 1: Unified Gateway -->
           <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            class="home-feature card card-hover"
           >
             <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-110"
+              class="home-feature-icon"
             >
-              <Icon name="server" size="lg" class="text-white" />
+              <Icon name="server" size="lg" aria-hidden="true" />
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 class="mb-2 text-lg font-semibold">
               {{ t('home.features.unifiedGateway') }}
             </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+            <p class="home-feature-description">
               {{ t('home.features.unifiedGatewayDesc') }}
             </p>
           </div>
 
           <!-- Feature 2: Account Pool -->
           <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            class="home-feature card card-hover"
           >
             <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-110"
+              class="home-feature-icon"
             >
               <svg
-                class="h-6 w-6 text-white"
+                class="h-6 w-6"
+                aria-hidden="true"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -333,23 +314,24 @@
                 />
               </svg>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 class="mb-2 text-lg font-semibold">
               {{ t('home.features.multiAccount') }}
             </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+            <p class="home-feature-description">
               {{ t('home.features.multiAccountDesc') }}
             </p>
           </div>
 
           <!-- Feature 3: Billing & Quota -->
           <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
+            class="home-feature card card-hover"
           >
             <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30 transition-transform group-hover:scale-110"
+              class="home-feature-icon"
             >
               <svg
-                class="h-6 w-6 text-white"
+                class="h-6 w-6"
+                aria-hidden="true"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -362,10 +344,10 @@
                 />
               </svg>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 class="mb-2 text-lg font-semibold">
               {{ t('home.features.balanceQuota') }}
             </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+            <p class="home-feature-description">
               {{ t('home.features.balanceQuotaDesc') }}
             </p>
           </div>
@@ -373,96 +355,32 @@
 
         <!-- Supported Providers -->
         <div class="mb-8 text-center">
-          <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 class="mb-3 text-2xl font-bold">
             {{ t('home.providers.title') }}
           </h2>
-          <p class="text-sm text-gray-600 dark:text-dark-400">
+          <p class="home-feature-description">
             {{ t('home.providers.description') }}
           </p>
         </div>
 
-        <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
-          <!-- Claude - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500"
-            >
-              <span class="text-xs font-bold text-white">C</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.claude') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
+        <!-- 展示信息模块 / 区分-信息牌：官方品牌图像保持原图，能力标签不作为健康状态；卡片无装饰边框。 -->
+        <div class="home-providers">
+          <div v-for="provider in providers" :key="provider.id" class="home-provider card">
+            <img :src="provider.logo" alt="" width="32" height="32" class="home-provider-logo" />
+            <span class="home-provider-name">{{ provider.labelKey ? t(provider.labelKey) : provider.label }}</span>
+            <span class="badge badge-primary">{{ t('home.providers.supported') }}</span>
           </div>
-          <!-- GPT - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">GPT</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Gemini - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.gemini') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Antigravity - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-pink-600"
-            >
-              <span class="text-xs font-bold text-white">A</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.antigravity') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- More - Coming Soon -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-gray-200/50 bg-white/40 px-5 py-3 opacity-60 backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/40"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"
-            >
-              <span class="text-xs font-bold text-white">+</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.more') }}</span>
-            <span
-              class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-400"
-              >{{ t('home.providers.soon') }}</span
-            >
+          <div class="home-provider card">
+            <Icon name="plus" size="lg" class="home-provider-more" aria-hidden="true" />
+            <span class="home-provider-name">{{ t('home.providers.more') }}</span>
+            <span class="badge badge-gray">{{ t('home.providers.soon') }}</span>
           </div>
         </div>
       </div>
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-10 border-t border-gray-200/50 px-6 py-8 dark:border-dark-800/50">
+    <footer class="home-footer">
       <div
         class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
       >
@@ -501,6 +419,21 @@ import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { sanitizeUrl } from '@/utils/url'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
+import { isMicrofrontend } from '@/runtime/environment'
+import claudeLogo from '@/assets/provider-logos/claude.png'
+import openaiLogo from '@/assets/provider-logos/openai.png'
+import geminiLogo from '@/assets/provider-logos/gemini.svg'
+import antigravityLogo from '@/assets/provider-logos/antigravity.svg'
+
+// 展示信息模块：本地打包的官方品牌标识，来源与摘要见assets/provider-logos/SOURCES.md。
+const providers = [
+  { id: 'claude', logo: claudeLogo, labelKey: 'home.providers.claude' },
+  { id: 'gpt', logo: openaiLogo, label: 'GPT' },
+  { id: 'gemini', logo: geminiLogo, labelKey: 'home.providers.gemini' },
+  { id: 'antigravity', logo: antigravityLogo, labelKey: 'home.providers.antigravity' },
+]
+
+const embedded = isMicrofrontend()
 
 const { t } = useI18n()
 
@@ -550,6 +483,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 // Toggle theme
 function toggleTheme() {
+  if (embedded) return
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
@@ -557,6 +491,7 @@ function toggleTheme() {
 
 // Initialize theme
 function initTheme() {
+  if (embedded) return
   const savedTheme = localStorage.getItem('theme')
   if (
     savedTheme === 'dark' ||
@@ -581,164 +516,64 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Terminal Container */
-.terminal-container {
-  position: relative;
-  display: inline-block;
-}
+/* 展示信息模块：页面纯色，保留原应用的1152px正文上限与24px侧距。 */
+.home-page { display: flex; flex-direction: column; min-width: 0; background: var(--bg); color: var(--text); }
+.home-main { flex: 1; min-width: 0; padding: 64px 24px; }
+.home-content { container: home-content / inline-size; width: 100%; max-width: 1152px; margin-inline: auto; }
+.home-hero { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 48px; margin-bottom: 48px; }
+.home-hero-copy { min-width: 0; text-align: center; overflow-wrap: anywhere; }
+.home-subtitle { font-size: 18px; line-height: 1.6; color: var(--text-2); white-space: pre-wrap; }
+.home-terminal-column { display: flex; justify-content: center; min-width: 0; }
+.home-tags { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; }
+.home-tags .badge { white-space: normal; }
+.home-footer { min-width: 0; padding: 32px 24px; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
 
-/* Terminal Window */
-.terminal-window {
-  width: 420px;
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 14px;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
-  transition: transform 0.3s ease;
-}
+/* 展示卡片：实际正文容器决定列数，不用含宿主侧栏的视口宽度强塞三列。 */
+.home-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 24px; margin-bottom: 48px; }
+.home-feature { min-width: 0; padding: 24px; overflow-wrap: anywhere; }
+.home-feature-description { font-size: 14px; line-height: 1.65; color: var(--text-2); }
+/* 卡片SVG：42px中性图标框、12px圆角，无缩放/彩色光晕。 */
+.home-feature-icon { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin-bottom: 16px; border-radius: 12px; background: var(--card-hover); color: var(--text-2); }
+.home-feature-icon :deep(svg) { width: 24px; height: 24px; }
+/* 展示信息模块 / 区分-信息牌：品牌与能力分离，标识保持原始比例。 */
+.home-providers { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; margin-bottom: 64px; }
+.home-provider { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 100%; padding: 12px 20px; }
+.home-provider-logo, .home-provider-more { flex: none; width: 32px; height: 32px; object-fit: contain; }
+.home-provider-more { color: var(--text-3); }
+.home-provider-name { min-width: 0; overflow-wrap: anywhere; font-size: 14px; font-weight: 500; color: var(--text-2); }
 
-.terminal-window:hover {
-  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-4px);
+/* 展示信息模块 / 数字展示：深色代码例外#1e1e1e/#eee，18px角与12.5px等宽，不使用透视/光晕。 */
+.terminal-container { width: 100%; max-width: 420px; min-width: 0; }
+.terminal-window { width: 100%; border: 0; border-radius: 18px; background: #1e1e1e; color: #eee; overflow: hidden; }
+.terminal-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid #383838; color: #bfbfbf; }
+.terminal-title { font: 400 12.5px/20px var(--ff-mono); }
+.terminal-body { padding: 12px 14px; font: 400 12.5px/2 var(--ff-mono); overflow-x: auto; }
+.code-line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; opacity: 0; animation: line-appear .5s ease forwards; overflow-wrap: anywhere; }
+.line-1 { animation-delay: .3s; }
+.line-2 { animation-delay: 1s; }
+.line-3 { animation-delay: 1.8s; }
+.line-4 { animation-delay: 2.5s; }
+.code-comment { color: #bfbfbf; }
+/* 区分-状态牌：HTTP响应示例的真实成功含义，使用系统success，不将命令染成状态色。 */
+.code-success { padding: 0 8px; border-radius: 6px; background: rgba(52,199,89,.18); color: #34c759; }
+/* 组件绘制动画：保留代码逐行展示；减少动态时直接显示完整内容。 */
+.cursor { display: inline-block; width: 8px; height: 16px; background: currentColor; animation: blink 1s step-end infinite; }
+@keyframes line-appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+@container home-content (min-width: 720px) {
+  .home-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; }
+  .home-hero-copy { text-align: left; }
+  .home-terminal-column { justify-content: end; }
 }
-
-/* Terminal Header */
-.terminal-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: rgba(30, 41, 59, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+@media (max-width: 640px) {
+  .home-main { padding-block: 40px; }
+  .home-hero { gap: 32px; }
+  .home-features { gap: 16px; }
+  .home-feature { padding: 20px; }
+  .home-feature-icon { width: 38px; height: 38px; }
 }
-
-.terminal-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.terminal-buttons span {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.btn-close {
-  background: #ef4444;
-}
-.btn-minimize {
-  background: #eab308;
-}
-.btn-maximize {
-  background: #22c55e;
-}
-
-.terminal-title {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  font-family: ui-monospace, monospace;
-  color: #64748b;
-  margin-right: 52px;
-}
-
-/* Terminal Body */
-.terminal-body {
-  padding: 20px 24px;
-  font-family: ui-monospace, 'Fira Code', monospace;
-  font-size: 14px;
-  line-height: 2;
-}
-
-.code-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  opacity: 0;
-  animation: line-appear 0.5s ease forwards;
-}
-
-.line-1 {
-  animation-delay: 0.3s;
-}
-.line-2 {
-  animation-delay: 1s;
-}
-.line-3 {
-  animation-delay: 1.8s;
-}
-.line-4 {
-  animation-delay: 2.5s;
-}
-
-@keyframes line-appear {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.code-prompt {
-  color: #22c55e;
-  font-weight: bold;
-}
-.code-cmd {
-  color: #38bdf8;
-}
-.code-flag {
-  color: #a78bfa;
-}
-.code-url {
-  color: #14b8a6;
-}
-.code-comment {
-  color: #64748b;
-  font-style: italic;
-}
-.code-success {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.15);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-.code-response {
-  color: #fbbf24;
-}
-
-/* Blinking Cursor */
-.cursor {
-  display: inline-block;
-  width: 8px;
-  height: 16px;
-  background: #22c55e;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
-  }
-}
-
-/* Dark mode adjustments */
-:deep(.dark) .terminal-window {
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(20, 184, 166, 0.2),
-    0 0 40px rgba(20, 184, 166, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+@media (prefers-reduced-motion: reduce) {
+  .code-line { opacity: 1; transform: none; animation: none; }
+  .cursor { animation: none; }
 }
 </style>

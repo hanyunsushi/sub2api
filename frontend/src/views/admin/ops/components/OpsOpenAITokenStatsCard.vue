@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
 import { computed, ref, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -165,7 +166,7 @@ function onNextPage() {
       </h3>
       <div class="flex flex-wrap items-center gap-2">
         <div class="w-36">
-          <Select v-model="timeRange" :options="timeRangeOptions" />
+          <RouteSwitch :label="t('admin.dashboard.timeRange')" v-model="timeRange" :options="timeRangeOptions" />
         </div>
         <div class="w-36">
           <Select v-model="viewMode" :options="viewModeOptions" />

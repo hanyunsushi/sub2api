@@ -1,0 +1,12 @@
+/* 加载反馈 / 组件绘制动画：门控仅覆盖正在准备的正文，常驻顶栏、侧栏和认证左栏保留。 */
+.kreepai-route-shell { display: contents; }
+.kreepai-page-content { min-height: calc(100dvh - 64px); }
+.kreepai-route-shell.is-preparing .kreepai-layout-content,
+.kreepai-route-shell.is-preparing .sub2api-microfrontend-content main,
+.kreepai-route-shell.is-preparing .kreepai-auth-content,
+.kreepai-route-shell.is-preparing > :not(.kreepai-layout):not(.sub2api-microfrontend-content):not(.kreepai-auth),
+.qz-shift5-enter-pending { visibility: hidden !important; }
+.qz-shift5-route-transition {
+  position: fixed; z-index: 9999; background: var(--bg, #fff); pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) { .qz-shift5-route-transition { display: none !important; } }

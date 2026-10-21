@@ -6,7 +6,8 @@
 
   <!-- 独立形态:自带导航条(logo/站名 + 登录/回后台) -->
   <div v-else class="min-h-screen bg-gray-50 dark:bg-dark-950">
-    <PlazaNavBar />
+    <!-- 顶栏：Console 使用宿主导航，独立站保留广场顶栏。 -->
+    <PlazaNavBar v-if="!consoleEmbedded" />
     <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <ModelPlazaContent :response="data" :loading="loading" :error="loadFailed" />
     </main>
@@ -22,6 +23,9 @@ import ModelPlazaContent from '@/components/modelPlaza/ModelPlazaContent.vue'
 import { getModelPlaza, type ModelPlazaResponse } from '@/api/modelPlaza'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
+import { isMicrofrontend } from '@/runtime/environment'
+
+const consoleEmbedded = isMicrofrontend()
 
 const route = useRoute()
 const appStore = useAppStore()

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import OpsTimeRangePicker from './OpsTimeRangePicker.vue'
+import RefreshButton from '@/components/common/RefreshButton.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Select from '@/components/common/Select.vue'
@@ -10,7 +12,7 @@ import { adminAPI } from '@/api'
 import { opsAPI, type OpsDashboardOverview, type OpsMetricThresholds, type OpsRealtimeTrafficSummary } from '@/api/admin/ops'
 import type { OpsRequestDetailsPreset } from './OpsRequestDetailsModal.vue'
 import { useAdminSettingsStore } from '@/stores'
-import { formatDateTimeLocalInput, formatNumber } from '@/utils/format'
+import { formatNumber } from '@/utils/format'
 import { formatMemorySizeMB } from '../utils/opsFormatters'
 
 type RealtimeWindow = '1min' | '5min' | '30min' | '1h'
@@ -89,42 +91,11 @@ watch(
 
 // --- Filters ---
 
-const showCustomTimeRangeDialog = ref(false)
-const customStartTimeInput = ref('')
-const customEndTimeInput = ref('')
-
-function formatCustomTimeRangeLabel(startTime: string, endTime: string): string {
-  const start = new Date(startTime)
-  const end = new Date(endTime)
-  const formatDate = (d: Date) => {
-    const month = String(d.getMonth() + 1).padStart(2, '0')
-    const day = String(d.getDate()).padStart(2, '0')
-    const hour = String(d.getHours()).padStart(2, '0')
-    const minute = String(d.getMinutes()).padStart(2, '0')
-    return `${month}-${day} ${hour}:${minute}`
-  }
-  return `${formatDate(start)} ~ ${formatDate(end)}`
-}
-
 const groups = ref<Array<{ id: number; name: string; platform: string }>>([])
 
 const platformOptions = computed(() => [
   { value: '', label: t('common.all') },
   ...CONCRETE_PLATFORM_OPTIONS
-])
-
-const timeRangeOptions = computed(() => [
-  { value: '5m', label: t('admin.ops.timeRange.5m') },
-  { value: '30m', label: t('admin.ops.timeRange.30m') },
-  { value: '1h', label: t('admin.ops.timeRange.1h') },
-  { value: '6h', label: t('admin.ops.timeRange.6h') },
-  { value: '24h', label: t('admin.ops.timeRange.24h') },
-  {
-    value: 'custom',
-    label: props.timeRange === 'custom' && props.customStartTime && props.customEndTime
-      ? `${t('admin.ops.timeRange.custom')} (${formatCustomTimeRangeLabel(props.customStartTime, props.customEndTime)})`
-      : t('admin.ops.timeRange.custom')
-  }
 ])
 
 const queryModeOptions = computed(() => [
@@ -172,35 +143,9 @@ function handleGroupChange(val: string | number | boolean | null) {
   emit('update:group', Number.isFinite(id) && id > 0 ? id : null)
 }
 
-function handleTimeRangeChange(val: string | number | boolean | null) {
-  const newValue = String(val || '1h')
-  if (newValue === 'custom') {
-    // 初始化为最近1小时
-    const now = new Date()
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
-    customStartTimeInput.value = formatDateTimeLocalInput(oneHourAgo.getTime() / 1000)
-    customEndTimeInput.value = formatDateTimeLocalInput(now.getTime() / 1000)
-    showCustomTimeRangeDialog.value = true
-  } else {
-    emit('update:timeRange', newValue)
-  }
-}
-
-function handleCustomTimeRangeConfirm() {
-  if (!customStartTimeInput.value || !customEndTimeInput.value) return
-  const startTime = new Date(customStartTimeInput.value).toISOString()
-  const endTime = new Date(customEndTimeInput.value).toISOString()
-  // Emit custom time range first so the parent can build correct API params
-  // when it reacts to timeRange switching to "custom".
-  emit('update:customTimeRange', startTime, endTime)
-  emit('update:timeRange', 'custom')
-  showCustomTimeRangeDialog.value = false
-}
-
-function handleCustomTimeRangeCancel() {
-  showCustomTimeRangeDialog.value = false
-  // 如果当前不是 custom，不需要做任何事
-  // 如果当前是 custom，保持不变
+function handleTimeRangeChange(value: { timeRange: string; startTime?: string; endTime?: string }) {
+  if (value.timeRange === 'custom' && value.startTime && value.endTime) emit('update:customTimeRange', value.startTime, value.endTime)
+  emit('update:timeRange', value.timeRange)
 }
 
 function handleQueryModeChange(val: string | number | boolean | null) {
@@ -859,19 +804,14 @@ function handleToolbarRefresh() {
 </script>
 
 <template>
-  <div :class="['flex flex-col gap-4 rounded-3xl bg-white shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700', props.fullscreen ? 'p-8' : 'p-6']">
+  <!-- 展示信息模块：一级浅灰容器，健康、指标与系统子模块使用二级白底。 -->
+  <div :class="['ops-dashboard-header card flex flex-col gap-4', props.fullscreen ? 'p-8' : 'p-6']">
     <!-- Top Toolbar -->
     <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4 dark:border-dark-700">
       <div>
         <h1 class="flex items-center gap-2 text-xl font-black text-gray-900 dark:text-white">
-          <svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-            />
-          </svg>
+          <!-- 卡片SVG：完整监控图标、固定24px，中性前景。 -->
+          <Icon name="chart" size="lg" class="shrink-0 text-gray-500" />
           {{ t('admin.ops.title') }}
         </h1>
 
@@ -893,31 +833,29 @@ function handleToolbarRefresh() {
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-3">
-        <template v-if="!props.fullscreen">
+      <!-- 填写框 / 日期范围选择器：快捷范围与时分合并为一个原单表面入口。 -->
+      <div class="ops-toolbar-controls">
+        <div v-if="!props.fullscreen" class="ops-toolbar-selectors">
           <Select
             :model-value="platform"
             :options="platformOptions"
-            class="w-full sm:w-[140px]"
+            class="w-full"
             @update:model-value="handlePlatformChange"
           />
 
           <Select
             :model-value="groupId"
             :options="groupOptions"
-            class="w-full sm:w-[160px]"
+            class="w-full"
             @update:model-value="handleGroupChange"
           />
 
-          <div class="mx-1 hidden h-4 w-[1px] bg-gray-200 dark:bg-dark-700 sm:block"></div>
+        </div>
 
-          <Select
-            :model-value="timeRange"
-            :options="timeRangeOptions"
-            class="relative w-full sm:w-[150px]"
-            @update:model-value="handleTimeRangeChange"
-          />
-        </template>
+        <OpsTimeRangePicker v-if="!props.fullscreen" class="ops-toolbar-time-range"
+          :time-range="timeRange" :custom-start-time="customStartTime" :custom-end-time="customEndTime"
+          @change="handleTimeRangeChange"
+        />
 
         <Select
           v-if="false"
@@ -927,31 +865,17 @@ function handleToolbarRefresh() {
           @update:model-value="handleQueryModeChange"
         />
 
-        <button
-          v-if="!props.fullscreen"
-          type="button"
-          class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600"
-          :disabled="loading"
-          :title="t('common.refresh')"
-          @click="handleToolbarRefresh"
-        >
-          <svg class="h-4 w-4" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-        </button>
+        <div v-if="!props.fullscreen" class="ops-toolbar-actions">
+        <!-- 普通按钮 / 悬浮效果：手动重载复用标准刷新，等待绑定原请求状态。 -->
+        <RefreshButton v-if="!props.fullscreen" :loading="loading" :label="t('common.refresh')" @refresh="handleToolbarRefresh" />
 
-        <div v-if="!props.fullscreen" class="mx-1 hidden h-4 w-[1px] bg-gray-200 dark:bg-dark-700 sm:block"></div>
 
         <!-- Alert Rules Button (hidden in fullscreen) -->
+        <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
         <button
           v-if="!props.fullscreen"
           type="button"
-          class="flex h-8 items-center gap-1.5 rounded-lg bg-blue-100 px-3 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
+          class="btn btn-secondary flex h-8 items-center gap-1.5 rounded-lg bg-blue-100 px-3 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
           :title="t('admin.ops.alertRules.title')"
           @click="emit('openAlertRules')"
         >
@@ -962,10 +886,11 @@ function handleToolbarRefresh() {
         </button>
 
         <!-- Settings Button (hidden in fullscreen) -->
+        <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
         <button
           v-if="!props.fullscreen"
           type="button"
-          class="flex h-8 items-center gap-1.5 rounded-lg bg-gray-100 px-3 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+          class="btn btn-secondary flex h-8 items-center gap-1.5 rounded-lg bg-gray-100 px-3 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :title="t('admin.ops.settings.title')"
           @click="emit('openSettings')"
         >
@@ -977,10 +902,11 @@ function handleToolbarRefresh() {
         </button>
 
         <!-- Enter Fullscreen Button (hidden in fullscreen mode) -->
+        <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
         <button
           v-if="!props.fullscreen"
           type="button"
-          class="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
+          class="btn btn-secondary flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :title="t('admin.ops.fullscreen.enter')"
           @click="emit('enterFullscreen')"
         >
@@ -988,13 +914,14 @@ function handleToolbarRefresh() {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
           </svg>
         </button>
+        </div>
       </div>
     </div>
 
-    <div v-if="overview" class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-      <!-- Left: Health + Realtime -->
-      <div :class="['rounded-2xl bg-gray-50 dark:bg-dark-900 lg:col-span-5', props.fullscreen ? 'p-6' : 'p-4']">
-        <div class="grid h-full grid-cols-1 gap-6 md:grid-cols-[200px_1fr] md:items-center">
+    <div v-if="overview" class="ops-overview-grid">
+      <!-- 展示信息模块：二级健康/实时与各项指标白底；普通明细按钮沿用原事件。 -->
+      <div :class="['ops-health-card ops-submodule', props.fullscreen ? 'p-6' : 'p-4']">
+        <div class="ops-health-realtime">
           <!-- 1) Health Score -->
           <div
             class="group relative flex cursor-pointer flex-col items-center justify-center rounded-xl py-2 transition-all hover:bg-white/60 dark:hover:bg-dark-800/60 md:border-r md:border-gray-200 md:pr-6 dark:md:border-dark-700"
@@ -1207,17 +1134,18 @@ function handleToolbarRefresh() {
       </div>
 
       <!-- Right: 6 cards (3 cols x 2 rows) -->
-      <div class="grid h-full grid-cols-1 content-center gap-4 sm:grid-cols-2 lg:col-span-7 lg:grid-cols-3">
+      <div class="ops-metric-grid">
         <!-- Card 1: Requests -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" style="order: 1;">
+        <div class="ops-submodule p-4" style="order: 1;">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.requestsTitle') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.totalRequests')" />
             </div>
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
             <button
               v-if="!props.fullscreen"
-              class="text-[10px] font-bold text-blue-500 hover:underline"
+              class="btn btn-secondary"
               type="button"
               @click="openDetails({ title: t('admin.ops.requestDetails.title') })"
             >
@@ -1245,16 +1173,17 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Card 2: SLA -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" style="order: 2;">
+        <div class="ops-submodule p-4" style="order: 2;">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.sla') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.sla')" />
               <span class="h-1.5 w-1.5 rounded-full" :class="getSLAThresholdLevel(slaPercent) === 'critical' ? 'bg-red-500' : getSLAThresholdLevel(slaPercent) === 'warning' ? 'bg-yellow-500' : 'bg-green-500'"></span>
             </div>
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
             <button
               v-if="!props.fullscreen"
-              class="text-[10px] font-bold text-blue-500 hover:underline"
+              class="btn btn-secondary"
               type="button"
               @click="openDetails({ title: t('admin.ops.requestDetails.title'), kind: 'error' })"
             >
@@ -1276,15 +1205,16 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Card 4: Request Duration -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" style="order: 4;">
+        <div class="ops-submodule p-4" style="order: 4;">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.latencyDuration') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.latency')" />
             </div>
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
             <button
               v-if="!props.fullscreen"
-              class="text-[10px] font-bold text-blue-500 hover:underline"
+              class="btn btn-secondary"
               type="button"
               @click="openDetails({ title: t('admin.ops.latencyDuration'), sort: 'duration_desc' })"
             >
@@ -1327,15 +1257,16 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Card 5: TTFT -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" style="order: 5;">
+        <div class="ops-submodule p-4" style="order: 5;">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
               <span class="text-[10px] font-bold uppercase text-gray-400">TTFT</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.ttft')" />
             </div>
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
             <button
               v-if="!props.fullscreen"
-              class="text-[10px] font-bold text-blue-500 hover:underline"
+              class="btn btn-secondary"
               type="button"
               @click="openDetails({ title: t('admin.ops.ttftLabel'), kind: 'success', sort: 'ttft_desc' })"
             >
@@ -1378,13 +1309,14 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Card 3: Request Errors -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" style="order: 3;">
+        <div class="ops-submodule p-4" style="order: 3;">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.requestErrors') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.errors')" />
             </div>
-            <button v-if="!props.fullscreen" class="text-[10px] font-bold text-blue-500 hover:underline" type="button" @click="openErrorDetails('request')">
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+            <button v-if="!props.fullscreen" class="btn btn-secondary" type="button" @click="openErrorDetails('request')">
               {{ t('admin.ops.requestDetails.details') }}
             </button>
           </div>
@@ -1404,13 +1336,14 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Card 6: Upstream Errors -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" style="order: 6;">
+        <div class="ops-submodule p-4" style="order: 6;">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-1">
               <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.upstreamErrors') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.upstreamErrors')" />
             </div>
-            <button v-if="!props.fullscreen" class="text-[10px] font-bold text-blue-500 hover:underline" type="button" @click="openErrorDetails('upstream')">
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+            <button v-if="!props.fullscreen" class="btn btn-secondary" type="button" @click="openErrorDetails('upstream')">
               {{ t('admin.ops.requestDetails.details') }}
             </button>
           </div>
@@ -1430,7 +1363,7 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Per-request output speed, separate from system throughput. -->
-        <div class="rounded-2xl bg-gray-50 p-4 dark:bg-dark-900" data-testid="output-tps-card" style="order: 7;">
+        <div class="ops-submodule p-4" data-testid="output-tps-card" style="order: 7;">
           <div class="flex items-center gap-1">
             <span class="text-[10px] font-bold uppercase text-gray-400">{{ t('admin.ops.outputTps') }}</span>
             <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.outputTps')" />
@@ -1455,9 +1388,9 @@ function handleToolbarRefresh() {
 
     <!-- Integrated: System health (cards) -->
     <div v-if="overview" class="mt-2 border-t border-gray-100 pt-4 dark:border-dark-700">
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div class="ops-system-grid">
         <!-- CPU -->
-        <div class="rounded-xl bg-gray-50 p-3 dark:bg-dark-900">
+        <div class="ops-submodule p-3">
           <div class="flex items-center gap-1">
             <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">CPU</div>
             <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.cpu')" />
@@ -1471,7 +1404,7 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- MEM -->
-        <div class="rounded-xl bg-gray-50 p-3 dark:bg-dark-900">
+        <div class="ops-submodule p-3">
           <div class="flex items-center gap-1">
             <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.memory') }}</div>
             <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.memory')" />
@@ -1489,7 +1422,7 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- DB -->
-        <div class="rounded-xl bg-gray-50 p-3 dark:bg-dark-900">
+        <div class="ops-submodule p-3">
           <div class="flex items-center gap-1">
             <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.db') }}</div>
             <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.db')" />
@@ -1506,7 +1439,7 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Redis -->
-        <div class="rounded-xl bg-gray-50 p-3 dark:bg-dark-900">
+        <div class="ops-submodule p-3">
           <div class="flex items-center gap-1">
             <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Redis</div>
             <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.redis')" />
@@ -1522,7 +1455,7 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Goroutines -->
-        <div class="rounded-xl bg-gray-50 p-3 dark:bg-dark-900">
+        <div class="ops-submodule p-3">
           <div class="flex items-center gap-1">
             <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.goroutines') }}</div>
             <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.goroutines')" />
@@ -1541,13 +1474,14 @@ function handleToolbarRefresh() {
         </div>
 
         <!-- Jobs -->
-        <div class="rounded-xl bg-gray-50 p-3 dark:bg-dark-900">
+        <div class="ops-submodule p-3">
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-1">
               <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ t('admin.ops.jobs') }}</div>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.jobs')" />
             </div>
-            <button v-if="!props.fullscreen" class="text-[10px] font-bold text-blue-500 hover:underline" type="button" @click="openJobsDetails">
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+            <button v-if="!props.fullscreen" class="btn btn-secondary" type="button" @click="openJobsDetails">
               {{ t('admin.ops.requestDetails.details') }}
             </button>
           </div>
@@ -1604,46 +1538,41 @@ function handleToolbarRefresh() {
       </div>
     </BaseDialog>
 
-    <!-- Custom Time Range Dialog -->
-    <BaseDialog :show="showCustomTimeRangeDialog" :title="t('admin.ops.timeRange.custom')" width="narrow" @close="handleCustomTimeRangeCancel">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {{ t('admin.ops.customTimeRange.startTime') }}
-          </label>
-          <input
-            v-model="customStartTimeInput"
-            type="datetime-local"
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-dark-600 dark:bg-dark-800 dark:text-white"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {{ t('admin.ops.customTimeRange.endTime') }}
-          </label>
-          <input
-            v-model="customEndTimeInput"
-            type="datetime-local"
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-dark-600 dark:bg-dark-800 dark:text-white"
-          />
-        </div>
-        <div class="flex justify-end gap-3 pt-2">
-          <button
-            type="button"
-            class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
-            @click="handleCustomTimeRangeCancel"
-          >
-            {{ t('common.cancel') }}
-          </button>
-          <button
-            type="button"
-            class="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
-            @click="handleCustomTimeRangeConfirm"
-          >
-            {{ t('common.confirm') }}
-          </button>
-        </div>
-      </div>
-    </BaseDialog>
+
   </div>
 </template>
+
+<style scoped>
+/* 展示信息模块 / 响应式：以实际正文宽度排布，不能按含侧栏的视口挤入12列。 */
+.ops-dashboard-header { container: ops-header / inline-size; min-width: 0; }
+.ops-overview-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
+.ops-health-realtime { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; align-items:center; height:100%; }
+.ops-metric-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr)); gap:16px; align-content:center; }
+.ops-system-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr)); gap:12px; }
+.ops-overview-grid :deep(*), .ops-system-grid :deep(*) { min-width:0; overflow-wrap:anywhere; }
+.ops-metric-grid :deep(.whitespace-nowrap) { white-space:normal; flex-wrap:wrap; }
+.ops-health-realtime :deep(.items-baseline) { flex-wrap:wrap; }
+.ops-system-grid :deep(.justify-between) { flex-wrap:wrap; }
+.ops-dashboard-header > :deep(.flex) { min-width:0; }
+/* 填写框 / 日期范围选择器 / 普通按钮：选择、统一时间入口与动作按正文容器重排。 */
+.ops-toolbar-controls { display: grid; grid-template-columns: minmax(0,1fr); align-items: center; gap: 12px; width: 100%; min-width: 0; }
+.ops-toolbar-selectors { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,140px),1fr)); gap: 12px; min-width: 0; }
+.ops-toolbar-time-range { width: 100%; max-width: 100%; min-width: 0; }
+.ops-toolbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+@container ops-header (min-width:720px) {
+  .ops-toolbar-controls { grid-template-columns: minmax(0,1fr) auto; }
+  .ops-toolbar-selectors { grid-column: 1; grid-row: 1; max-width: 312px; }
+  .ops-toolbar-actions { grid-column: 2; grid-row: 1; justify-content: end; }
+  .ops-toolbar-time-range { grid-column: 1 / -1; grid-row: 2; }
+}
+@container ops-header (min-width:1120px) {
+  .ops-toolbar-controls { grid-template-columns: 312px minmax(0,1fr) auto; }
+  .ops-toolbar-time-range { grid-column: 2; grid-row: 1; }
+  .ops-toolbar-actions { grid-column: 3; }
+}
+/* 展示信息模块：二级常态白面，一级容器的浅灰不再被旧灰色工具类覆盖。 */
+.ops-submodule { background: var(--bg); border-radius: 18px; box-shadow: none; }
+.ops-time-range-calendar { min-width:0; }
+@container ops-header (min-width:560px) { .ops-health-realtime { grid-template-columns:160px minmax(0,1fr); } }
+@container ops-header (min-width:1180px) { .ops-overview-grid { grid-template-columns:minmax(420px,5fr) minmax(0,7fr); } }
+</style>

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import BaseDialog from '../BaseDialog.vue'
@@ -14,10 +14,12 @@ describe('dialog accessible titles', () => {
     openDialog('Edit account')
     openDialog('Confirm deletion')
     await nextTick()
+    await vi.waitFor(() => expect(document.body.querySelectorAll('[role="dialog"]')).toHaveLength(2))
     const dialogs = Array.from(document.body.querySelectorAll('[role="dialog"]'))
     expect(dialogs).toHaveLength(2)
     const titles = dialogs.map(dialog => document.getElementById(dialog.getAttribute('aria-labelledby')!)?.textContent)
-    expect(titles).toEqual(['Edit account', 'Confirm deletion'])
+    expect(titles.sort()).toEqual(['Confirm deletion', 'Edit account'])
+    expect(new Set(dialogs.map(d => d.getAttribute('aria-labelledby'))).size).toBe(2)
   })
 
   it('keeps the title association stable when a dialog is reopened', async () => {

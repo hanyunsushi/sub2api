@@ -218,6 +218,11 @@ export default {
 
   // Auth
   auth: {
+    gatewayHeadline: 'Connect every model. Focus on what you create.',
+    gatewayKeys: 'Manage your API keys in one place',
+    gatewayUsage: 'Track usage and balance',
+    gatewayModels: 'Choose models and services',
+
     welcomeBack: 'Welcome Back',
     signInToAccount: 'Sign in to your account to continue',
     signIn: 'Sign In',

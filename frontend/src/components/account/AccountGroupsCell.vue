@@ -1,11 +1,12 @@
 <template>
   <div v-if="groups && groups.length > 0" class="relative max-w-56">
-    <!-- 限制列宽但不裁切行高，完整显示分组名称和 +N 按钮 -->
+    <!-- 区分-信息牌：完整显示分组归属与原品牌Logo；健康状态由AccountStatusIndicator单独表达。 -->
     <div class="flex flex-wrap gap-1">
       <GroupBadge
         v-for="group in displayGroups"
         :key="group.id"
         :name="group.name"
+        :logo-url="group.logo_url"
         :platform="group.platform"
         :subscription-type="group.subscription_type"
         :rate-multiplier="group.rate_multiplier"
@@ -58,6 +59,7 @@
               v-for="group in groups"
               :key="group.id"
               :name="group.name"
+              :logo-url="group.logo_url"
               :platform="group.platform"
               :subscription-type="group.subscription_type"
               :rate-multiplier="group.rate_multiplier"

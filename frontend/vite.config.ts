@@ -2,6 +2,7 @@ import { defineConfig, loadEnv, Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import checker from 'vite-plugin-checker'
 import { resolve } from 'path'
+import { microfrontendCssScopePlugin, microfrontendTeleportTransform } from './scripts/microfrontend-css-scope.mjs'
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => ({
@@ -82,15 +83,19 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const backendUrl = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8080'
   const devPort = Number(env.VITE_DEV_PORT || 3000)
+  const microfrontendBuild = process.env.KREEPAI_MICROFRONTEND === '1'
 
   return {
+    esbuild: { jsx: 'automatic', jsxImportSource: 'react' },
     plugins: [
-      vue(),
+      vue(microfrontendBuild ? { template: { compilerOptions: { nodeTransforms: [microfrontendTeleportTransform('kreepai')] } } } : {}),
+      ...(microfrontendBuild ? [microfrontendCssScopePlugin('kreepai')] : []),
       checker({
         vueTsc: true
       }),
       injectPublicSettings(backendUrl)
     ],
+  base: microfrontendBuild ? (process.env.CONSOLE_MFE_ASSET_BASE || '/apps/kreepai/microfrontend/') : '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -103,7 +108,21 @@ export default defineConfig(({ mode }) => {
     // JIT 编译器生成 AST 对象而非 JS 代码，无需 unsafe-eval
     __INTLIFY_JIT_COMPILATION__: true
   },
-  build: {
+  build: microfrontendBuild ? {
+    outDir: process.env.CONSOLE_MFE_OUT_DIR || 'output/microfrontend',
+    emptyOutDir: true,
+    cssCodeSplit: false,
+    rollupOptions: {
+      input: resolve(__dirname, 'src/runtime/microfrontend.ts'),
+      preserveEntrySignatures: 'strict',
+      output: {
+        format: 'es',
+        entryFileNames: 'kreepai-microfrontend.js',
+        manualChunks: undefined,
+        assetFileNames: asset => asset.name?.endsWith('.css') ? 'style.css' : 'assets/[name]-[hash][extname]',
+      },
+    },
+  } : {
     outDir: '../backend/internal/web/dist',
     emptyOutDir: true,
     rollupOptions: {

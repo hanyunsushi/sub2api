@@ -115,4 +115,18 @@ describe('LoginView registration entry', () => {
 
     expect(wrapper.text()).not.toContain('auth.signUp')
   })
+  it('uses accessible field errors for invalid input without the browser validation bubble', async () => {
+    const wrapper = mountLogin()
+    await flushPromises()
+    expect(wrapper.get('form').attributes()).toHaveProperty('novalidate')
+    await wrapper.get('#email').setValue('akadmin')
+    await wrapper.get('#password').setValue('short')
+    await wrapper.get('form').trigger('submit')
+    expect(wrapper.get('#email').attributes('aria-invalid')).toBe('true')
+    expect(wrapper.get('#email').attributes('aria-describedby')).toBe('login-email-error')
+    expect(wrapper.get('#login-email-error').text()).toBe('auth.invalidEmail')
+    expect(wrapper.get('#password').attributes('aria-describedby')).toBe('login-password-error')
+    expect(wrapper.get('#login-password-error').text()).toBe('auth.passwordMinLength')
+  })
+
 })

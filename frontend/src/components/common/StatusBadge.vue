@@ -1,5 +1,6 @@
 <template>
-  <div class="flex items-center gap-1.5">
+  <!-- 区分-状态牌：嵌入视觉由 data-status 映射；原标签与状态值不变。 -->
+  <div class="kreepai-status flex items-center gap-1.5" :data-status="status">
     <span
       :class="[
         'inline-block h-2 w-2 rounded-full',

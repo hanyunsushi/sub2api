@@ -299,7 +299,8 @@ async function saveAllSettings() {
                 class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
               >
                 {{ email }}
-                <button type="button" class="text-blue-700/80 hover:text-blue-900" @click="removeRecipient('alert', email)">×</button>
+                <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+                <button type="button" class="btn btn-danger text-blue-700/80 hover:text-blue-900" @click="removeRecipient('alert', email)">×</button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -347,7 +348,8 @@ async function saveAllSettings() {
                 class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
               >
                 {{ email }}
-                <button type="button" class="text-blue-700/80 hover:text-blue-900" @click="removeRecipient('report', email)">×</button>
+                <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+                <button type="button" class="btn btn-danger text-blue-700/80 hover:text-blue-900" @click="removeRecipient('report', email)">×</button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">

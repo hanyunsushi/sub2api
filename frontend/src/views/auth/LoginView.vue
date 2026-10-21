@@ -11,7 +11,9 @@
         </p>
       </div>
       <!-- Login Form -->
-      <form @submit.prevent="handleLogin" class="space-y-5">
+      <form novalidate @submit.prevent="handleLogin" class="space-y-5">
+        <!-- 提示信息：后端拒绝原因持续保留在表单中，原校验/重试与Toast处理不变。 -->
+        <p v-if="errorMessage" class="kreepai-auth-error" role="alert">{{ errorMessage }}</p>
         <!-- Email Input -->
         <div>
           <label for="email" class="input-label">
@@ -31,9 +33,13 @@
               :disabled="authActionDisabled"
               class="input pl-11"
               :class="{ 'input-error': errors.email }"
+              :aria-invalid="!!errors.email"
+              :aria-describedby="errors.email ? 'login-email-error' : undefined"
               :placeholder="t('auth.emailPlaceholder')"
             />
           </div>
+          <!-- 填写框 / 警告信息：字段错误复用原校验，替代浏览器不可定制的原生气泡。 -->
+          <p v-if="errors.email" id="login-email-error" class="kreepai-field-error" role="alert">{{ errors.email }}</p>
         </div>
 
         <!-- Password Input -->
@@ -54,6 +60,8 @@
               :disabled="authActionDisabled"
               class="input pl-11 pr-11"
               :class="{ 'input-error': errors.password }"
+              :aria-invalid="!!errors.password"
+              :aria-describedby="errors.password ? 'login-password-error' : undefined"
               :placeholder="t('auth.passwordPlaceholder')"
             />
             <button
@@ -66,6 +74,7 @@
               <Icon v-else name="eye" size="md" />
             </button>
           </div>
+          <p v-if="errors.password" id="login-password-error" class="kreepai-field-error" role="alert">{{ errors.password }}</p>
           <div class="mt-1 flex items-center justify-between">
             <span></span>
             <router-link
@@ -97,32 +106,17 @@
           />
         </div>
 
+        <p v-if="errors.turnstile" class="kreepai-field-error" role="alert">{{ errors.turnstile }}</p>
+
         <!-- Submit Button -->
         <button
           type="submit"
           :disabled="authActionDisabled || (turnstileEnabled && !turnstileToken)"
           class="btn btn-primary w-full"
         >
-          <svg
+          <LoadingSpinner
             v-if="isLoading"
-            class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+           size="sm" />
           <Icon v-else name="login" size="md" class="mr-2" />
           {{ isLoading ? t('auth.signingIn') : t('auth.signIn') }}
         </button>
@@ -222,6 +216,8 @@
 </template>
 
 <script setup lang="ts">
+// 加载反馈：保留原请求条件，统一默认点阵。
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { computed, ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'

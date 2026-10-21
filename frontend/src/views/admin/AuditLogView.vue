@@ -57,7 +57,7 @@
 
               <div class="w-full sm:w-auto sm:min-w-[170px]">
                 <label class="input-label">{{ t('admin.dashboard.timeRange') }}</label>
-                <Select
+                <RouteSwitch :label="t('admin.dashboard.timeRange')"
                   :model-value="timeRange"
                   :options="timeRangeOptions"
                   @update:model-value="handleTimeRangeChange"
@@ -277,14 +277,8 @@
       @close="handleCustomTimeRangeCancel"
     >
       <div class="space-y-4 py-2">
-        <div>
-          <label class="input-label">{{ t('admin.ops.customTimeRange.startTime') }}</label>
-          <input v-model="customStartTimeInput" type="datetime-local" class="input" />
-        </div>
-        <div>
-          <label class="input-label">{{ t('admin.ops.customTimeRange.endTime') }}</label>
-          <input v-model="customEndTimeInput" type="datetime-local" class="input" />
-        </div>
+        <!-- 日期范围选择器：保留原过滤字段、时分精度与查询触发。 -->
+<DateRangeFields v-model:start="customStartTimeInput" v-model:end="customEndTimeInput" time :clearable="false" />
       </div>
       <template #footer>
         <button type="button" class="btn btn-secondary" @click="handleCustomTimeRangeCancel">
@@ -352,6 +346,8 @@
 </template>
 
 <script setup lang="ts">
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI, type AuditLog } from '@/api/admin'

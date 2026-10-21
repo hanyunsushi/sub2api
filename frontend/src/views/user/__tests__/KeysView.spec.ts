@@ -302,6 +302,26 @@ describe('user KeysView column settings', () => {
     isCurrentStep.mockReturnValue(false)
   })
 
+  it('keeps manual refresh busy until the list request completes and blocks duplicate clicks', async () => {
+    const wrapper = await mountView()
+    let finish!: (value: unknown) => void
+    listKeys.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve }))
+    const refresh = wrapper.get('button[title="Refresh"]')
+
+    await refresh.trigger('click')
+    expect(listKeys).toHaveBeenCalledTimes(2)
+    expect(refresh.attributes('aria-busy')).toBe('true')
+    expect(refresh.attributes('disabled')).toBeDefined()
+    await refresh.trigger('click')
+    expect(listKeys).toHaveBeenCalledTimes(2)
+
+    finish({ items: [], total: 0, page: 1, page_size: 20, pages: 0 })
+    await flushPromises()
+    expect(refresh.attributes('aria-busy')).toBe('false')
+    expect(refresh.attributes('disabled')).toBeUndefined()
+    wrapper.unmount()
+  })
+
   it.each([
     { initialStatus: 'quota_exhausted', status: 'active', formStatus: 'active' },
     { initialStatus: 'inactive', status: 'inactive', formStatus: 'inactive' },

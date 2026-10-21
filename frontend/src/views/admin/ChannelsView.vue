@@ -31,14 +31,8 @@
 
           <!-- Right: Actions -->
           <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button
-              @click="loadChannels"
-              :disabled="loading"
-              class="btn btn-secondary"
-              :title="t('common.refresh', 'Refresh')"
-            >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-            </button>
+            <!-- 普通按钮 / 悬浮效果：原刷新回调与请求状态，标准SVG不改变按钮位置。 -->
+            <RefreshButton :label="t('common.refresh')" @refresh="loadChannels" :loading="loading" />
             <button @click="openCreateDialog" class="btn btn-primary">
               <Icon name="plus" size="md" class="mr-2" />
               {{ t('admin.channels.createChannel', 'Create Channel') }}
@@ -545,7 +539,7 @@
                     <!-- Search results dropdown -->
                     <div
                       v-if="showRuleAccountDropdown[`${section.platform}-${ruleIndex}`] && (ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]?.length ?? 0) > 0"
-                      class="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+                      class="dropdown absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
                     >
                       <button
                         v-for="account in ruleAccountSearchResults[`${section.platform}-${ruleIndex}`]"
@@ -630,6 +624,7 @@
 </template>
 
 <script setup lang="ts">
+import RefreshButton from '@/components/common/RefreshButton.vue'
 import LogoPicker from '@/components/common/LogoPicker.vue'
 import ProviderBrandIcon from '@/components/common/ProviderBrandIcon.vue'
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
@@ -1709,6 +1704,7 @@ onUnmounted(() => {
   ruleAccountSearchRunner.clearAll()
   clearAllRuleAccountSearchState()
 })
+// 顶栏 / 普通按钮 / 默认弧边按钮：调用现有业务入口；加载时阻止重复触发。
 </script>
 
 <style scoped>

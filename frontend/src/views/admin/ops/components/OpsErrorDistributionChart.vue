@@ -1,4 +1,8 @@
 <script setup lang="ts">
+// 数字展示 / 组件绘制动画：两种入口共用图表字体与低动态，状态编码/业务数据保持。
+import { consoleChartPlugins } from '@/styles/design-system/chart-style'
+const designChartPlugins = consoleChartPlugins()
+
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, ArcElement, Legend, Tooltip } from 'chart.js'
@@ -137,7 +141,7 @@ const options = computed(() => ({
     <div class="relative min-h-0 flex-1">
       <div v-if="state === 'ready' && chartData" class="flex h-full flex-col">
         <div class="flex-1">
-          <Doughnut :data="chartData" :options="{ ...options, cutout: '65%' }" />
+          <Doughnut :plugins="designChartPlugins" :data="chartData" :options="{ ...options, cutout: '65%' }" />
         </div>
         <div class="mt-4 flex flex-col items-center gap-2">
           <div v-if="topReason" class="text-xs font-bold text-gray-900 dark:text-white">

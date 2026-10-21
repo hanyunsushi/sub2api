@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 import ModelDistributionChart from '../ModelDistributionChart.vue'
@@ -48,6 +48,7 @@ vi.mock('vue-chartjs', () => ({
 }))
 
 describe('ModelDistributionChart', () => {
+  afterEach(() => { globalThis.__SUB2API_MICROFRONTEND__ = undefined })
   const modelStats = [
     {
       model: 'model-a',
@@ -72,6 +73,19 @@ describe('ModelDistributionChart', () => {
       actual_cost: 1.4,
     },
   ]
+
+  it('limits the embedded donut to five slices without dropping any model table rows', () => {
+    globalThis.__SUB2API_MICROFRONTEND__ = true
+    const models = Array.from({ length: 8 }, (_, i) => ({ ...modelStats[0], model: `model-${i}`, total_tokens: (8 - i) * 100 }))
+    const wrapper = mount(ModelDistributionChart, { props: { modelStats: models } })
+    const data = JSON.parse(wrapper.find('.chart-data').text())
+    expect(data.labels).toHaveLength(5)
+    expect(data.datasets[0].data).toEqual([800, 700, 600, 500, 1000])
+    expect(data.datasets[0].backgroundColor).toHaveLength(5)
+    expect(wrapper.findAll('tbody tr')).toHaveLength(8)
+    expect(wrapper.findAll('tbody tr').map(row => row.text())).toEqual(expect.arrayContaining(models.map(model => expect.stringContaining(model.model))))
+    wrapper.unmount()
+  })
 
   it('uses total_tokens and token ordering by default', () => {
     const wrapper = mount(ModelDistributionChart, {
@@ -183,8 +197,8 @@ describe('ModelDistributionChart', () => {
       'Others',
     ])
     expect(chartData.datasets[0].data).toEqual([12, 8, 0, 10])
-    expect(chartData.datasets[0].backgroundColor[0]).toBe('#3b82f6')
-    expect(chartData.datasets[0].backgroundColor[3]).toBe('#94a3b8')
+    expect(chartData.datasets[0].backgroundColor[0]).toBe('#688ae8')
+    expect(chartData.datasets[0].backgroundColor[3]).toBe('#8456ce')
     expect(chartData.datasets[0].backgroundColor[3]).not.toBe(chartData.datasets[0].backgroundColor[0])
 
     const rows = wrapper.findAll('tbody tr')

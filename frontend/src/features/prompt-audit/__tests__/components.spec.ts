@@ -5,6 +5,8 @@ import EndpointPool from '../components/EndpointPool.vue'
 import PolicyPanel from '../components/PolicyPanel.vue'
 import EventWorkspace from '../components/EventWorkspace.vue'
 import EventDetailDialog from '../components/EventDetailDialog.vue'
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
 import FilterDeleteDialog from '../components/FilterDeleteDialog.vue'
 import type { PromptAuditDraft, PromptAuditEndpointDraft, PromptAuditEvent, PromptEventFilters } from '../types'
 import { emptyEventFilters, resolveDeleteRangeFilters, SCANNER_CATALOG } from '../viewModel'
@@ -122,7 +124,7 @@ describe('Prompt Audit components', () => {
       props: { show: true, initialFilters: emptyEventFilters(), preview: null, previewing: false, deleting: false },
       global: { stubs: { BaseDialog: DialogStub } },
     })
-    expect(wrapper.get<HTMLInputElement>('[data-test="range-preset-7d"]').element.checked).toBe(true)
+    expect(wrapper.findComponent(RouteSwitch).props('modelValue')).toBe('7d')
     expect(wrapper.find('[data-test="custom-range"]').exists()).toBe(false)
     expect(wrapper.get('[data-test="delete-preview-empty"]').exists()).toBeTruthy()
     // A valid preset is enough: confirm is armed immediately (one-click flow)
@@ -134,7 +136,8 @@ describe('Prompt Audit components', () => {
     expect(directConfirm.start_at).toBe('1970-01-01T00:00:00.000Z')
     expect(Date.now() - new Date(directConfirm.end_at).getTime()).toBeGreaterThanOrEqual(7 * 24 * 60 * 60 * 1000)
 
-    await wrapper.get('[data-test="range-preset-30d"]').setValue()
+    wrapper.findComponent(RouteSwitch).vm.$emit('update:modelValue', '30d')
+    await wrapper.vm.$nextTick()
     expect(wrapper.emitted('criteria-change')?.length).toBeGreaterThan(0)
     await wrapper.get('[data-test="delete-risk"]').setValue('high')
     await wrapper.get('[data-test="run-delete-preview"]').trigger('click')
@@ -143,14 +146,17 @@ describe('Prompt Audit components', () => {
     expect(presetPreview.start_at).toBe('1970-01-01T00:00:00.000Z')
     expect(Date.now() - new Date(presetPreview.end_at).getTime()).toBeGreaterThanOrEqual(30 * 24 * 60 * 60 * 1000)
 
-    await wrapper.get('[data-test="range-preset-custom"]').setValue()
+    wrapper.findComponent(RouteSwitch).vm.$emit('update:modelValue', 'custom')
+    await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-test="custom-range"]').exists()).toBe(true)
     expect(wrapper.get('[data-test="run-delete-preview"]').attributes()).toHaveProperty('disabled')
     expect(wrapper.get('[data-test="confirm-filter-delete"]').attributes()).toHaveProperty('disabled')
     expect(wrapper.get('[data-test="confirm-disabled-reason"]').text()).toBe('admin.promptAudit.events.filterDeleteConfirmInvalidRange')
     expect(wrapper.get('[data-test="confirm-filter-delete"]').attributes('title')).toBe('admin.promptAudit.events.filterDeleteConfirmInvalidRange')
-    await wrapper.get('[data-test="custom-range"] [aria-label="admin.promptAudit.events.startAt"]').setValue('2026-07-01T00:00')
-    await wrapper.get('[data-test="custom-range"] [aria-label="admin.promptAudit.events.endAt"]').setValue('2026-07-02T00:00')
+    wrapper.findComponent(DateRangeFields).vm.$emit('update:start', '2026-07-01T00:00')
+    await wrapper.vm.$nextTick()
+    wrapper.findComponent(DateRangeFields).vm.$emit('update:end', '2026-07-02T00:00')
+    await wrapper.vm.$nextTick()
     expect(wrapper.get('[data-test="run-delete-preview"]').attributes()).not.toHaveProperty('disabled')
     expect(wrapper.get('[data-test="confirm-filter-delete"]').attributes()).not.toHaveProperty('disabled')
     expect(wrapper.find('[data-test="confirm-disabled-reason"]').exists()).toBe(false)
@@ -195,8 +201,8 @@ describe('Prompt Audit components', () => {
       props: { show: true, initialFilters, preview: null, previewing: false, deleting: false },
       global: { stubs: { BaseDialog: DialogStub } },
     })
-    expect(wrapper.get<HTMLInputElement>('[data-test="range-preset-custom"]').element.checked).toBe(true)
-    expect(wrapper.get<HTMLInputElement>('[data-test="custom-range"] [aria-label="admin.promptAudit.events.startAt"]').element.value).toBe('2026-07-01T00:00')
+    expect(wrapper.findComponent(RouteSwitch).props('modelValue')).toBe('custom')
+    expect(wrapper.findComponent(DateRangeFields).props('start')).toBe('2026-07-01T00:00')
     expect(wrapper.get<HTMLSelectElement>('[data-test="delete-decision"]').element.value).toBe('critical')
     expect(wrapper.get('[data-test="run-delete-preview"]').attributes()).not.toHaveProperty('disabled')
   })

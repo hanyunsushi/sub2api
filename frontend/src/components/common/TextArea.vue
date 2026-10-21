@@ -1,5 +1,6 @@
 <template>
-  <div class="w-full">
+  <!-- 填写框：多行字段保留 rows、纵向缩放与原始输入事件，不套单行固定高度。 -->
+  <div class="min-w-0 w-full">
     <label v-if="label" :for="id" class="input-label mb-1.5 block">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
@@ -13,9 +14,11 @@
         :required="required"
         :placeholder="placeholderText"
         :readonly="readonly"
+        :aria-invalid="error ? true : undefined"
+        :aria-describedby="id && (error || hint) ? `${id}-feedback` : undefined"
         :rows="rows"
         :class="[
-          'input w-full min-h-[80px] transition-all duration-200 resize-y',
+          'input textarea-control min-w-0 w-full min-h-[80px] transition-all duration-200 resize-y',
           error ? 'input-error ring-2 ring-red-500/20' : '',
           disabled ? 'cursor-not-allowed bg-gray-100 opacity-60 dark:bg-dark-900' : ''
         ]"
@@ -25,11 +28,11 @@
         @focus="$emit('focus', $event)"
       ></textarea>
     </div>
-    <!-- Hint / Error Text -->
-    <p v-if="error" class="input-error-text mt-1.5">
+    <!-- 提示信息 / 警告信息：保留字段校验原文，错误与帮助互斥。 -->
+    <p v-if="error" :id="id ? `${id}-feedback` : undefined" class="input-error-text mt-1.5">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="input-hint mt-1.5">
+    <p v-else-if="hint" :id="id ? `${id}-feedback` : undefined" class="input-hint mt-1.5">
       {{ hint }}
     </p>
   </div>
@@ -79,3 +82,10 @@ defineExpose({
   select: () => textAreaRef.value?.select()
 })
 </script>
+
+<style scoped>
+/* 填写框：多行最小80px，避免共享 input 的34/44px最小高度覆盖多行下限。 */
+:root.kreepai-design-system .textarea-control {
+  min-height: 80px;
+}
+</style>

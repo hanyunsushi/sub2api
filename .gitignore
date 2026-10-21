@@ -161,3 +161,10 @@ issues/
 .vite/
 # 本地闭源插件开发目录及构建产物不进入 Sub2API 仓库
 /plugins/
+
+# Console microfrontend build adapters (keep other local scripts ignored).
+!frontend/scripts/
+frontend/scripts/*
+!frontend/scripts/microfrontend-css-scope.mjs
+!frontend/scripts/microfrontend-css-scope.d.mts
+!frontend/scripts/verify-microfrontend.mjs

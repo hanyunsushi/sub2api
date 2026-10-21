@@ -1,20 +1,8 @@
 <template>
-  <Teleport to="body">
-    <Transition name="modal">
-      <div
-        v-if="show"
-        class="modal-overlay"
-        :style="zIndexStyle"
-        :aria-labelledby="dialogId"
-        role="dialog"
-        aria-modal="true"
-        @click.self="handleClose"
-      >
-        <!-- Modal panel -->
-        <div ref="dialogRef" :class="['modal-content', widthClasses]" @click.stop>
+  <FeedbackSurface :show="show" modal :label="title" :label-id="dialogId" :panel-class="`kf-feedback-panel modal-content kf-dialog-width-${width} ${widthClasses}`" scope-class="console-kreepai-surface kreepai-design-system" :z-index="zIndex" :close-on-escape="closeOnEscape" :close-on-click-outside="closeOnClickOutside" @close="emit('close')">
           <!-- Header -->
           <div class="modal-header">
-            <h3 :id="dialogId" class="modal-title">
+            <h3 class="modal-title" aria-hidden="true">
               {{ title }}
             </h3>
             <button
@@ -36,28 +24,16 @@
           <div v-if="$slots.footer" class="modal-footer">
             <slot name="footer"></slot>
           </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
+  </FeedbackSurface>
 </template>
 
 <script lang="ts">
 let dialogIdCounter = 0
-const openDialogs = new Set<string>()
 </script>
-
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted, ref, nextTick } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
-
-// 生成唯一ID以避免多个对话框时ID冲突
-const dialogId = `modal-title-${++dialogIdCounter}`
-
-// 焦点管理
-const dialogRef = ref<HTMLElement | null>(null)
-const modalBodyRef = ref<HTMLElement | null>(null)
-let previousActiveElement: HTMLElement | null = null
+import FeedbackSurface from './feedback/FeedbackSurface.vue'
 
 type DialogWidth = 'narrow' | 'normal' | 'wide' | 'extra-wide' | 'full'
 
@@ -80,15 +56,13 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnEscape: true,
   closeOnClickOutside: false,
   showCloseButton: true,
-  zIndex: 50
+  zIndex: 1000
 })
 
 const emit = defineEmits<Emits>()
-
-// Custom z-index style (overrides the default z-50 from CSS)
-const zIndexStyle = computed(() => {
-  return props.zIndex !== 50 ? { zIndex: props.zIndex } : undefined
-})
+const dialogId = `kreepai-dialog-${++dialogIdCounter}`
+const modalBodyRef = ref<HTMLElement | null>(null)
+watch(() => props.show, async visible => { if (visible) { await nextTick(); if (modalBodyRef.value) modalBodyRef.value.scrollTop = 0 } }, { immediate: true, flush: 'post' })
 
 const widthClasses = computed(() => {
   // Width guidance: narrow=confirm/short prompts, normal=standard forms,
@@ -104,64 +78,4 @@ const widthClasses = computed(() => {
   return widths[props.width]
 })
 
-const handleClose = () => {
-  if (props.closeOnClickOutside) {
-    emit('close')
-  }
-}
-
-const handleEscape = (event: KeyboardEvent) => {
-  if (props.show && props.closeOnEscape && event.key === 'Escape' && [...openDialogs].pop() === dialogId) {
-    emit('close')
-  }
-}
-
-const updateScrollLock = (isOpen: boolean) => {
-  if (isOpen) openDialogs.add(dialogId)
-  else openDialogs.delete(dialogId)
-  document.body.classList.toggle('modal-open', openDialogs.size > 0)
-}
-
-// Prevent body scroll when modal is open and manage focus
-watch(
-  () => props.show,
-  async (isOpen) => {
-    if (isOpen) {
-      // 保存当前焦点元素
-      previousActiveElement = document.activeElement as HTMLElement
-      // 使用CSS类而不是直接操作style,更易于管理多个对话框
-      updateScrollLock(true)
-
-      // 等待DOM更新后设置焦点到对话框
-      await nextTick()
-      if (modalBodyRef.value) {
-        modalBodyRef.value.scrollTop = 0
-      }
-      if (dialogRef.value) {
-        const firstFocusable = dialogRef.value.querySelector<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        )
-        firstFocusable?.focus()
-      }
-    } else {
-      updateScrollLock(false)
-      // 恢复之前的焦点
-      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
-        previousActiveElement.focus()
-      }
-      previousActiveElement = null
-    }
-  },
-  { immediate: true }
-)
-
-onMounted(() => {
-  document.addEventListener('keydown', handleEscape)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleEscape)
-  // 确保组件卸载时移除滚动锁定
-  updateScrollLock(false)
-})
 </script>

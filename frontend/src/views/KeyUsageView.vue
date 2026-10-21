@@ -1,7 +1,8 @@
 <template>
+  <!-- 加载反馈：原异步分支共用小型DotMatrix，不改请求、表单与失败反馈。 -->
   <div class="relative flex min-h-screen flex-col bg-gray-50 dark:bg-dark-950">
-    <!-- Header (same pattern as HomeView) -->
-    <header class="relative z-20 px-6 py-4">
+    <!-- 顶栏：嵌入模式复用宿主顶栏，独立站保留原导航。 -->
+    <header v-if="!embedded" class="relative z-20 px-6 py-4">
       <nav class="mx-auto flex max-w-6xl items-center justify-between">
         <router-link to="/home" class="flex items-center gap-3">
           <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
@@ -79,10 +80,7 @@
             :disabled="isQuerying"
             class="h-12 px-7 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-medium text-sm transition-all active:scale-[0.97] flex items-center gap-2 whitespace-nowrap disabled:opacity-60"
           >
-            <svg v-if="isQuerying" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
-              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-            </svg>
+            <LoadingSpinner size="sm" v-if="isQuerying" class="w-4 h-4 " />
             <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
@@ -97,27 +95,9 @@
         <div v-if="showDatePicker" class="mt-4">
           <div class="flex flex-wrap items-center gap-2 justify-center">
             <span class="text-xs text-gray-500 dark:text-dark-400">{{ t('keyUsage.dateRange') }}</span>
-            <button
-              v-for="range in dateRanges"
-              :key="range.key"
-              @click="setDateRange(range.key)"
-              class="text-xs px-3 py-1.5 rounded-lg border transition-all"
-              :class="currentRange === range.key
-                ? 'bg-primary-500 text-white border-primary-500'
-                : 'border-gray-200 bg-white text-gray-700 dark:border-dark-700 dark:bg-dark-900 dark:text-dark-200 hover:border-primary-300 dark:hover:border-dark-600'"
-            >{{ range.label }}</button>
+            <RouteSwitch :label="t('admin.dashboard.timeRange')" :model-value="currentRange" :options="dateRanges.map(range => ({value:range.key,label:range.label}))" @update:model-value="setDateRange($event as DateRangeKey)" />
             <div v-if="currentRange === 'custom'" class="flex items-center gap-2 ml-1">
-              <input
-                v-model="customStartDate"
-                type="date"
-                class="input-ring text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-900 dark:border-dark-700 dark:bg-dark-900 dark:text-white"
-              />
-              <span class="text-xs text-gray-400">-</span>
-              <input
-                v-model="customEndDate"
-                type="date"
-                class="input-ring text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-900 dark:border-dark-700 dark:bg-dark-900 dark:text-white"
-              />
+              <DateRangeFields v-model:start="customStartDate" v-model:end="customEndDate" :clearable="false" />
               <button
                 @click="queryKey"
                 class="text-xs px-3 py-1.5 rounded-lg bg-primary-500 text-white hover:bg-primary-600"
@@ -417,6 +397,9 @@
 </template>
 
 <script setup lang="ts">
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
@@ -426,6 +409,9 @@ import Icon from '@/components/icons/Icon.vue'
 import { buildGatewayUrl } from '@/api/client'
 import { formatDateLocalInput } from '@/utils/format'
 import { sanitizeUrl } from '@/utils/url'
+import { isMicrofrontend } from '@/runtime/environment'
+
+const embedded = isMicrofrontend()
 
 const { t, locale } = useI18n()
 const appStore = useAppStore()
@@ -443,6 +429,7 @@ const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
 const isDark = ref(document.documentElement.classList.contains('dark'))
 
 function toggleTheme() {
+  if (embedded) return
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
@@ -911,6 +898,7 @@ async function queryKey() {
 // ==================== Lifecycle ====================
 
 function initTheme() {
+  if (embedded) return
   const savedTheme = localStorage.getItem('theme')
   if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     isDark.value = true

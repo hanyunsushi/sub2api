@@ -75,19 +75,26 @@ describe('Select dropdown viewport constraints', () => {
     expect(dropdown).not.toBeNull()
     expect(dropdown?.style.left).toBe('20px')
     expect(dropdown?.style.minWidth).toBe('200px')
-    expect(dropdown?.style.maxWidth).toBe('996px')
+    expect(dropdown?.style.maxWidth).toBe('1008px')
   })
 
-  it('shrinks the minimum width to fit near the right viewport edge', async () => {
+  it('centers a readable panel over its trigger when both sides have room', async () => {
+    setViewportWidth(1024)
+    mockTriggerRect(400, 80)
+    const dropdown = await openSelect()
+    expect(dropdown?.style.left).toBe('340px')
+  })
+
+  it('aligns the panel with the trigger right edge near the viewport boundary', async () => {
     setViewportWidth(320)
     mockTriggerRect(220, 80)
 
     const dropdown = await openSelect()
 
     expect(dropdown).not.toBeNull()
-    expect(dropdown?.style.left).toBe('220px')
-    expect(dropdown?.style.minWidth).toBe('92px')
-    expect(dropdown?.style.maxWidth).toBe('92px')
+    expect(dropdown?.style.left).toBe('100px')
+    expect(dropdown?.style.minWidth).toBe('200px')
+    expect(dropdown?.style.maxWidth).toBe('304px')
   })
 
   it('clamps a trigger left of the viewport to the safe padding', async () => {
@@ -109,9 +116,9 @@ describe('Select dropdown viewport constraints', () => {
     const dropdown = await openSelect()
 
     expect(dropdown).not.toBeNull()
-    expect(dropdown?.style.left).toBe('312px')
-    expect(dropdown?.style.minWidth).toBe('0px')
-    expect(dropdown?.style.maxWidth).toBe('0px')
+    expect(dropdown?.style.left).toBe('112px')
+    expect(dropdown?.style.minWidth).toBe('200px')
+    expect(dropdown?.style.maxWidth).toBe('304px')
   })
 })
 
@@ -215,5 +222,21 @@ describe('Select remote search', () => {
     const dropdown = await openDropdown()
     const labels = [...dropdown.querySelectorAll('.select-option-label')].map((el) => el.textContent)
     expect(labels).toEqual(['Alpha account'])
+  })
+})
+
+describe('Select pending highlight', () => {
+  it('shows one pending row and restores selection when the pointer leaves', async () => {
+    const wrapper=mount(Select,{props:{modelValue:'a',options:[{value:'a',label:'A'},{value:'b',label:'B'}]}})
+    unmountWrapper=()=>wrapper.unmount()
+    await wrapper.get('button').trigger('click');await nextTick()
+    const panel=document.querySelector('.select-dropdown-portal')!
+    const rows=panel.querySelectorAll('.select-option')
+    rows[1].dispatchEvent(new MouseEvent('mouseenter'));await nextTick()
+    expect(panel.querySelectorAll('.select-option-focused')).toHaveLength(1)
+    expect(rows[0].classList.contains('select-option-selected')).toBe(false)
+    panel.dispatchEvent(new MouseEvent('mouseleave'));await nextTick()
+    expect(panel.querySelectorAll('.select-option-focused')).toHaveLength(0)
+    expect(rows[0].classList.contains('select-option-selected')).toBe(true)
   })
 })

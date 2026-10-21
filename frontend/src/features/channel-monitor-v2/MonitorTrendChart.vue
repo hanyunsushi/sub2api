@@ -45,7 +45,7 @@
         class="h-[280px] sm:h-[300px]"
         @wheel="onChartWheel"
       >
-        <Line :data="chartData" :options="chartOptions" />
+        <Line :plugins="designChartPlugins" :data="chartData" :options="chartOptions" />
       </div>
       <div v-else class="flex h-[280px] items-center justify-center sm:h-[300px]">
         <EmptyState
@@ -58,6 +58,10 @@
 </template>
 
 <script setup lang="ts">
+// 数字展示 / 组件绘制动画：两种入口共用图表字体与低动态，状态编码/业务数据保持。
+import { consoleChartPlugins } from '@/styles/design-system/chart-style'
+const designChartPlugins = consoleChartPlugins()
+
 import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
 import {

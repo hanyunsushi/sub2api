@@ -1,5 +1,6 @@
 <template>
-  <div class="min-w-0 w-full space-y-2">
+  <div class="account-filters min-w-0 w-full space-y-2">
+    <!-- 填写框 / 选择下拉菜单：筛选以实际可用正文宽度重排，原条件和事件保持。 -->
     <div class="grid grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap">
       <SearchInput
         :model-value="searchQuery"
@@ -65,3 +66,12 @@ const gOpts = computed(() => [
   ...(props.groups || []).map(g => ({ value: String(g.id), label: g.name }))
 ])
 </script>
+
+<style scoped>
+/* 填写框 / 选择下拉菜单：主侧栏展开后的中等正文也保持可用列宽。 */
+.account-filters { container: account-filters / inline-size; }
+@container account-filters (max-width: 560px) {
+  .account-filters > div { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .account-filters > div > * { min-width: 0; width: 100%; grid-column: auto; }
+}
+</style>

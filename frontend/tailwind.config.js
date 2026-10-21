@@ -5,19 +5,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 主色调 - Teal/Cyan 青色系
+        // 强调按钮 / 项目超链接：两种构建统一采用第一设计系统Apple蓝。
         primary: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
-          950: '#042f2e'
+          50: '#f2f8ff', 100: '#e9f3ff', 200: '#cce4ff', 300: '#99caff',
+          400: '#298fff', 500: '#007aff', 600: '#007aff', 700: '#0066cc',
+          800: '#033160', 900: '#002b55', 950: '#001b35'
         },
         // 辅助色 - 深蓝灰
         accent: {
@@ -48,21 +40,11 @@ export default {
           950: '#020617'
         }
       },
+      // 数字展示 / 字体：Tailwind工具与共享token使用同一字族，不保留系统字体分支。
       fontFamily: {
-        sans: [
-          'system-ui',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'Helvetica Neue',
-          'Arial',
-          'PingFang SC',
-          'Hiragino Sans GB',
-          'Microsoft YaHei',
-          'sans-serif'
-        ],
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+        sans: ['Inter', 'Resource Han Rounded CN', 'sans-serif'],
+        display: ['Fraunces', 'Source Han Serif SC', 'serif'],
+        mono: ['Courier Prime', 'ui-monospace', 'monospace']
       },
       boxShadow: {
         glass: '0 8px 32px rgba(0, 0, 0, 0.08)',

@@ -1,109 +1,15 @@
 <script setup lang="ts">
-/**
- * 导航进度条组件
- * 在页面顶部显示加载进度，提供导航反馈
- */
-import { computed } from 'vue'
-import { useNavigationLoadingState } from '@/composables/useNavigationLoading'
-
-const { isLoading } = useNavigationLoadingState()
-
-// 进度条可见性
-const isVisible = computed(() => isLoading.value)
+// 加载反馈：路由模块、初始接口和首屏媒体共用同一次真实等待，点阵移除后才播放入场。
+import { useI18n } from 'vue-i18n'
+import { pageLoading, usePageLoadingPosition } from '@/utils/page-loading'
+const { t } = useI18n()
+const position = usePageLoadingPosition(() => document.querySelector<HTMLElement>('.console-remote-application')?.closest<HTMLElement>('.layout-content') || document.querySelector<HTMLElement>('.kreepai-layout-content'))
 </script>
-
 <template>
-  <Transition name="progress-fade">
-    <div
-      v-show="isVisible"
-      class="navigation-progress"
-      role="progressbar"
-      aria-label="Loading"
-      aria-valuenow="0"
-      aria-valuemin="0"
-      aria-valuemax="100"
-    >
-      <div class="navigation-progress-bar" />
-    </div>
-  </Transition>
+  <!-- 加载反馈：20px点阵固定占位，正文切换保留导航。 -->
+  <span v-if="pageLoading" class="navigation-loading-dot dot-matrix-loader" :style="position" role="status" :aria-label="t('common.loading')" />
 </template>
-
 <style scoped>
-.navigation-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  z-index: 9999;
-  overflow: hidden;
-  background: transparent;
-}
-
-.navigation-progress-bar {
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    theme('colors.primary.400') 20%,
-    theme('colors.primary.500') 50%,
-    theme('colors.primary.400') 80%,
-    transparent 100%
-  );
-  animation: progress-slide 1.5s ease-in-out infinite;
-}
-
-/* 暗色模式下的进度条颜色 */
-:root.dark .navigation-progress-bar {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    theme('colors.primary.500') 20%,
-    theme('colors.primary.400') 50%,
-    theme('colors.primary.500') 80%,
-    transparent 100%
-  );
-}
-
-/* 进度条滑动动画 */
-@keyframes progress-slide {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* 淡入淡出过渡 */
-.progress-fade-enter-active {
-  transition: opacity 0.15s ease-out;
-}
-
-.progress-fade-leave-active {
-  transition: opacity 0.3s ease-out;
-}
-
-.progress-fade-enter-from,
-.progress-fade-leave-to {
-  opacity: 0;
-}
-
-/* 减少动画模式 */
-@media (prefers-reduced-motion: reduce) {
-  .navigation-progress-bar {
-    animation: progress-pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes progress-pulse {
-    0%,
-    100% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-}
+/* 加载反馈：定位不占布局，不遮挡常驻顶栏/侧栏。 */
+.navigation-loading-dot { position: fixed; z-index: 125; color: var(--accent, #007aff); transform: translate(-50%,-50%); pointer-events: none; }
 </style>

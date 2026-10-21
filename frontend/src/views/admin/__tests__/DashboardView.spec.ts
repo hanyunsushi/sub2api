@@ -91,6 +91,13 @@ const createDashboardStats = (): DashboardStats => ({
 })
 
 describe('admin DashboardView', () => {
+  const mountDashboard = () => mount(DashboardView, {
+    global: { stubs: {
+      AppLayout: { template: '<div><slot /></div>' }, LoadingSpinner: true,
+      Icon: true, DateRangePicker: true, Select: true, ModelDistributionChart: true,
+      TokenUsageTrend: true
+    } }
+  })
   beforeEach(() => {
     setActivePinia(createPinia())
 
@@ -117,6 +124,57 @@ describe('admin DashboardView', () => {
       start_date: '',
       end_date: ''
     })
+  })
+
+  it('keeps an initial request failure visible and lets the user retry without reloading', async () => {
+    getSnapshotV2.mockRejectedValueOnce(new Error('network unavailable'))
+    const wrapper = mountDashboard()
+    await flushPromises()
+    expect(wrapper.get('[role="alert"]').text()).toContain('admin.dashboard.failedToLoad')
+    expect(wrapper.find('.kreepai-dashboard-value').exists()).toBe(false)
+    await wrapper.get('[role="alert"] button').trigger('click')
+    await flushPromises()
+    expect(getSnapshotV2).toHaveBeenCalledTimes(2)
+    expect(getSnapshotV2).toHaveBeenLastCalledWith(expect.objectContaining({ include_stats: true }))
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+    expect(wrapper.find('.kreepai-dashboard-value').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('recovers a failed initial load when the browser comes online and removes its listener on exit', async () => {
+    getSnapshotV2.mockRejectedValueOnce(new Error('offline'))
+    const wrapper = mountDashboard()
+    await flushPromises()
+    window.dispatchEvent(new Event('online'))
+    await flushPromises()
+    expect(wrapper.find('.kreepai-dashboard-value').exists()).toBe(true)
+    expect(getSnapshotV2).toHaveBeenCalledTimes(2)
+    wrapper.unmount()
+    window.dispatchEvent(new Event('online'))
+    await flushPromises()
+    expect(getSnapshotV2).toHaveBeenCalledTimes(2)
+  })
+
+  it('preserves the last successful dashboard if a later refresh fails', async () => {
+    const wrapper = mountDashboard()
+    await flushPromises()
+    getSnapshotV2.mockRejectedValueOnce(new Error('temporary failure'))
+    await wrapper.get('button[title="common.refresh"]').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('.kreepai-dashboard-value').exists()).toBe(true)
+    expect(wrapper.get('[role="alert"]').text()).toContain('admin.dashboard.failedToLoad')
+    wrapper.unmount()
+  })
+
+  it('treats a snapshot without statistics as a recoverable load error', async () => {
+    getSnapshotV2.mockResolvedValueOnce({ trend: [], models: [] })
+    const wrapper = mountDashboard()
+    await flushPromises()
+    expect(wrapper.get('[role="alert"]').text()).toContain('admin.dashboard.failedToLoad')
+    await wrapper.get('[role="alert"] button').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('.kreepai-dashboard-value').exists()).toBe(true)
+    wrapper.unmount()
   })
 
   it('switches metrics and ignores a stale tokens response', async () => {

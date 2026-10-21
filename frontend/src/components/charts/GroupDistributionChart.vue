@@ -1,4 +1,5 @@
 <template>
+  <!-- 展示信息模块 / 数字展示 / 组件绘制动画：嵌入Canvas使用本系统图表适配，保留原数据模型。 -->
   <div class="card p-4">
     <div class="mb-4 flex items-center justify-between gap-3">
       <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
@@ -35,7 +36,7 @@
     </div>
     <div v-else-if="displayGroupStats.length > 0 && chartData" class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
       <div class="h-48 w-48 shrink-0">
-        <Doughnut :data="chartData" :options="doughnutOptions" />
+        <Doughnut :plugins="embeddedChartPlugins" role="img" aria-label="分组用量分布图" :data="chartData" :options="doughnutOptions" />
       </div>
       <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
         <table class="w-full text-xs">
@@ -104,10 +105,14 @@
     >
       {{ t('admin.dashboard.noDataAvailable') }}
     </div>
+    <!-- 提示信息：聚合仅限图形，完整明细、排序与逐项查看入口保留。 -->
+    <p class="kreepai-chart-note">图形最多显示5类，其余合并为“其他”；完整明细保留在表格。</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import { consoleChartPlugins, consoleDistribution } from '@/styles/design-system/chart-style'
+const embeddedChartPlugins = consoleChartPlugins()
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
@@ -198,7 +203,7 @@ const displayGroupStats = computed(() => {
 const chartData = computed(() => {
   if (!props.groupStats?.length) return null
 
-  return {
+  return consoleDistribution({
     labels: displayGroupStats.value.map((g) => g.group_name || String(g.group_id)),
     datasets: [
       {
@@ -207,7 +212,7 @@ const chartData = computed(() => {
         borderWidth: 0
       }
     ]
-  }
+  }, t('admin.dashboard.spendingRankingOther'))
 })
 
 const doughnutOptions = computed(() => ({

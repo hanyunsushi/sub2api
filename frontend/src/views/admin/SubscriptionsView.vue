@@ -1,11 +1,12 @@
 <template>
   <AppLayout>
-    <TablePageLayout>
+    <!-- 展示信息模块 / 填写框：筛选、批量动作与订阅卡片按可用正文宽度收缩。 -->
+    <TablePageLayout class="admin-subscriptions-page">
       <template #filters>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
         <div class="flex flex-wrap items-start justify-between gap-4">
           <!-- Left: Fuzzy user search + filters (wrap to multiple lines) -->
-          <div class="flex flex-1 flex-wrap items-center gap-3">
+          <div class="subscription-filters flex min-w-0 flex-1 flex-wrap items-center gap-3">
             <!-- User Search -->
             <div
               class="relative w-full sm:w-64"
@@ -24,6 +25,7 @@
                 @input="debounceSearchFilterUsers"
                 @focus="showFilterUserDropdown = true"
               />
+              <!-- 填写框：内嵌清空保留输入框内定位与原事件。 -->
               <button
                 v-if="selectedFilterUser"
                 @click="clearFilterUser"
@@ -35,9 +37,10 @@
               </button>
 
               <!-- User Dropdown -->
+              <!-- 下拉选择菜单：面板复用共享16px圆角与中性表面。 -->
               <div
                 v-if="showFilterUserDropdown && (filterUserResults.length > 0 || filterUserKeyword)"
-                class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+                class="dropdown absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
               >
                 <div
                   v-if="filterUserLoading"
@@ -51,12 +54,13 @@
                 >
                   {{ t('common.noOptionsFound') }}
                 </div>
+                <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
                 <button
                   v-for="user in filterUserResults"
                   :key="user.id"
                   type="button"
                   @click="selectFilterUser(user)"
-                  class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
+                  class="dropdown-item w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
                 >
                   <span class="font-medium text-gray-900 dark:text-white">{{ user.email }}</span>
                   <span class="ml-2 text-gray-500 dark:text-gray-400">#{{ user.id }}</span>
@@ -93,14 +97,8 @@
 
           <!-- Right: Actions -->
           <div class="ml-auto flex flex-wrap items-center justify-end gap-3">
-            <button
-              @click="loadSubscriptions"
-              :disabled="loading"
-              class="btn btn-secondary"
-              :title="t('common.refresh')"
-            >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-            </button>
+            <!-- 普通按钮 / 悬浮效果：手动重载复用标准刷新，等待绑定原请求状态。 -->
+            <RefreshButton :loading="loading" :label="t('common.refresh')" @refresh="loadSubscriptions" />
             <!-- Column Settings Dropdown -->
             <div class="relative" ref="columnDropdownRef">
               <button
@@ -114,9 +112,10 @@
                 <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
               </button>
               <!-- Dropdown menu -->
+              <!-- 下拉选择菜单：面板复用共享16px圆角与中性表面。 -->
               <div
                 v-if="showColumnDropdown"
-                class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+                class="dropdown absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
               >
                 <div class="p-2">
                   <!-- User column mode selection -->
@@ -124,27 +123,30 @@
                     <div class="px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                       {{ t('admin.subscriptions.columns.user') }}
                     </div>
+                    <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
                     <button
                       @click="setUserColumnMode('email')"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                      class="dropdown-item flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                     >
                       <span>{{ t('admin.users.columns.email') }}</span>
                       <Icon v-if="userColumnMode === 'email'" name="check" size="sm" class="text-primary-500" />
                     </button>
+                    <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
                     <button
                       @click="setUserColumnMode('username')"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                      class="dropdown-item flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                     >
                       <span>{{ t('admin.users.columns.username') }}</span>
                       <Icon v-if="userColumnMode === 'username'" name="check" size="sm" class="text-primary-500" />
                     </button>
                   </div>
                   <!-- Other columns toggle -->
+                  <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
                   <button
                     v-for="col in toggleableColumns"
                     :key="col.key"
                     @click="toggleColumn(col.key)"
-                    class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                    class="dropdown-item flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                   >
                     <span>{{ col.label }}</span>
                     <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
@@ -174,6 +176,7 @@
             <span class="mr-2 text-sm font-medium text-primary-800 dark:text-primary-200">
               {{ t('admin.subscriptions.bulk.selected', { count: selectedCount }) }}
             </span>
+            <!-- 普通按钮 / 删除按钮：批量动作保留原有动态语义分类。 -->
             <button
               v-for="action in bulkActions"
               :key="action"
@@ -185,7 +188,7 @@
             >
               {{ t(`admin.subscriptions.bulk.${action}`) }} ({{ bulkTargets[action].length }})
             </button>
-            <button type="button" class="btn btn-secondary btn-sm" @click="clearSelection">
+            <button type="button" class="btn btn-secondary btn-arc btn-sm" @click="clearSelection">
               {{ t('admin.subscriptions.bulk.clearSelection') }}
             </button>
           </div>
@@ -246,7 +249,7 @@
           </template>
 
           <template #cell-usage="{ row }">
-            <div class="min-w-[280px] space-y-2">
+            <div class="subscription-usage min-w-0 space-y-2">
               <!-- Daily Usage -->
               <div v-if="row.group?.daily_limit_usd" class="usage-row">
                 <div class="flex items-center gap-2">
@@ -418,35 +421,39 @@
 
           <template #cell-actions="{ row }">
             <div class="flex items-center gap-1">
+              <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
               <button
                 v-if="row.status === 'active' || row.status === 'expired'"
                 @click="handleExtend(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="btn btn-secondary flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
               >
                 <Icon name="calendar" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.adjust') }}</span>
               </button>
+              <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
               <button
                 v-if="row.status === 'active'"
                 @click="handleResetQuota(row)"
                 :disabled="resettingQuota && resettingSubscription?.id === row.id"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+                class="btn btn-secondary flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Icon name="refresh" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.resetQuota') }}</span>
               </button>
+              <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
               <button
                 v-if="row.status === 'active'"
                 @click="handleRevoke(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="btn btn-secondary flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
                 <Icon name="ban" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.revoke') }}</span>
               </button>
+              <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
               <button
                 v-if="row.status === 'revoked'"
                 @click="handleRestore(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                class="btn btn-secondary flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
               >
                 <Icon name="refresh" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.restore') }}</span>
@@ -518,6 +525,7 @@
               @input="debounceSearchUsers"
               @focus="showUserDropdown = true"
             />
+            <!-- 填写框：内嵌清空保留输入框内定位与原事件。 -->
             <button
               v-if="selectedUser"
               @click="clearUserSelection"
@@ -527,9 +535,10 @@
               <Icon name="x" size="sm" :stroke-width="2" />
             </button>
             <!-- User Dropdown -->
+            <!-- 下拉选择菜单：面板复用共享16px圆角与中性表面。 -->
             <div
               v-if="showUserDropdown && (userSearchResults.length > 0 || userSearchKeyword)"
-              class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+              class="dropdown absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
             >
               <div
                 v-if="userSearchLoading"
@@ -543,13 +552,14 @@
               >
                 {{ t('common.noOptionsFound') }}
               </div>
+              <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
               <button
                 v-for="user in userSearchResults"
                 :key="user.id"
                 type="button"
                 :disabled="submitting || (batchAssignEnabled && assignUsers.some((selected) => selected.id === user.id))"
                 @click="selectUser(user)"
-                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-dark-700"
+                class="dropdown-item w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-dark-700"
               >
                 <span class="font-medium text-gray-900 dark:text-white">{{ user.email }}</span>
                 <span class="ml-2 text-gray-500 dark:text-gray-400">#{{ user.id }}</span>
@@ -563,7 +573,8 @@
             <ul class="max-h-40 space-y-1 overflow-y-auto">
               <li v-for="user in assignUsers" :key="user.id" class="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-1 text-sm dark:bg-dark-700">
                 <span class="truncate">{{ user.email }} <span class="text-gray-500">#{{ user.id }}</span></span>
-                <button
+                <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+                <button class="btn btn-secondary"
                   type="button"
                   :disabled="submitting"
                   :aria-label="t('admin.subscriptions.batchAssign.removeUser', { email: user.email })"
@@ -630,26 +641,8 @@
             :disabled="submitting || (batchAssignEnabled && assignUsers.length === 0)"
             class="btn btn-primary"
           >
-            <svg
-              v-if="submitting"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+            <LoadingSpinner v-if="submitting" size="sm" color="white" class="-ml-1 mr-2" />
             {{ submitting ? t('admin.subscriptions.assigning') : t('admin.subscriptions.assign') }}
           </button>
         </div>
@@ -763,7 +756,8 @@
         <div v-if="showGuideModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" @mousedown.self="showGuideModal = false">
           <div class="fixed inset-0 bg-black/50" @click="showGuideModal = false"></div>
           <div class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
-            <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showGuideModal = false">
+            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+            <button type="button" class="btn btn-secondary absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showGuideModal = false">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
@@ -840,6 +834,8 @@
 </template>
 
 <script setup lang="ts">
+import RefreshButton from '@/components/common/RefreshButton.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
@@ -1640,5 +1636,16 @@ onUnmounted(() => {
 
 .reset-info {
   @apply flex items-center gap-1 pl-12 text-[10px] text-blue-600 dark:text-blue-400;
+}
+
+/* 填写框：只调整本页筛选宽度，搜索的原下拉与清空回调保持。 */
+.admin-subscriptions-page { min-width: 0; container: admin-subscriptions / inline-size; }
+.subscription-filters > * { min-width: 0; max-width: 100%; }
+/* 数字展示：宽表格仍由DataTable滚动，移动卡片不继承280px硬下限。 */
+.subscription-usage { width: 280px; max-width: 100%; }
+.subscription-usage .usage-row > .flex { flex-wrap: wrap; }
+@container admin-subscriptions (max-width: 560px) {
+  .subscription-filters { flex-basis: 100%; }
+  .subscription-filters > * { width: 100%; }
 }
 </style>

@@ -1,8 +1,9 @@
 <template>
-  <div v-if="subscriptionFeatureEnabled && hasActiveSubscriptions" class="relative" ref="containerRef">
+  <div v-if="subscriptionFeatureEnabled && hasActiveSubscriptions" class="relative" ref="containerRef" @keydown.esc="closeTooltip" @focusout="!containerRef?.contains($event.relatedTarget as Node) && closeTooltip()">
     <!-- Mini Progress Display -->
     <button
       @click="toggleTooltip"
+      :aria-expanded="tooltipOpen"
       class="flex cursor-pointer items-center gap-2 rounded-xl bg-purple-50 px-3 py-1.5 transition-colors hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/30"
       :title="t('subscriptionProgress.viewDetails')"
     >
@@ -185,13 +186,14 @@ import { useSubscriptionStore } from '@/stores'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
 import type { UserSubscription } from '@/types'
 import { getExpirationDateRelation } from '@/utils/subscriptionQuota'
+import { useHeaderMenu } from '@/composables/useHeaderMenu'
 
 const { t } = useI18n()
 
 const subscriptionStore = useSubscriptionStore()
 
 const containerRef = ref<HTMLElement | null>(null)
-const tooltipOpen = ref(false)
+const tooltipOpen = useHeaderMenu('subscription')
 
 // Use store data instead of local state
 const activeSubscriptions = computed(() => subscriptionStore.activeSubscriptions)

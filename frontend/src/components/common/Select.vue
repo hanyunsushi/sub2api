@@ -1,5 +1,6 @@
 <template>
-  <div class="relative" ref="containerRef">
+  <div class="relative min-w-0 max-w-full" ref="containerRef">
+  <!-- 选择下拉菜单：触发器保持中性，共享层负责34/44px与18px角；选值/权限由原模型负责。 -->
     <button
       ref="triggerRef"
       type="button"
@@ -10,6 +11,7 @@
       :id="id"
       :aria-label="ariaLabel ?? 'Select option'"
       :aria-describedby="ariaDescribedby"
+      :aria-invalid="error ? true : undefined"
       :class="[
         'select-trigger',
         isOpen && 'select-trigger-open',
@@ -45,7 +47,7 @@
       </span>
     </button>
 
-    <!-- Teleport dropdown to body to escape stacking context -->
+    <!-- 下拉选择菜单：Teleport 面板由根标记共享层统一16/12/8几何，不复制视觉覆盖。 -->
     <Teleport to="body">
       <Transition name="select-dropdown">
         <div
@@ -59,8 +61,9 @@
           @click.stop
           @mousedown.stop
           @keydown="onDropdownKeyDown"
+          @mouseleave="focusedIndex = -1"
         >
-          <!-- Search input -->
+          <!-- 填写框：搜索输入复用共享 input 焦点与触摸高度，远程防抖及 IME 保持。 -->
           <div v-if="isSearchable" class="select-search">
             <Icon name="search" size="sm" class="text-gray-400" />
             <input
@@ -69,12 +72,12 @@
               type="text"
               :placeholder="searchPlaceholderText"
               :aria-label="searchPlaceholderText"
-              class="select-search-input"
+              class="input select-search-input"
               @click.stop
             />
           </div>
 
-          <!-- Options list -->
+          <!-- 选择下拉菜单：可变高度选项由共享层换行，禁用项与分组标题保持不可选。 -->
           <div class="select-options" ref="optionsListRef">
             <div
               v-for="(option, index) in filteredOptions"
@@ -87,7 +90,7 @@
               :class="[
                 'select-option',
                 isGroupHeaderOption(option) && 'select-option-group',
-                isSelected(option) && 'select-option-selected',
+                isSelected(option) && (focusedIndex < 0 || focusedIndex === index) && 'select-option-selected',
                 isOptionDisabled(option) && !isGroupHeaderOption(option) && 'select-option-disabled',
                 focusedIndex === index && !isGroupHeaderOption(option) && 'select-option-focused'
               ]"
@@ -104,14 +107,14 @@
                   v-if="isSelected(option)"
                   name="check"
                   size="sm"
-                  class="text-primary-500"
+                  class="select-option-check text-primary-500"
                   :stroke-width="2"
                 />
               </slot>
             </div>
 
-            <!-- Empty state -->
-            <div v-if="filteredOptions.length === 0" class="select-empty">
+            <!-- 加载反馈 / 提示信息：真实等待与无结果原文分开，均不是可选项。 -->
+            <div v-if="filteredOptions.length === 0" class="select-empty" role="status">
               {{ props.loading ? t('common.loading') : emptyTextDisplay }}
             </div>
           </div>
@@ -217,19 +220,24 @@ const dropdownStyle = computed(() => {
 
   const rect = triggerRect.value
   const viewportRight = Math.max(dropdownViewportPadding, window.innerWidth - dropdownViewportPadding)
-  const left = Math.min(
-    Math.max(dropdownViewportPadding, rect.left),
-    viewportRight
-  )
-  const availableWidth = Math.max(0, viewportRight - left)
+  const availableWidth = Math.max(0, viewportRight - dropdownViewportPadding)
   const preferredMinWidth = Math.max(dropdownMinimumWidth, rect.width)
   const minWidth = Math.min(preferredMinWidth, availableWidth)
+  // 选择下拉菜单：默认以触发器居中，靠边时与可用一侧对齐，最后保留8px视口边界。
+  const centered = rect.left + (rect.width - minWidth) / 2
+  const aligned = centered < dropdownViewportPadding ? rect.left : centered + minWidth > viewportRight ? rect.right - minWidth : centered
+  const left = Math.max(dropdownViewportPadding, Math.min(aligned, viewportRight - minWidth))
   const style: Record<string, string> = {
     position: 'fixed',
     left: `${left}px`,
+    width: `${minWidth}px`,
+    boxSizing: 'border-box',
     minWidth: `${minWidth}px`,
     maxWidth: `${availableWidth}px`,
-    zIndex: '100000020'
+    zIndex: '100000020',
+    '--select-available-height': `${Math.max(0, (dropdownPosition.value === 'top'
+      ? rect.top
+      : window.innerHeight - rect.bottom) - 4 - dropdownViewportPadding)}px`
   }
 
   if (dropdownPosition.value === 'top') {
@@ -347,8 +355,8 @@ const handleOptionMouseEnter = (option: any, index: number) => {
 
 // Update trigger rect periodically while open to follow scroll/resize
 const updateTriggerRect = () => {
-  if (containerRef.value) {
-    triggerRect.value = containerRef.value.getBoundingClientRect()
+  if (triggerRef.value) {
+    triggerRect.value = triggerRef.value.getBoundingClientRect()
   }
 }
 
@@ -362,7 +370,7 @@ const calculateDropdownPosition = () => {
     const spaceBelow = window.innerHeight - triggerRect.value.bottom
     const spaceAbove = triggerRect.value.top
 
-    if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+    if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
       dropdownPosition.value = 'top'
     } else {
       dropdownPosition.value = 'bottom'
@@ -518,6 +526,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* 选择下拉菜单：仅保留原组件兜底，根标记共享层负责系统视觉。 */
 .select-trigger {
   @apply flex w-full items-center justify-between gap-2;
   @apply rounded-xl px-4 py-2.5 text-sm;
@@ -558,6 +567,7 @@ onUnmounted(() => {
 </style>
 
 <style>
+/* 下拉选择菜单：Teleport 到 body 的基础样式；尺寸、表面及状态由共享根选择器接管。 */
 .select-dropdown-portal {
   @apply w-max min-w-[200px];
   @apply bg-white dark:bg-dark-800;
@@ -578,6 +588,28 @@ onUnmounted(() => {
   @apply text-gray-900 dark:text-gray-100;
   @apply placeholder:text-gray-400 dark:placeholder:text-dark-400;
   @apply focus:outline-none;
+}
+
+/* 选择下拉菜单：滚动局限于结果区，搜索框始终可见，窄/矮视口内允许收缩。 */
+:root.kreepai-design-system .select-dropdown-portal {
+  display: flex;
+  flex-direction: column;
+  max-height: var(--select-available-height, calc(100dvh - 16px));
+}
+
+:root.kreepai-design-system .select-dropdown-portal .select-search {
+  flex-shrink: 0;
+  padding: 0 0 8px;
+}
+
+:root.kreepai-design-system .select-dropdown-portal .select-options {
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+/* 选择下拉菜单：中性选中面已表达选择，不再预留勾选图标。 */
+:root.kreepai-design-system .select-dropdown-portal .select-option-check {
+  display: none;
 }
 
 .select-dropdown-portal .select-options {

@@ -3,12 +3,13 @@
     v-if="mode === 'checkbox' && documents.length > 0"
     class="px-0.5"
   >
-    <div class="flex items-start gap-2">
+    <!-- 复选框：使用共享16px/4px样式，标签维持原同意/拒绝语义。 -->
+    <div class="kreepai-agreement-choice flex items-start gap-2">
       <input
         id="login-agreement-consent"
         type="checkbox"
         :checked="accepted"
-        class="mt-[2px] h-4 w-4 flex-shrink-0 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-900"
+        class="kreepai-agreement-checkbox"
         @change="handleCheckboxChange"
       />
       <div class="min-w-0 flex-1">

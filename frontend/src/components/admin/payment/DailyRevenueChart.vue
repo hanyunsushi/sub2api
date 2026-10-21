@@ -7,7 +7,7 @@
       <div v-if="loading" class="flex h-full items-center justify-center">
         <LoadingSpinner size="md" />
       </div>
-      <Line v-else-if="chartData" :data="chartData" :options="chartOptions" />
+      <Line :plugins="designChartPlugins" v-else-if="chartData" :data="chartData" :options="chartOptions" />
       <div
         v-else
         class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
@@ -19,6 +19,10 @@
 </template>
 
 <script setup lang="ts">
+// 数字展示 / 组件绘制动画：两种入口共用图表字体与低动态，状态编码/业务数据保持。
+import { consoleChartColors, consoleChartPlugins } from '@/styles/design-system/chart-style'
+const designChartPlugins = consoleChartPlugins()
+
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -44,12 +48,8 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const colors = [
-  ['rgb(59, 130, 246)', 'rgba(59, 130, 246, 0.1)'],
-  ['rgb(168, 85, 247)', 'rgba(168, 85, 247, 0.1)'],
-  ['rgb(245, 158, 11)', 'rgba(245, 158, 11, 0.1)'],
-  ['rgb(239, 68, 68)', 'rgba(239, 68, 68, 0.1)'],
-]
+// 展示信息模块：币种分类使用AWS序列；金额与原始币种不合并。
+const colors = consoleChartColors.map(color => [color, `${color}1a`])
 
 const chartData = computed(() => {
   if (!props.data || props.data.length === 0) return null
@@ -73,8 +73,8 @@ const chartData = computed(() => {
       {
         label: t('payment.admin.orderCount'),
         data: props.data.map(d => d.count),
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: consoleChartColors[1],
+        backgroundColor: `${consoleChartColors[1]}1a`,
         fill: false,
         tension: 0.3,
         pointRadius: 3,

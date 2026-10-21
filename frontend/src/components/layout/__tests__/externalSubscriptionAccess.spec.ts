@@ -15,6 +15,7 @@ vi.mock('@/stores', () => ({
   useAppStore: () => ({ cachedPublicSettings: {}, docUrl: '', contactInfo: '' }),
   useOnboardingStore: () => ({ replay: vi.fn() }),
 }))
+vi.mock('@/stores/subscriptions', () => ({ useSubscriptionStore: () => ({ fetchActiveSubscriptions: vi.fn().mockResolvedValue([]) }) }))
 vi.mock('@/stores/adminSettings', () => ({ useAdminSettingsStore: () => ({ customMenuItems: [] }) }))
 vi.mock('vue-router', () => ({
   useRoute: () => ({ path: '/monitor', name: 'ChannelStatus', params: {}, meta: {} }),

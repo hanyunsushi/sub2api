@@ -1,33 +1,38 @@
 <template>
-  <div>
+  <!-- 复选框 / 展示信息模块：内嵌分组列表保留平台、混合调度和简易模式过滤。 -->
+  <div class="group-selector min-w-0 max-w-full">
     <label class="input-label">
       {{ t('admin.users.groups') }}
       <span class="font-normal text-gray-400">{{ t('common.selectedCount', { count: modelValue.length }) }}</span>
     </label>
+    <!-- 填写框：搜索接入共享 input，原生 v-model 保留组合输入。 -->
     <div
       v-if="isSearchable"
-      class="flex items-center gap-2 rounded-t-lg border border-b-0 border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-600 dark:bg-dark-800"
+      class="relative mb-2 flex min-w-0 items-center"
     >
-      <Icon name="search" size="sm" class="shrink-0 text-gray-400" />
+      <Icon name="search" size="sm" class="pointer-events-none absolute left-3 shrink-0 text-gray-400" />
       <input
         v-model="searchText"
         type="text"
         :placeholder="t('common.searchPlaceholder')"
-        class="flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100 dark:placeholder:text-dark-400"
+        :aria-label="t('common.searchPlaceholder')"
+        class="input min-w-0 flex-1 pl-9"
       />
     </div>
     <div
       :class="[
-        'grid max-h-32 grid-cols-2 gap-1 overflow-y-auto p-2',
+        'group-selector-options grid max-h-32 grid-cols-2 gap-1 overflow-y-auto p-2',
         isSearchable
           ? 'rounded-b-lg border border-t-0 border-gray-200 bg-gray-50 dark:border-dark-600 dark:bg-dark-800'
           : 'rounded-lg border border-gray-200 bg-gray-50 dark:border-dark-600 dark:bg-dark-800'
       ]"
     >
+      <!-- 复选框 / 选择下拉菜单：行复用共享选项几何与中性选中面，模型仍为分组 ID 数组。 -->
       <label
         v-for="group in filteredGroups"
         :key="group.id"
-        class="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 transition-colors hover:bg-white dark:hover:bg-dark-700"
+        class="select-option flex min-w-0 cursor-pointer items-center gap-2 rounded px-2 py-1.5 transition-colors hover:bg-white dark:hover:bg-dark-700"
+        :class="modelValue.includes(group.id) && 'select-option-selected'"
         :title="group.rate_multiplier == null ? group.name : t('admin.groups.rateAndAccounts', { rate: group.rate_multiplier, count: group.account_count || 0 })"
       >
         <input
@@ -47,9 +52,11 @@
         />
         <span class="shrink-0 text-xs text-gray-400">{{ group.account_count || 0 }}</span>
       </label>
+      <!-- 提示信息：空列表保留原消息，不伪装成可选分组或加载状态。 -->
       <div
         v-if="filteredGroups.length === 0"
-        class="col-span-2 py-2 text-center text-sm text-gray-500 dark:text-gray-400"
+        class="col-span-full py-2 text-center text-sm text-gray-500 dark:text-gray-400"
+        role="status"
       >
         {{ t('common.noGroupsAvailable') }}
       </div>
@@ -133,3 +140,14 @@ const handleChange = (groupId: number, checked: boolean) => {
   emit('update:modelValue', newValue)
 }
 </script>
+
+<style scoped>
+/* 复选框 / 展示信息模块：按列表实际宽度自动换列；滚动只在选项区，不添加浮层定位。 */
+:root.kreepai-design-system .group-selector-options {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  border: 1px solid #d1cfc5;
+  border-radius: 18px;
+  background: var(--bg);
+  overscroll-behavior: contain;
+}
+</style>

@@ -27,15 +27,8 @@
           </div>
 
           <div class="table-filter-actions flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
-            <button data-testid="admin-external-subscriptions-button-refresh-all-true"
-              type="button"
-              class="btn btn-primary external-subscriptions-refresh-button"
-              :disabled="loading || statusLoading"
-              :title="t('common.refresh')"
-              @click="refreshAll(true)"
-            >
-              {{ t("common.refresh") }}
-            </button>
+            <!-- 普通按钮 / 标准刷新：调用原refreshAll，SVG旋转/禁用跟随真实请求。 -->
+            <RefreshButton data-testid="admin-external-subscriptions-button-refresh-all-true" :label="t('common.refresh')" :loading="loading || statusLoading" @refresh="refreshAll(true)" />
             <button data-testid="admin-external-subscriptions-button-open-create-dialog" type="button" class="btn btn-primary external-subscriptions-create-button" @click="openCreateDialog">
               {{ localText('新增订阅', 'Add Provider') }}
             </button>
@@ -45,25 +38,14 @@
 
       <section aria-label="Subscriptions">
         <div class="external-subscription-card-shell">
-          <div
-            v-if="isInitialLoading"
-            class="external-subscription-card-grid grid gap-3 md:grid-cols-2 xl:grid-cols-4"
-          >
-            <div
-              v-for="index in 6"
-              :key="index"
-              class="external-subscription-card external-subscription-card-main"
-            >
-              <div class="h-10 w-10 animate-pulse rounded-lg bg-gray-100 dark:bg-dark-800"></div>
-              <div class="mt-4 h-4 w-32 animate-pulse rounded bg-gray-100 dark:bg-dark-800"></div>
-              <div class="mt-6 h-12 animate-pulse rounded bg-gray-100 dark:bg-dark-800"></div>
-              <div class="mt-5 h-3 w-40 animate-pulse rounded bg-gray-100 dark:bg-dark-800"></div>
-            </div>
+          <!-- 加载反馈：首次真实请求显示小型点阵，不用空卡片骨架伪造内容。 -->
+          <div v-if="isInitialLoading" class="grid min-h-44 place-items-center" aria-live="polite">
+            <LoadingSpinner />
           </div>
 
           <div
             v-else-if="filteredCards.length > 0"
-            class="external-subscription-card-grid grid gap-3 md:grid-cols-2 xl:grid-cols-4"
+            class="external-subscription-card-grid"
           >
             <article
               v-for="card in filteredCards"
@@ -85,7 +67,7 @@
                   </div>
                   <div class="min-w-0">
                     <div class="min-w-0">
-                      <h3 class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                      <h3 class="break-words text-sm font-semibold text-gray-900 dark:text-white">
                         {{ card.name }}
                       </h3>
                       <div class="external-subscription-status-line">
@@ -95,14 +77,7 @@
                         </span>
                       </div>
                     </div>
-                    <div class="mt-1 flex min-w-0 items-center gap-2">
-                      <span class="external-subscription-provider-id truncate font-mono">
-                        {{ card.id }}
-                      </span>
-                      <span class="external-subscription-template-chip truncate">
-                        {{ cardSchemeLabel(card) }}
-                      </span>
-                    </div>
+
                   </div>
                 </div>
                 <div v-if="card.providerConfig" class="flex flex-shrink-0 items-center gap-1">
@@ -125,6 +100,15 @@
                 </div>
               </div>
 
+              <div class="mt-3 flex min-w-0 flex-wrap items-center gap-2">
+                <span class="external-subscription-provider-id break-all font-mono">
+                  {{ card.id }}
+                </span>
+                <span class="external-subscription-template-chip break-words">
+                  {{ cardSchemeLabel(card) }}
+                </span>
+              </div>
+
               <a data-testid="admin-external-subscriptions-link-a"
                 class="external-subscription-card-link mt-2 block truncate font-mono text-xs"
                 :href="card.siteUrl"
@@ -135,23 +119,26 @@
                 {{ localText('前往官网', 'Official site') }}
               </a>
 
-              <div class="external-subscription-balance-row mt-3">
+              <!-- 数字展示 / 展示信息模块：余额和已用按卡片实际宽度并列，长金额完整换行。 -->
+              <div class="external-subscription-metrics">
+              <div class="external-subscription-balance-row">
                 <div class="external-subscription-card-label">{{ localText('余额', 'Balance') }}</div>
                 <div
-                  class="external-subscription-balance-value truncate font-mono"
+                  class="external-subscription-balance-value font-mono"
                   :title="formatCardBalance(card)"
                 >
                   {{ formatCardBalance(card) }}
                 </div>
               </div>
 
-              <div v-if="formatStatusUsage(card.status)" class="external-subscription-balance-row mt-2">
+              <div v-if="formatStatusUsage(card.status)" class="external-subscription-balance-row">
                 <div class="external-subscription-card-label">{{ localText('已用', 'Used') }}</div>
-                <div class="external-subscription-balance-value truncate font-mono">
+                <div class="external-subscription-balance-value font-mono">
                   {{ formatStatusUsage(card.status) }}
                 </div>
               </div>
 
+              </div>
               <div class="external-subscription-card-facts mt-3">
                 <div class="external-subscription-fact min-w-0">
                   <div class="external-subscription-card-label">{{ localText('期限', 'Expiry') }}</div>
@@ -195,7 +182,7 @@
                 </span>
               </div>
 
-              <div class="mt-auto flex flex-wrap gap-1 pt-3">
+              <div class="mt-3 flex flex-wrap gap-1">
                 <span
                   v-for="keyword in card.matchKeywords"
                   :key="keyword"
@@ -387,6 +374,8 @@
 </template>
 
 <script setup lang="ts">
+import RefreshButton from '@/components/common/RefreshButton.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import externalSubscriptionsAPI, {
@@ -1146,11 +1135,17 @@ onMounted(() => {
 onBeforeUnmount(() => {
   unsubscribeExternalSubscriptionStatuses()
 })
+// 顶栏 / 普通按钮 / 默认弧边按钮：调用现有业务入口；加载时阻止重复触发。
 </script>
 
 <style scoped>
 .external-subscription-card { @apply card flex min-w-0 flex-col p-4; }
-.external-subscription-card-grid { @apply items-stretch; }
+/* 展示卡片：每列260px起按实际正文分配，卡片自适应内容高度，不拉伸到邻卡高度。 */
+.external-subscription-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); align-items: start; gap: 12px; }
+.external-subscription-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.external-subscription-balance-value { overflow-wrap: anywhere; font-size: 20px; line-height: 26px; }
+.external-subscription-card h3 { overflow-wrap: anywhere; }
+@container kreepai-content (max-width: 360px) { .external-subscription-metrics { grid-template-columns: minmax(0, 1fr); } }
 .external-subscription-logo { @apply inline-flex h-9 w-9 shrink-0 items-center justify-center; }
 .external-subscription-status-line { @apply mt-1 flex items-center gap-1.5; }
 .external-subscription-status-dot { @apply h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400; }

@@ -1,11 +1,11 @@
 <template>
-  <div class="flex min-w-0 flex-1 items-start justify-between gap-3">
-    <!-- Left: name + description -->
+  <!-- 展示信息模块：可变高度分组选项，名称说明与倍率在窄面板允许分行。 -->
+  <div class="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-3">
+    <!-- 区分-身份牌：平台归属由 GroupBadge 表达，不把身份颜色改成健康状态。 -->
     <div
-      class="flex min-w-0 flex-1 flex-col items-start"
+      class="flex min-w-0 flex-[1_1_160px] flex-col items-start"
       :title="description || undefined"
     >
-      <!-- Row 1: platform badge (name bold) -->
       <GroupBadge
         :name="name"
         :platform="platform"
@@ -14,7 +14,7 @@
         :show-rate="false"
         class="groupOptionItemBadge"
       />
-      <!-- Row 2: description with top spacing -->
+      <!-- 提示信息：说明保留三行摘要与 title 全文，连续长词可换行。 -->
       <span
         v-if="description"
         class="mt-1.5 w-full whitespace-pre-line [overflow-wrap:anywhere] text-left text-xs leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-3"
@@ -23,11 +23,10 @@
       </span>
     </div>
 
-    <!-- Right: rate pill + checkmark (vertically centered to first row) -->
-    <div class="flex shrink-0 items-center gap-2 pt-0.5">
-      <div class="flex shrink-0 flex-col items-end gap-1">
-        <!-- Rate pill (platform color) -->
-        <span v-if="rateMultiplier !== undefined" :class="['inline-flex items-center whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold', ratePillClass]">
+    <!-- 区分-信息牌 / 数字展示：倍率沿用平台与峰时价格配色，只接入共享标签几何。 -->
+    <div class="flex min-w-0 max-w-full items-center gap-2 pt-0.5">
+      <div class="flex min-w-0 max-w-full flex-col items-end gap-1">
+        <span v-if="rateMultiplier !== undefined" :class="['badge inline-flex max-w-full flex-wrap items-center rounded-full px-3 py-1 text-xs font-semibold', ratePillClass]">
           <template v-if="hasCustomRate">
             <span class="mr-1 line-through opacity-50">{{ rateMultiplier }}x</span>
             <span class="font-bold">{{ userRateMultiplier }}x</span>
@@ -38,16 +37,16 @@
         </span>
         <span
           v-if="hasPeakRate"
-          class="inline-flex items-center whitespace-nowrap rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
+          class="badge inline-flex max-w-full flex-wrap items-center [overflow-wrap:anywhere] rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
           :title="peakRateTitle"
         >
           {{ peakRateText }}
         </span>
       </div>
-      <!-- Checkmark -->
+      <!-- 选择下拉菜单：原选中条件保留；系统模式由中性选中面表达，不额外绘制勾。 -->
       <svg
         v-if="showCheckmark && selected"
-        class="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
+        class="group-option-check h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -125,7 +124,7 @@ const peakRateTitle = computed(() => {
   return t('common.peakRateTooltip', { window: peakRateText.value })
 })
 
-// Rate pill color matches platform badge color
+// 区分-信息牌：倍率借用平台身份配色，不表达请求成功或账户健康。
 const ratePillClass = computed(() => {
   switch (props.platform) {
     case 'anthropic':
@@ -141,8 +140,13 @@ const ratePillClass = computed(() => {
 </script>
 
 <style scoped>
-/* Bold the group name inside GroupBadge when used in dropdown option */
+/* 区分-身份牌：选项内分组名称加粗，不修改 GroupBadge 的平台或订阅语义。 */
 .groupOptionItemBadge :deep(span.truncate) {
   font-weight: 600;
+}
+
+/* 选择下拉菜单：原 selected/showCheckmark API 保留，共享中性选中面无需额外勾。 */
+:root.kreepai-design-system .group-option-check {
+  display: none;
 }
 </style>

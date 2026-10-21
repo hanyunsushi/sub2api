@@ -13,9 +13,8 @@
           v-if="!errorMessage"
           class="mt-6 flex items-center justify-center py-10"
         >
-          <div
-            class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"
-          ></div>
+          <LoadingSpinner
+           />
         </div>
 
         <div
@@ -39,6 +38,8 @@
 </template>
 
 <script setup lang="ts">
+// 加载反馈：保留原请求条件，统一默认点阵。
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'

@@ -1,6 +1,6 @@
 <template>
   <component :is="isFullscreen ? 'div' : AppLayout" :class="isFullscreen ? 'flex min-h-screen flex-col justify-center bg-gray-50 dark:bg-dark-950' : ''">
-    <div :class="[isFullscreen ? 'p-4 md:p-6' : '', 'space-y-6 pb-12']">
+    <div :class="[isFullscreen ? 'p-4 md:p-6' : '', 'ops-dashboard space-y-6 pb-12']">
       <div
         v-if="errorMessage"
         class="rounded-2xl bg-red-50 p-4 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400"
@@ -40,11 +40,11 @@
       />
 
       <!-- Row: Concurrency + Throughput -->
-      <div v-if="opsEnabled && !(loading && !hasLoadedOnce)" class="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        <div class="lg:col-span-1 min-h-[360px]">
+      <div v-if="opsEnabled && !(loading && !hasLoadedOnce)" class="ops-charts-row">
+        <div class="min-w-0 min-h-[360px]">
           <OpsConcurrencyCard :platform-filter="platform" :group-id-filter="groupId" :refresh-token="dashboardRefreshToken" />
         </div>
-        <div class="lg:col-span-1 h-[360px]">
+        <div class="min-w-0 h-[360px]">
           <OpsSwitchRateTrendChart
             :points="switchTrend?.points ?? []"
             :loading="loadingSwitchTrend"
@@ -52,7 +52,7 @@
             :fullscreen="isFullscreen"
           />
         </div>
-        <div class="lg:col-span-2 h-[360px]">
+        <div class="ops-throughput-plot min-w-0 h-[360px]">
           <OpsThroughputTrendChart
             :points="throughputTrend?.points ?? []"
             :by-platform="throughputTrend?.by_platform ?? []"
@@ -68,7 +68,7 @@
       </div>
 
       <!-- Row: Visual Analysis (baseline 3-up grid) -->
-      <div v-if="opsEnabled && !(loading && !hasLoadedOnce)" class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div v-if="opsEnabled && !(loading && !hasLoadedOnce)" class="ops-analysis-row">
         <OpsLatencyChart :latency-data="latencyHistogram" :loading="loadingLatency" />
         <OpsErrorDistributionChart
           :data="errorDistribution"
@@ -863,3 +863,11 @@ watch(showSettingsDialog, async (show) => {
   }
 })
 </script>
+
+<style scoped>
+/* 展示信息模块：监控图表按自身容器重排，Canvas和完整数据保留。 */
+.ops-dashboard { container: ops-dashboard / inline-size; min-width:0; }
+.ops-charts-row,.ops-analysis-row { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
+@container ops-dashboard (min-width:720px) { .ops-charts-row,.ops-analysis-row { grid-template-columns:repeat(2,minmax(0,1fr)); } .ops-throughput-plot { grid-column:1/-1; } }
+@container ops-dashboard (min-width:1180px) { .ops-charts-row { grid-template-columns:repeat(4,minmax(0,1fr)); } .ops-throughput-plot { grid-column:span 2; } .ops-analysis-row { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+</style>

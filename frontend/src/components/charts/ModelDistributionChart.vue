@@ -1,98 +1,18 @@
 <template>
-  <div class="card p-4">
-    <div class="mb-4 flex items-center justify-between gap-3">
+  <!-- 展示信息模块 / 数字展示 / 组件绘制动画：嵌入Canvas使用本系统图表适配，保留原数据模型。 -->
+  <div class="kreepai-model-distribution card p-4">
+    <div class="kreepai-chart-heading mb-4 flex items-center justify-between gap-3">
       <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
         {{ !enableRankingView || activeView === 'model_distribution'
           ? t('admin.dashboard.modelDistribution')
           : t('admin.dashboard.spendingRankingTitle') }}
       </h3>
       <div class="flex flex-wrap items-center justify-end gap-2">
-        <div
-          v-if="showSourceToggle"
-          class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-dark-700 dark:bg-dark-800"
-        >
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="source === 'requested'
-              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
-            @click="emit('update:source', 'requested')"
-          >
-            {{ t('usage.requestedModel') }}
-          </button>
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="source === 'upstream'
-              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
-            @click="emit('update:source', 'upstream')"
-          >
-            {{ t('usage.upstreamModel') }}
-          </button>
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="source === 'mapping'
-              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
-            @click="emit('update:source', 'mapping')"
-          >
-            {{ t('usage.mapping') }}
-          </button>
-        </div>
-        <div
-          v-if="showMetricToggle"
-          class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-dark-700 dark:bg-dark-800"
-        >
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="metric === 'tokens'
-              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
-            @click="emit('update:metric', 'tokens')"
-          >
-            {{ t('admin.dashboard.metricTokens') }}
-          </button>
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="metric === 'actual_cost'
-              ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
-            @click="emit('update:metric', 'actual_cost')"
-          >
-            {{ t('admin.dashboard.metricActualCost') }}
-          </button>
-        </div>
-        <div v-if="enableRankingView" class="inline-flex rounded-lg bg-gray-100 p-1 dark:bg-dark-800">
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="
-              activeView === 'model_distribution'
-                ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-            "
-            @click="activeView = 'model_distribution'"
-          >
-            {{ t('admin.dashboard.viewModelDistribution') }}
-          </button>
-          <button
-            type="button"
-            class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-            :class="
-              activeView === 'spending_ranking'
-                ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-700 dark:text-white'
-                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-            "
-            @click="activeView = 'spending_ranking'"
-          >
-            {{ t('admin.dashboard.viewSpendingRanking') }}
-          </button>
-        </div>
+        <!-- 路由切换组件：来源/指标复用同一活动面，保持原更新事件。 -->
+        <RouteSwitch v-if="showSourceToggle" :model-value="source" :options="[{ value: 'requested', label: t('usage.requestedModel') }, { value: 'upstream', label: t('usage.upstreamModel') }, { value: 'mapping', label: t('usage.mapping') }]" :label="t('usage.requestedModel')" @update:model-value="emit('update:source', $event as ModelSource)" />
+        <RouteSwitch v-if="showMetricToggle" :model-value="metric" :options="[{ value: 'tokens', label: t('admin.dashboard.metricTokens') }, { value: 'actual_cost', label: t('admin.dashboard.metricActualCost') }]" :label="t('admin.dashboard.metricTokens')" @update:model-value="emit('update:metric', $event as DistributionMetric)" />
+        <!-- 路由切换组件：模型/用户榜沿用原activeView，单一活动面随悬浮和选择移动。 -->
+        <RouteSwitch v-if="enableRankingView" v-model="activeView" :options="[{ value: 'model_distribution', label: t('admin.dashboard.viewModelDistribution') }, { value: 'spending_ranking', label: t('admin.dashboard.viewSpendingRanking') }]" :label="t('admin.dashboard.modelDistribution')" />
       </div>
     </div>
 
@@ -101,10 +21,10 @@
     </div>
     <div
       v-else-if="activeView === 'model_distribution' && displayModelStats.length > 0 && chartData"
-      class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6"
+      class="kreepai-distribution-layout flex flex-col items-center gap-4 sm:flex-row sm:gap-6"
     >
       <div class="h-48 w-48 shrink-0">
-        <Doughnut :data="chartData" :options="doughnutOptions" />
+        <Doughnut :plugins="embeddedChartPlugins" role="img" aria-label="模型或用户用量分布图" :data="chartData" :options="doughnutOptions" />
       </div>
       <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
         <table class="w-full text-xs">
@@ -182,9 +102,9 @@
     >
       {{ t('admin.dashboard.failedToLoad') }}
     </div>
-    <div v-else-if="rankingDisplayItems.length > 0 && rankingChartData" class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+    <div v-else-if="rankingDisplayItems.length > 0 && rankingChartData" class="kreepai-distribution-layout flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
       <div class="h-48 w-48 shrink-0">
-        <Doughnut :data="rankingChartData" :options="rankingDoughnutOptions" />
+        <Doughnut :plugins="embeddedChartPlugins" role="img" aria-label="模型或用户用量分布图" :data="rankingChartData" :options="rankingDoughnutOptions" />
       </div>
       <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
         <table class="w-full text-xs">
@@ -239,10 +159,15 @@
     >
       {{ t('admin.dashboard.noDataAvailable') }}
     </div>
+    <!-- 提示信息：聚合仅限图形，完整明细、排序与逐项查看入口保留。 -->
+    <p class="kreepai-chart-note">图形最多显示5类，其余合并为“其他”；完整明细保留在表格。</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
+import { consoleChartPlugins, consoleDistribution } from '@/styles/design-system/chart-style'
+const embeddedChartPlugins = consoleChartPlugins()
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
@@ -369,7 +294,7 @@ const displayModelStats = computed(() => {
 const chartData = computed(() => {
   if (!displayModelStats.value.length) return null
 
-  return {
+  return consoleDistribution({
     labels: displayModelStats.value.map((m) => m.model),
     datasets: [
       {
@@ -378,7 +303,7 @@ const chartData = computed(() => {
         borderWidth: 0
       }
     ]
-  }
+  }, t('admin.dashboard.spendingRankingOther'))
 })
 
 const rankingChartData = computed(() => {
@@ -394,7 +319,7 @@ const rankingChartData = computed(() => {
     backgroundColor.push('#94a3b8')
   }
 
-  return {
+  return consoleDistribution({
     labels,
     datasets: [
       {
@@ -403,7 +328,7 @@ const rankingChartData = computed(() => {
         borderWidth: 0
       }
     ]
-  }
+  }, t('admin.dashboard.spendingRankingOther'))
 })
 
 const otherRankingItem = computed<RankingDisplayItem | null>(() => {

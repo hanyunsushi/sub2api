@@ -1,18 +1,7 @@
 <template>
   <div v-if="cardLayout || !isDesktopViewport" :class="cardLayout ? 'data-card-grid' : 'space-y-3'">
-    <template v-if="loading">
-      <div v-for="i in 5" :key="i" class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900">
-        <div class="space-y-3">
-          <div v-for="column in dataColumns" :key="column.key" class="flex justify-between">
-            <div class="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
-            <div class="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
-          </div>
-          <div v-if="hasActionsColumn" class="border-t border-gray-200 pt-3 dark:border-dark-700">
-            <div class="h-8 w-full animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
-          </div>
-        </div>
-      </div>
-    </template>
+    <!-- 加载反馈：原卡片/表格等待状态共用20px点阵，不创建虚假行。 -->
+    <div v-if="loading" class="col-span-full grid min-h-44 place-items-center"><LoadingSpinner /></div>
 
     <template v-else-if="!data || data.length === 0">
       <div class="col-span-full rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-dark-700 dark:bg-dark-900">
@@ -45,12 +34,13 @@
           <span>{{ t('common.selectAll') }}</span>
         </label>
       </div>
+      <!-- 展示卡片：嵌入视觉的稳定边界，完整保留原列、选择和卡片内容。 -->
       <div
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
         :data-row-id="cardLayout ? resolveRowKey(row, index) : undefined"
         :data-index="cardLayout ? index : undefined"
-        class="relative min-w-0 rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900"
+        class="kreepai-data-card relative min-w-0 rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900"
         :class="{
           'cursor-pointer': clickableRows,
           'border-primary-300 bg-primary-50/40 dark:border-primary-700 dark:bg-primary-900/10': selectable && isRowSelected(row, index)
@@ -172,17 +162,8 @@
         </tr>
       </thead>
       <tbody class="table-body divide-y divide-gray-200 bg-white dark:divide-dark-700 dark:bg-dark-900">
-        <!-- Loading skeleton -->
-        <tr v-if="loading" v-for="i in 5" :key="i">
-          <td v-if="selectable" class="w-11 min-w-11 px-3 py-4">
-            <div class="mx-auto h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
-          </td>
-          <td v-for="column in columns" :key="column.key" :class="['whitespace-nowrap py-4', getAdaptivePaddingClass()]">
-            <div class="animate-pulse">
-              <div class="h-4 w-3/4 rounded bg-gray-200 dark:bg-dark-700"></div>
-            </div>
-          </td>
-        </tr>
+        <!-- 加载反馈：单个跨列状态行保留真实列数，等待图标与内容分开。 -->
+        <tr v-if="loading"><td :colspan="tableColumnCount" class="py-12 text-center"><LoadingSpinner /></td></tr>
 
         <!-- Empty state -->
         <tr v-else-if="!data || data.length === 0">
@@ -268,6 +249,7 @@
 </template>
 
 <script setup lang="ts">
+import LoadingSpinner from './LoadingSpinner.vue'
 import { computed, ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useVirtualizer, observeElementRect as observeElementRectDefault } from '@tanstack/vue-virtual'
 import { useI18n } from 'vue-i18n'
@@ -1060,54 +1042,54 @@ tbody tr:hover .sticky-col {
   background-color: rgb(31 41 55);
 }
 
-/* 阴影只在可滚动时显示 */
-/* 单列固定右侧阴影 */
+/* 展示信息模块：可滚动固定列只画1px中性分隔线，不画渐变阴影。 */
+/* 单列固定右侧分隔线 */
 .is-scrollable .sticky-col-left::after {
   content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 10px;
+  width: 1px;
   transform: translateX(100%);
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), transparent);
+  background: var(--border, #e5e7eb);
   pointer-events: none;
 }
 
-/* 双列固定：只在第二列显示阴影 */
+/* 双列固定：只在第二列显示分隔线 */
 .is-scrollable .sticky-col-left-second::after {
   content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 10px;
+  width: 1px;
   transform: translateX(100%);
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), transparent);
+  background: var(--border, #e5e7eb);
   pointer-events: none;
 }
 
-/* 操作列左侧阴影 */
+/* 操作列左侧分隔线 */
 .is-scrollable .sticky-col-right::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 10px;
+  width: 1px;
   transform: translateX(-100%);
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.08), transparent);
+  background: var(--border, #e5e7eb);
   pointer-events: none;
 }
 
-/* 暗色模式阴影 */
+/* 暗色模式分隔线 */
 .dark .is-scrollable .sticky-col-left::after,
 .dark .is-scrollable .sticky-col-left-second::after {
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent);
+  background: var(--border, #334155);
 }
 
 .dark .is-scrollable .sticky-col-right::before {
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent);
+  background: var(--border, #334155);
 }
 </style>
 

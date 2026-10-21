@@ -398,7 +398,7 @@
             {{ t('admin.accounts.stats.usageTrend') }}
           </h3>
           <div class="h-64">
-            <Line v-if="trendChartData" :data="trendChartData" :options="lineChartOptions" />
+            <Line :plugins="designChartPlugins" v-if="trendChartData" :data="trendChartData" :options="lineChartOptions" />
             <div
               v-else
               class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400"
@@ -448,6 +448,10 @@
 </template>
 
 <script setup lang="ts">
+// 数字展示 / 组件绘制动画：两种入口共用图表字体与低动态，状态编码/业务数据保持。
+import { consoleChartPlugins } from '@/styles/design-system/chart-style'
+const designChartPlugins = consoleChartPlugins()
+
 import { ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {

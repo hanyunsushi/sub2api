@@ -18,17 +18,20 @@
             @create="showCreate = true"
           >
             <template #after>
-              <!-- Auto Refresh Dropdown -->
-              <div class="relative" ref="autoRefreshDropdownRef">
+              <!-- 普通按钮 / 选择下拉菜单：沿用原菜单互斥与轮询暂停；启用定时器不表示请求加载。 -->
+              <div class="relative" ref="autoRefreshDropdownRef" @keydown.esc="showAutoRefreshDropdown = false">
                 <button
+                  type="button"
                   @click="
                     showAutoRefreshDropdown = !showAutoRefreshDropdown;
                     showAccountToolsDropdown = false
                   "
                   class="btn btn-secondary px-2 md:px-3"
                   :title="t('admin.accounts.autoRefresh')"
+                  :aria-expanded="showAutoRefreshDropdown"
+                  aria-haspopup="menu"
                 >
-                  <Icon name="refresh" size="sm" :class="[autoRefreshEnabled ? 'animate-spin' : '']" />
+                  <Icon name="refresh" size="sm" />
                   <span class="hidden md:inline">
                     {{
                       autoRefreshEnabled
@@ -39,12 +42,16 @@
                 </button>
                 <div
                   v-if="showAutoRefreshDropdown"
-                  class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-700 dark:bg-dark-800"
+                  role="menu"
+                  class="dropdown absolute right-0 z-50 mt-2 w-56 origin-top-right"
                 >
-                  <div class="p-2">
+                  <div class="grid gap-0.5">
                     <button
+                      type="button"
+                      role="menuitemcheckbox"
+                      :aria-checked="autoRefreshEnabled"
                       @click="setAutoRefreshEnabled(!autoRefreshEnabled)"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                      class="dropdown-item flex w-full items-center justify-between"
                     >
                       <span>{{ t('admin.accounts.enableAutoRefresh') }}</span>
                       <Icon v-if="autoRefreshEnabled" name="check" size="sm" class="text-primary-500" />
@@ -53,8 +60,11 @@
                     <button
                       v-for="sec in autoRefreshIntervals"
                       :key="sec"
+                      type="button"
+                      role="menuitemradio"
+                      :aria-checked="autoRefreshIntervalSeconds === sec"
                       @click="setAutoRefreshInterval(sec)"
-                      class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                      class="dropdown-item flex w-full items-center justify-between"
                     >
                       <span>{{ autoRefreshIntervalLabel(sec) }}</span>
                       <Icon v-if="autoRefreshIntervalSeconds === sec" name="check" size="sm" class="text-primary-500" />
@@ -89,19 +99,19 @@
                           {{ t('admin.accounts.dataActions') }}
                         </div>
                       </div>
-                      <button class="account-tools-menu-item" @click="openSyncFromCrs">
+                      <button class="dropdown-item account-tools-menu-item" @click="openSyncFromCrs">
                         <span class="account-tools-menu-icon bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
                           <Icon name="sync" size="sm" />
                         </span>
                         <span class="flex-1 text-left">{{ t('admin.accounts.syncFromCrs') }}</span>
                       </button>
-                      <button class="account-tools-menu-item" @click="openImportData">
+                      <button class="dropdown-item account-tools-menu-item" @click="openImportData">
                         <span class="account-tools-menu-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
                           <Icon name="upload" size="sm" />
                         </span>
                         <span class="flex-1 text-left">{{ t('admin.accounts.dataImport') }}</span>
                       </button>
-                      <button class="account-tools-menu-item" @click="openExportDataDialogFromMenu">
+                      <button class="dropdown-item account-tools-menu-item" @click="openExportDataDialogFromMenu">
                         <span class="account-tools-menu-icon bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300">
                           <Icon name="download" size="sm" />
                         </span>
@@ -122,13 +132,13 @@
                           {{ t('admin.accounts.toolActions') }}
                         </div>
                       </div>
-                      <button class="account-tools-menu-item" @click="openErrorPassthrough">
+                      <button class="dropdown-item account-tools-menu-item" @click="openErrorPassthrough">
                         <span class="account-tools-menu-icon bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
                           <Icon name="shield" size="sm" />
                         </span>
                         <span class="flex-1 text-left">{{ t('admin.errorPassthrough.title') }}</span>
                       </button>
-                      <button class="account-tools-menu-item" @click="openTLSFingerprintProfiles">
+                      <button class="dropdown-item account-tools-menu-item" @click="openTLSFingerprintProfiles">
                         <span class="account-tools-menu-icon bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200">
                           <Icon name="lock" size="sm" />
                         </span>
@@ -149,7 +159,7 @@
                           v-for="col in toggleableColumns"
                           :key="col.key"
                           @click="toggleColumn(col.key)"
-                          class="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+                          class="dropdown-item flex w-full items-center justify-between"
                         >
                           <span class="truncate">{{ col.label }}</span>
                           <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
@@ -201,11 +211,17 @@
           <div class="flex items-center gap-2">
             <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               {{ t('customization.sortBy') }}
-              <select :value="sortState.sort_by" class="input w-auto py-1.5" data-testid="account-card-sort" @change="handleSort(($event.target as HTMLSelectElement).value, sortState.sort_order)">
-                <option v-for="column in allColumns.filter(column => column.sortable)" :key="column.key" :value="column.key">{{ column.label }}</option>
-              </select>
+              <!-- 选择下拉菜单：复用共享菜单，保留原排序字段、方向与持久化回调。 -->
+              <Select
+                :model-value="sortState.sort_by"
+                :options="allColumns.filter(column => column.sortable).map(column => ({ value: column.key, label: column.label }))"
+                :aria-label="t('customization.sortBy')"
+                data-testid="account-card-sort"
+                @update:model-value="handleSort(String($event), sortState.sort_order)"
+              />
             </label>
-            <button class="btn btn-secondary px-3 py-1.5" data-testid="account-card-sort-order" @click="handleSort(sortState.sort_by, sortState.sort_order === 'asc' ? 'desc' : 'asc')">
+            <!-- 标准默认弧边按钮：透明中性面、18px角，切换原升降序。 -->
+            <button type="button" class="btn btn-secondary btn-arc" data-testid="account-card-sort-order" @click="handleSort(sortState.sort_by, sortState.sort_order === 'asc' ? 'desc' : 'asc')">
               {{ t(sortState.sort_order === 'asc' ? 'customization.ascending' : 'customization.descending') }}
             </button>
           </div>
@@ -244,7 +260,10 @@
           <template #cell-name="{ row, value }">
             <div class="flex min-w-0 flex-col">
               <div class="flex min-w-0 items-center gap-2">
-              <ProviderBrandIcon class="shrink-0" :provider="getAccountLogoProvider(row)" :model="row.platform" :logo-url="getAccountCustomLogo(row)" data-testid="account-provider-logo" />
+              <!-- 品牌标识 / 普通按钮：原供应商Logo可点击编辑，图片与自动匹配继续由公共组件负责。 -->
+              <button type="button" class="account-logo-control btn btn-ghost btn-icon shrink-0" :title="localText('账号 Logo', 'Account logo')" :aria-label="`${localText('账号 Logo', 'Account logo')}: ${row.name}`" data-testid="account-logo-action" @click="handleEdit(row)">
+                <ProviderBrandIcon :provider="getAccountLogoProvider(row)" :model="row.platform" :logo-url="getAccountCustomLogo(row)" data-testid="account-provider-logo" />
+              </button>
               <HelpTooltip
                 v-if="accountHomepageUrl(row)"
                 :content="accountHomepageUrl(row)"
@@ -372,7 +391,7 @@
                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" :title="t('admin.accounts.fallbackActiveTip', { origin: row.proxy_fallback_origin_name })">
                   {{ t('admin.accounts.fallbackActive') }}
                 </span>
-                <button class="text-xs px-1.5 py-0.5 rounded border border-gray-300 dark:border-dark-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
+                <button class="btn btn-secondary" @click="onRevertFallback(row)">{{ t('admin.accounts.revertProxy') }}</button>
               </div>
             </div>
           </template>
@@ -463,17 +482,18 @@
             </div>
           </template>
           <template #cell-actions="{ row }">
-            <div class="account-card-actions flex flex-wrap items-center gap-1">
-              <button @click="openExternalQuotaProgressSettings(row)" class="btn-ghost btn-icon" :title="localText('额度条', 'Quota bar')" data-testid="account-external-quota-progress-action"><Icon name="chart" size="sm" /></button>
-              <button @click="handleEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400">
+            <!-- 普通按钮 / 删除按钮：账号操作统一单行几何；嵌入不修改原handler和确认流程。 -->
+            <div class="account-card-actions flex flex-wrap items-center gap-2">
+              <button @click="openExternalQuotaProgressSettings(row)" class="btn btn-secondary btn-icon" :title="localText('额度条', 'Quota bar')" data-testid="account-external-quota-progress-action"><Icon name="chart" size="sm" /></button>
+              <button @click="handleEdit(row)" class="btn btn-secondary">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                 <span class="text-xs">{{ t('common.edit') }}</span>
               </button>
-              <button @click="handleDelete(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+              <button @click="handleDelete(row)" class="btn btn-danger">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                 <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
-              <button @click="openMenu(row, $event)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white">
+              <button @click="openMenu(row, $event)" class="btn btn-secondary">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
                 <span class="text-xs">{{ t('common.more') }}</span>
               </button>
@@ -555,7 +575,7 @@ import ReAuthAccountModal from '@/components/admin/account/ReAuthAccountModal.vu
 import AccountTestModal from '@/components/admin/account/AccountTestModal.vue'
 import AccountStatsModal from '@/components/admin/account/AccountStatsModal.vue'
 import ScheduledTestsPanel from '@/components/admin/account/ScheduledTestsPanel.vue'
-import type { SelectOption } from '@/components/common/Select.vue'
+import Select, { type SelectOption } from '@/components/common/Select.vue'
 import AccountStatusIndicator from '@/components/account/AccountStatusIndicator.vue'
 import AccountUsageCell from '@/components/account/AccountUsageCell.vue'
 import AccountTodayStatsCell from '@/components/account/AccountTodayStatsCell.vue'
@@ -2962,12 +2982,6 @@ onUnmounted(unsubscribeExternalQuotaSummaries)
 
 .accounts-page :deep(.data-card-fields > .border-t) {
   padding-top: 0.5rem;
-}
-
-.account-card-actions > button {
-  flex-direction: row;
-  gap: 0.25rem;
-  min-height: 2rem;
 }
 
 .account-tools-menu-item {

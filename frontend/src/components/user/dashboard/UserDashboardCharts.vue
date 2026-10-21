@@ -1,4 +1,5 @@
 <template>
+  <!-- 展示信息模块 / 数字展示 / 组件绘制动画：嵌入Canvas使用本系统图表适配，保留原数据模型。 -->
   <div class="space-y-6">
     <!-- Date Range Filter -->
     <div class="card p-4">
@@ -22,14 +23,14 @@
     <!-- Charts Grid -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <!-- Model Distribution Chart -->
-      <div class="card relative overflow-hidden p-4">
+      <div class="kreepai-model-distribution card relative overflow-hidden p-4">
         <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-sm dark:bg-dark-800/50">
           <LoadingSpinner size="md" />
         </div>
         <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">{{ t('dashboard.modelDistribution') }}</h3>
-        <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+        <div class="kreepai-distribution-layout flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
           <div class="h-48 w-48 shrink-0">
-            <Doughnut v-if="modelData" :data="modelData" :options="doughnutOptions" />
+            <Doughnut :plugins="embeddedChartPlugins" role="img" aria-label="模型用量分布图" v-if="modelData" :data="modelData" :options="doughnutOptions" />
             <div v-else class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.noDataAvailable') }}</div>
           </div>
           <div class="max-h-48 w-full min-w-0 flex-1 overflow-auto">
@@ -60,10 +61,14 @@
       <!-- Token Usage Trend Chart -->
       <TokenUsageTrend :trend-data="trend" :loading="loading" />
     </div>
+    <!-- 提示信息：聚合仅限图形，完整明细、排序与逐项查看入口保留。 -->
+    <p class="kreepai-chart-note">图形最多显示5类，其余合并为“其他”；完整明细保留在表格。</p>
   </div>
 </template>
 
 <script setup lang="ts">
+import { consoleChartPlugins, consoleDistribution } from '@/styles/design-system/chart-style'
+const embeddedChartPlugins = consoleChartPlugins()
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -80,13 +85,13 @@ const props = defineProps<{ loading: boolean, startDate: string, endDate: string
 defineEmits(['update:startDate', 'update:endDate', 'update:granularity', 'dateRangeChange', 'granularityChange', 'refresh'])
 const { t } = useI18n()
 
-const modelData = computed(() => !props.models?.length ? null : {
+const modelData = computed(() => !props.models?.length ? null : consoleDistribution({
   labels: props.models.map((m: ModelStat) => m.model),
   datasets: [{
     data: props.models.map((m: ModelStat) => m.total_tokens),
     backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
   }]
-})
+}, t('admin.dashboard.spendingRankingOther')))
 
 const doughnutOptions = {
   responsive: true,

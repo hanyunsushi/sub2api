@@ -57,12 +57,11 @@
         {{ t("admin.plugins.uploadHint") }}
       </p>
 
-      <div
-        class="border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200"
-      >
+      <!-- 提示信息：插件运行说明使用统一浅底提示，不画蓝色边框。 -->
+      <InfoNotice>
         <p>{{ t("admin.plugins.runtimeNotice") }}</p>
         <p class="mt-1">{{ t("admin.plugins.menuNotice") }}</p>
-      </div>
+      </InfoNotice>
 
       <div
         v-if="loading"
@@ -333,6 +332,7 @@
 </template>
 
 <script setup lang="ts">
+import InfoNotice from "@/components/common/InfoNotice.vue";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {

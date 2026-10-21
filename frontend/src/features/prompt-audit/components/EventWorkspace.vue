@@ -42,14 +42,8 @@
       <FilterInput v-model="localFilters.request_id" :label="t('admin.promptAudit.events.requestId')" @change="filtersChanged" />
       <FilterInput v-model="localFilters.prompt_hash" :label="t('admin.promptAudit.events.promptHash')" @change="filtersChanged" />
       <FilterInput v-model="localFilters.keyword" :label="t('admin.promptAudit.events.keyword')" @change="filtersChanged" />
-      <label class="text-xs text-gray-600 dark:text-dark-200">
-        <span>{{ t('admin.promptAudit.events.startAt') }}</span>
-        <input v-model="localFilters.start_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.startAt')" @change="filtersChanged" />
-      </label>
-      <label class="text-xs text-gray-600 dark:text-dark-200">
-        <span>{{ t('admin.promptAudit.events.endAt') }}</span>
-        <input v-model="localFilters.end_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endAt')" @change="filtersChanged" />
-      </label>
+      <!-- 日期范围选择器：保留原过滤字段、时分精度与查询触发。 -->
+<DateRangeFields v-model:start="localFilters.start_at" v-model:end="localFilters.end_at" time @change="filtersChanged" />
       <div class="flex items-end gap-2 sm:col-span-2">
         <button type="submit" class="btn btn-primary btn-sm">{{ t('common.search') }}</button>
         <button type="button" class="btn btn-ghost btn-sm" @click="resetFilters">{{ t('common.reset') }}</button>
@@ -104,6 +98,7 @@
 </template>
 
 <script setup lang="ts">
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
 import { computed, defineComponent, h, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Pagination from '@/components/common/Pagination.vue'

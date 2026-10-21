@@ -21,6 +21,22 @@ function mountHeader(value = overview) {
 
 describe('OpsDashboardHeader output TPS', () => {
 
+  it('retains toolbar refresh events, parent busy state and fullscreen visibility', async () => {
+    const wrapper = mountHeader()
+    await flushPromises()
+    const refresh = wrapper.get('button[title="common.refresh"]')
+    await refresh.trigger('click')
+    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    await wrapper.setProps({ loading: true })
+    expect(refresh.attributes('aria-busy')).toBe('true')
+    expect(refresh.attributes('disabled')).toBeDefined()
+    await refresh.trigger('click')
+    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    await wrapper.setProps({ fullscreen: true })
+    expect(wrapper.find('button[title="common.refresh"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('shows per-request P50, slower-tail percentiles and sample count separately from traffic TPS', async () => {
     const wrapper = mountHeader({ ...overview, output_tps: { p5: 2.35, p10: 3.7, p50: 55, avg: 277.75, sample_count: 4 } })
     await flushPromises()

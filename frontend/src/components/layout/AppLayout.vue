@@ -1,21 +1,23 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-dark-950">
-    <!-- Background Decoration -->
-    <div class="pointer-events-none fixed inset-0 bg-mesh-gradient"></div>
+  <div class="min-h-screen" :class="embedded ? 'sub2api-microfrontend-content' : 'kreepai-layout'">
+    <!-- 展示信息模块：页面白底，卡片按深度区分，不叠加背景装饰。 -->
 
     <!-- Sidebar -->
-    <AppSidebar />
+    <!-- 多项目路由导航：嵌入只发布原菜单；导航 DOM 由宿主独占。 -->
+    <AppSidebar v-if="!embedded" />
 
     <!-- Main Content Area -->
     <div
       class="relative min-h-screen transition-all duration-300"
-      :class="[sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-64']"
+      :class="embedded ? '' : ['kreepai-layout-main', { 'is-collapsed': sidebarCollapsed }]"
     >
       <!-- Header -->
       <AppHeader />
 
       <!-- Main Content -->
-      <main class="p-4 md:p-6 lg:p-8">
+      <!-- 组件绘制动画：正文是唯一加载/揭示目标，顶栏与侧栏不进入切屏。 -->
+      <!-- 展示信息模块：原应用管理正文宽度和留白，独立站/嵌入共用，不套青舟内容容器。 -->
+      <main class="kreepai-page-content kreepai-layout-content">
         <slot />
       </main>
     </div>
@@ -23,30 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import '@/styles/onboarding.css'
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useAppStore } from '@/stores'
-import { useAuthStore } from '@/stores/auth'
-import { useOnboardingTour } from '@/composables/useOnboardingTour'
-import { useOnboardingStore } from '@/stores/onboarding'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
+import { isMicrofrontend } from '@/runtime/environment'
 
 const appStore = useAppStore()
-const authStore = useAuthStore()
+const embedded = isMicrofrontend()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
-const isAdmin = computed(() => authStore.user?.role === 'admin')
-
-const { replayTour } = useOnboardingTour({
-  storageKey: isAdmin.value ? 'admin_guide' : 'user_guide',
-  autoStart: true
-})
-
-const onboardingStore = useOnboardingStore()
-
-onMounted(() => {
-  onboardingStore.setReplayCallback(replayTour)
-})
-
-defineExpose({ replayTour })
 </script>

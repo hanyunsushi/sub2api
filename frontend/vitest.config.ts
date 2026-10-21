@@ -3,6 +3,7 @@ import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
+  esbuild: { jsx: 'automatic', jsxImportSource: 'react' },
   plugins: [vue()],
   resolve: {
     alias: {

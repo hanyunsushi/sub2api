@@ -1,46 +1,14 @@
 <template>
   <section class="py-3 md:py-4">
     <div class="flex items-center justify-end gap-3 flex-wrap">
-      <div
-        role="tablist"
-        class="inline-flex p-0.5 rounded-xl bg-gray-100 dark:bg-dark-800 border border-gray-200/60 dark:border-dark-700/60 text-xs"
-      >
-        <button
-          v-for="opt in windowOptions"
-          :key="opt.value"
-          type="button"
-          role="tab"
-          :aria-selected="window === opt.value"
-          class="px-3 py-1 rounded-lg transition-colors"
-          :class="window === opt.value
-            ? 'bg-white dark:bg-dark-700 shadow-sm text-gray-900 dark:text-white font-semibold'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
-          @click="emit('update:window', opt.value)"
-        >
-          {{ opt.label }}
-        </button>
-      </div>
+      <!-- 路由切换组件：原7/15/30日查询，复用单跟随面。 -->
+      <RouteSwitch :label="t('admin.dashboard.timeRange')" :model-value="window" :options="windowOptions" @update:model-value="emit('update:window', $event as MonitorWindow)" />
 
-      <span
-        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase"
-        :class="overallChipClass"
-      >
-        <span
-          class="w-1.5 h-1.5 rounded-full mr-1.5"
-          :class="overallDotClass"
-        ></span>
-        {{ overallLabel }}
-      </span>
+      <!-- 区分-状态牌：整体渠道状态复用统一6px/13px/600语义标签，不采用pill。 -->
+      <StatusBadge :status="overallStatus === 'operational' ? 'success' : 'warning'" :label="overallLabel" />
 
-      <button
-        type="button"
-        class="h-8 w-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-dark-700 transition-colors disabled:opacity-50"
-        :disabled="loading"
-        :title="t('common.refresh')"
-        @click="emit('refresh')"
-      >
-        <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-      </button>
+      <!-- 普通按钮 / 悬浮效果：标准刷新保留原请求与loading。 -->
+      <RefreshButton :label="t('common.refresh')" :loading="loading" @refresh="emit('refresh')" />
 
       <AutoRefreshButton
         v-if="autoRefresh"
@@ -58,7 +26,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Icon from '@/components/icons/Icon.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
+import RefreshButton from '@/components/common/RefreshButton.vue'
 import AutoRefreshButton from '@/components/common/AutoRefreshButton.vue'
 export type MonitorWindow = '7d' | '15d' | '30d'
 export type OverallStatus = 'operational' | 'degraded'
@@ -93,24 +63,5 @@ const windowOptions = computed<{ value: MonitorWindow; label: string }[]>(() => 
 
 const overallLabel = computed(() => t(`channelStatus.overall.${props.overallStatus}`))
 
-const overallChipClass = computed(() => {
-  switch (props.overallStatus) {
-    case 'operational':
-      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-    case 'degraded':
-    default:
-      return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-  }
-})
-
-const overallDotClass = computed(() => {
-  switch (props.overallStatus) {
-    case 'operational':
-      return 'bg-emerald-500 animate-pulse'
-    case 'degraded':
-    default:
-      return 'bg-amber-500 animate-pulse'
-  }
-})
 
 </script>

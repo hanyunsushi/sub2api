@@ -1,45 +1,18 @@
 <template>
-  <div
-    :class="['spinner', sizeClasses, colorClass]"
-    role="status"
-    :aria-label="t('common.loading')"
-  >
-    <span class="sr-only">{{ t('common.loading') }}</span>
-  </div>
+  <!-- 加载反馈：独立站与Console共用固定16/20px点阵；大小不随请求阶段改变。 -->
+  <span class="dot-matrix-loader" :class="colorClass" :style="{ '--loader-size': size === 'sm' ? '16px' : '20px' }" role="status" :aria-label="t('common.loading')" />
 </template>
-
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-
 const { t } = useI18n()
-
-type SpinnerSize = 'sm' | 'md' | 'lg' | 'xl'
-type SpinnerColor = 'primary' | 'secondary' | 'white' | 'gray'
-
-interface Props {
-  size?: SpinnerSize
-  color?: SpinnerColor
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  size: 'md',
-  color: 'primary'
-})
-
-const sizeClasses = computed(() => {
-  const sizes: Record<SpinnerSize, string> = {
-    sm: 'w-4 h-4 border-2',
-    md: 'w-8 h-8 border-2',
-    lg: 'w-12 h-12 border-[3px]',
-    xl: 'w-16 h-16 border-4'
-  }
-  return sizes[props.size]
-})
-
+const props = withDefaults(defineProps<{
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  color?: 'primary' | 'secondary' | 'white' | 'gray'
+}>(), { size: 'md', color: 'primary' })
 const colorClass = computed(() => {
-  const colors: Record<SpinnerColor, string> = {
-    primary: 'text-primary-500',
+  const colors: Record<'primary' | 'secondary' | 'white' | 'gray', string> = {
+    primary: 'kreepai-loader-primary',
     secondary: 'text-gray-500 dark:text-dark-400',
     white: 'text-white',
     gray: 'text-gray-400 dark:text-dark-500'
@@ -47,19 +20,8 @@ const colorClass = computed(() => {
   return colors[props.color]
 })
 </script>
-
 <style scoped>
-.spinner {
-  @apply inline-block rounded-full border-solid border-current border-r-transparent;
-  animation: spin 0.75s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* 加载反馈：页面/内容使用系统加载蓝；按钮内跟随所属按钮前景。 */
+.kreepai-loader-primary { color: var(--accent, #007aff); }
+:global(.btn) .kreepai-loader-primary { color: inherit; }
 </style>

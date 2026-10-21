@@ -6,6 +6,7 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import type { ApiResponse } from '@/types'
 import { getLocale } from '@/i18n'
+import { trackPageRequest } from '@/utils/page-loading'
 import {
   ADMIN_UI_REQUEST_HEADER,
   USER_UI_REQUEST_HEADER,
@@ -14,6 +15,7 @@ import {
 } from './adminUIRequest'
 import { refreshAuthTokens } from './tokenRefresh'
 import { getAPIBaseURL } from './url'
+import { navigateFromMicrofrontend, embeddedRequestSignal } from '@/runtime/environment'
 export { buildApiUrl, buildGatewayUrl } from './url'
 
 // ==================== Axios Instance Configuration ====================
@@ -26,6 +28,10 @@ export const apiClient: AxiosInstance = axios.create({
     'Content-Type': 'application/json'
   }
 })
+
+// 加载反馈：追踪真实 Axios 适配器直到响应体读完；后续刷新不会重启页面入场。
+const requestAdapter = axios.getAdapter(apiClient.defaults.adapter)
+apiClient.defaults.adapter = config => trackPageRequest(() => requestAdapter(config))
 
 // ==================== Request Interceptor ====================
 
@@ -40,6 +46,7 @@ const getUserTimezone = (): string => {
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    if (globalThis.__SUB2API_MICROFRONTEND__) config.signal = embeddedRequestSignal(config.signal as AbortSignal | undefined)
     // Attach token from localStorage
     const token = localStorage.getItem('auth_token')
     if (token && config.headers) {
@@ -131,8 +138,11 @@ apiClient.interceptors.response.use(
           // ignore event failures
         }
 
-        if (window.location.pathname.startsWith('/admin/ops')) {
-          window.location.href = '/admin/settings'
+        const applicationPath = globalThis.__SUB2API_MICROFRONTEND__
+          ? window.location.pathname.replace(/^\/kreepai(?=\/)/, '')
+          : window.location.pathname
+        if (applicationPath.startsWith('/admin/ops')) {
+          navigateFromMicrofrontend('/admin/settings')
         }
 
         return Promise.reject({
@@ -219,7 +229,7 @@ apiClient.interceptors.response.use(
             sessionStorage.setItem('auth_expired', '1')
 
             if (!window.location.pathname.includes('/login')) {
-              window.location.href = '/login'
+              navigateFromMicrofrontend('/login')
             }
 
             return Promise.reject({
@@ -250,7 +260,7 @@ apiClient.interceptors.response.use(
         }
         // Only redirect if not already on login page
         if (!window.location.pathname.includes('/login')) {
-          window.location.href = '/login'
+          navigateFromMicrofrontend('/login')
         }
       }
 

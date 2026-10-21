@@ -5,28 +5,12 @@
 
       <fieldset>
         <legend class="text-xs font-medium text-gray-600 dark:text-dark-200">{{ t('admin.promptAudit.events.filterTimeRange') }}</legend>
-        <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" :aria-label="t('admin.promptAudit.events.filterTimeRange')">
-          <label
-            v-for="option in DELETE_RANGE_PRESETS"
-            :key="option.id"
-            class="cursor-pointer"
-          >
-            <input v-model="preset" type="radio" name="prompt-delete-range" :value="option.id" class="peer sr-only" :data-test="`range-preset-${option.id}`" @change="criteriaChanged" />
-            <span class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 peer-focus-visible:ring-2 peer-focus-visible:ring-red-500/30 dark:border-dark-600 dark:text-dark-300 dark:peer-checked:border-red-500 dark:peer-checked:bg-red-950/40 dark:peer-checked:text-red-300">
-              {{ t(`admin.promptAudit.events.timePresets.${option.id}`) }}
-            </span>
-          </label>
-        </div>
+        <!-- 路由切换组件：原清理时间预设仍走同一校验，不用危险色装饰筛选控件。 -->
+        <RouteSwitch v-model="preset" :options="DELETE_RANGE_PRESETS.map(option => ({value:option.id,label:t(`admin.promptAudit.events.timePresets.${option.id}`)}))" :label="t('admin.promptAudit.events.filterTimeRange')" @update:model-value="criteriaChanged" />
         <p class="mt-2 text-xs text-gray-500 dark:text-dark-400">{{ t('admin.promptAudit.events.filterTimeRangeHint') }}</p>
         <div v-if="preset === 'custom'" class="mt-3 grid gap-3 sm:grid-cols-2" data-test="custom-range">
-          <label class="text-xs text-gray-600 dark:text-dark-200">
-            <span>{{ t('admin.promptAudit.events.startAt') }}</span>
-            <input v-model="local.start_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.startAt')" @change="criteriaChanged" />
-          </label>
-          <label class="text-xs text-gray-600 dark:text-dark-200">
-            <span>{{ t('admin.promptAudit.events.endAt') }}</span>
-            <input v-model="local.end_at" type="datetime-local" class="input mt-1 w-full" :aria-label="t('admin.promptAudit.events.endAt')" @change="criteriaChanged" />
-          </label>
+          <!-- 日期范围选择器：保留原过滤字段、时分精度与查询触发。 -->
+<DateRangeFields v-model:start="local.start_at" v-model:end="local.end_at" time @change="criteriaChanged" />
           <p v-if="!canPreview" class="text-xs text-red-600 dark:text-red-400 sm:col-span-2">{{ t('admin.promptAudit.events.customRangeInvalid') }}</p>
         </div>
       </fieldset>
@@ -117,6 +101,8 @@
 </template>
 
 <script setup lang="ts">
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseDialog from '@/components/common/BaseDialog.vue'

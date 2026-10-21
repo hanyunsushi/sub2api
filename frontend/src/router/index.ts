@@ -3,7 +3,7 @@
  * Defines all application routes with lazy loading and navigation guards
  */
 
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createMemoryHistory, createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 import { useAdminSettingsStore } from '@/stores/adminSettings'
@@ -13,6 +13,9 @@ import { useRoutePrefetch } from '@/composables/useRoutePrefetch'
 import { getSetupStatus } from '@/api/setup'
 import { resolveCompletedSetupRedirectPath } from './setupRedirect'
 import { resolveRouteDocumentTitle } from './title'
+import { isMicrofrontend } from '@/runtime/environment'
+import { beginPageLoad, cancelPageLoad, currentPageLoad } from '@/utils/page-loading'
+import { prepareShift5Route, resetShift5Transition } from '@/utils/shift5'
 
 /**
  * Route definitions with lazy loading
@@ -736,7 +739,7 @@ const routes: RouteRecordRaw[] = [
  * Create router instance
  */
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: isMicrofrontend() ? createMemoryHistory('/kreepai') : createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(_to, _from, savedPosition) {
     // Scroll to saved position when using browser back/forward
@@ -751,7 +754,7 @@ const router = createRouter({
 /**
  * Navigation guard: Authentication check
  */
-let authInitialized = false
+const initializedAuthStores = new WeakSet<object>()
 
 // 初始化导航加载状态和预加载
 const navigationLoading = useNavigationLoadingState()
@@ -785,16 +788,21 @@ function isBackendModePublicRouteAllowed(path: string, hasPendingAuthSession: bo
   return false
 }
 
+const pageLoads = new WeakMap<object, number>()
 router.beforeEach(async (to, _from, next) => {
+  // 加载反馈 / 组件绘制动画：先等待权限、懒加载及初始请求，再由目标正文统一揭示。
+  resetShift5Transition()
+  prepareShift5Route('content')
+  pageLoads.set(to, beginPageLoad())
   // 开始导航加载状态
   navigationLoading.startNavigation()
 
   const authStore = useAuthStore()
 
   // Restore auth state from localStorage on first navigation (page refresh)
-  if (!authInitialized) {
+  if (!initializedAuthStores.has(authStore)) {
     authStore.checkAuth()
-    authInitialized = true
+    initializedAuthStores.add(authStore)
   }
 
   // Set page title
@@ -804,7 +812,7 @@ router.beforeEach(async (to, _from, next) => {
     ...(appStore.cachedPublicSettings?.custom_menu_items ?? []),
     ...(authStore.isAdmin ? adminSettingsStore.customMenuItems : []),
   ]
-  document.title = resolveRouteDocumentTitle(to, appStore.siteName, customMenuItems)
+  if (!isMicrofrontend()) document.title = resolveRouteDocumentTitle(to, appStore.siteName, customMenuItems)
 
   // Check if route requires authentication
   const requiresAuth = to.meta.requiresAuth !== false // Default to true
@@ -988,7 +996,11 @@ router.beforeEach(async (to, _from, next) => {
 /**
  * Navigation guard: End loading and trigger prefetch
  */
-router.afterEach((to) => {
+router.afterEach((to, _from, failure) => {
+  if (failure) {
+    const token = pageLoads.get(to)
+    if (token === currentPageLoad()) { resetShift5Transition(); cancelPageLoad(token) }
+  }
   // 结束导航加载状态
   navigationLoading.endNavigation()
 
@@ -1004,7 +1016,10 @@ router.afterEach((to) => {
  * Navigation guard: Error handling
  * Handles dynamic import failures caused by deployment updates
  */
-router.onError((error) => {
+router.onError((error, to) => {
+  const token = pageLoads.get(to)
+  if (token === currentPageLoad()) { resetShift5Transition(); cancelPageLoad(token) }
+  navigationLoading.endNavigation()
   console.error('Router error:', error)
 
   // Check if this is a dynamic import failure (chunk loading error)
@@ -1015,6 +1030,10 @@ router.onError((error) => {
     error.name === 'ChunkLoadError'
 
   if (isChunkLoadError) {
+    if (isMicrofrontend()) {
+      window.dispatchEvent(new CustomEvent('sub2api-microfrontend-error', { detail: { error } }))
+      return
+    }
     // Avoid infinite reload loop by checking sessionStorage
     const reloadKey = 'chunk_reload_attempted'
     const lastReload = sessionStorage.getItem(reloadKey)
@@ -1030,5 +1049,7 @@ router.onError((error) => {
     }
   }
 })
+
+export function stopEmbeddedRouteTasks() { routePrefetch?.cancelPendingPrefetch() }
 
 export default router

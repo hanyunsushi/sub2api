@@ -1,0 +1,17 @@
+/* 展示信息模块：整页沿用页面样式和内距，100vh只映射到宿主正文可用高度。 */
+@container console-page (min-width: 0px) {
+  :root.console-kreepai-surface :is(.min-h-screen, .kreepai-auth) { min-height: var(--console-page-height, 100dvh); }
+  /* 展示信息模块：原首页终端随可用宽度收缩，保留原内距、圆角与绘制样式。 */
+  :root.console-kreepai-surface .flex:has(> .terminal-container) { min-width: 0; max-width: 100%; }
+  :root.console-kreepai-surface .terminal-container { width: min(420px, 100%); max-width: 100%; }
+  :root.console-kreepai-surface .terminal-window { width: 100%; }
+}
+/* 展示信息模块：复用既有认证页单列样式，断点按实际正文宽度判断。 */
+@container console-page (max-width: 860px) {
+  :root.console-kreepai-surface .kreepai-auth { grid-template-columns: minmax(0, 1fr); }
+  :root.console-kreepai-surface .kreepai-auth-aside { display: none; }
+  :root.console-kreepai-surface .kreepai-auth-main { align-items: start; padding: 32px 0; }
+}
+
+/* 展示信息模块：只有Console常驻64px顶栏需要偏移，独立认证页从0开始。 */
+:root.console-kreepai-surface { --auth-top-offset: 64px; }

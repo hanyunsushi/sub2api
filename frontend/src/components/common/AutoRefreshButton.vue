@@ -1,33 +1,37 @@
 <template>
-  <div class="relative" ref="dropdownRef">
+  <!-- 普通按钮 / 选择下拉菜单：定时刷新是配置选择，启用轮询不冒充请求loading。 -->
+  <div class="relative kreepai-auto-refresh" ref="dropdownRef" @keydown.esc="showDropdown = false" @focusout="!dropdownRef?.contains($event.relatedTarget as Node) && (showDropdown = false)">
     <button
-      @click="showDropdown = !showDropdown"
-      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700"
+      type="button" @click="showDropdown = !showDropdown"
+      :aria-expanded="showDropdown" aria-haspopup="menu"
+      class="btn btn-secondary"
       :title="t('common.autoRefresh.title')"
     >
       <svg
         class="h-3.5 w-3.5"
-        :class="enabled ? 'animate-spin' : ''"
         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
       >
         <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.312a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm-10.624-2.848a5.5 5.5 0 019.201-2.466l.312.311H11.768a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.537a.75.75 0 00-1.5 0v2.034l-.312-.312A7 7 0 002.628 8.397a.75.75 0 001.449.39z" clip-rule="evenodd" />
       </svg>
-      <span>
+      <span class="auto-refresh-label">
+        <span class="auto-refresh-reserve" aria-hidden="true">{{ enabled ? t('common.autoRefresh.countdown', { seconds: intervalSeconds }) : t('common.autoRefresh.title') }}</span>
+        <span class="auto-refresh-value">
         {{ enabled
           ? t('common.autoRefresh.countdown', { seconds: countdown })
           : t('common.autoRefresh.title')
         }}
-      </span>
+      </span></span>
     </button>
 
     <div
-      v-if="showDropdown"
-      class="absolute right-0 z-20 mt-1 w-44 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+      v-if="showDropdown" role="menu"
+      class="dropdown absolute right-0 z-20 mt-2 w-44"
     >
-      <div class="p-1.5">
+      <div class="grid gap-0.5">
         <button
           @click="$emit('update:enabled', !enabled)"
-          class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+          :aria-checked="enabled"
+          type="button" role="menuitemradio" class="dropdown-item flex w-full items-center justify-between"
         >
           <span>{{ t('common.autoRefresh.enable') }}</span>
           <svg v-if="enabled" class="h-4 w-4 text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -39,7 +43,8 @@
           v-for="sec in intervals"
           :key="sec"
           @click="$emit('update:interval', sec)"
-          class="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
+          :aria-checked="intervalSeconds === sec"
+          type="button" role="menuitemradio" class="dropdown-item flex w-full items-center justify-between"
         >
           <span>{{ t('common.autoRefresh.seconds', { n: sec }) }}</span>
           <svg v-if="intervalSeconds === sec" class="h-4 w-4 text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -80,3 +85,11 @@ function handleClickOutside(event: MouseEvent) {
 onMounted(() => document.addEventListener('click', handleClickOutside))
 onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 </script>
+
+<style scoped>
+/* 普通按钮 / 数字展示：倒计时占同一网格格，按完整interval预留宽度，不逐秒推动邻居。 */
+.auto-refresh-label { display:inline-grid; font-variant-numeric:tabular-nums; }
+.auto-refresh-label > span { grid-area:1/1; white-space:nowrap; }
+.auto-refresh-reserve { visibility:hidden; pointer-events:none; }
+.auto-refresh-value { justify-self:start; }
+</style>

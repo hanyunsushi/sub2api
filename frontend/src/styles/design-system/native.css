@@ -1,0 +1,11 @@
+/* 页面滚动条：独立站原生document滚动；Console的轨道及槽位由Host独占。 */
+html.kreepai-design-system { --scrollbar-track-width: 16px; --scrollbar-thumb-width: 8px; scrollbar-width: none; }
+html.kreepai-design-system body { padding-right: 16px; scrollbar-width: none; }
+html.kreepai-design-system::-webkit-scrollbar, html.kreepai-design-system body::-webkit-scrollbar { display: none; }
+html.kreepai-design-system .sidebar-nav { scrollbar-width: auto; scrollbar-gutter: stable; }
+html.kreepai-design-system .sidebar-nav::-webkit-scrollbar { display: revert; }
+@media (max-width: 768px) {
+  html.kreepai-design-system body { padding-right: 0; }
+  html.kreepai-design-system .sidebar-nav { scrollbar-width: none; scrollbar-gutter: auto; }
+  html.kreepai-design-system .sidebar-nav::-webkit-scrollbar { display: none; }
+}

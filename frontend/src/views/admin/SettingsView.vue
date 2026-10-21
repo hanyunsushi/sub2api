@@ -1,49 +1,19 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-6xl space-y-6">
+    <div class="settings-page mx-auto max-w-6xl space-y-6">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
-        <div
-          class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"
-        ></div>
+        <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+        <LoadingSpinner size="md" />
       </div>
 
       <!-- Settings Form -->
-      <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
-        <!-- Tab Navigation -->
-        <div class="settings-tabs-shell">
-          <nav
-            class="settings-tabs-scroll"
-            role="tablist"
-            :aria-label="t('admin.settings.title')"
-          >
-            <div class="settings-tabs">
-              <button
-                v-for="tab in settingsTabs"
-                :key="tab.key"
-                :id="`settings-tab-${tab.key}`"
-                type="button"
-                role="tab"
-                :aria-selected="activeTab === tab.key"
-                :tabindex="activeTab === tab.key ? 0 : -1"
-                :class="[
-                  'settings-tab',
-                  activeTab === tab.key && 'settings-tab-active',
-                ]"
-                @click="selectSettingsTab(tab.key)"
-                @keydown="handleSettingsTabKeydown($event, tab.key)"
-              >
-                <span class="settings-tab-icon">
-                  <Icon :name="tab.icon" size="sm" />
-                </span>
-                <span class="settings-tab-label">{{
-                  t(`admin.settings.tabs.${tab.key}`)
-                }}</span>
-              </button>
-            </div>
-          </nav>
-        </div>
-
+      <form v-else @submit.prevent="saveSettings" class="settings-layout" novalidate>
+        <!-- 路由切换组件：保留AI原横向分区导航，不迁移青舟二级侧栏。 -->
+        <RouteSwitch :model-value="activeTab" :options="settingsTabOptions" :label="t('admin.settings.title')" class="settings-section-switch" @update:model-value="selectSettingsTab" />
+        <!-- 展示信息模块 / 填写框：正文独立收缩，按实际可用宽度重排表单与操作组。 -->
+        <!-- 路由切换组件：预载分区直接切换，不重播页面入场或产生加载门控。 -->
+        <div class="settings-main space-y-6">
         <!-- Tab: Security — Admin API Key -->
         <div v-show="activeTab === 'security'" class="space-y-6">
           <!-- Admin API Key Settings -->
@@ -80,16 +50,15 @@
                 v-if="adminApiKeyLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
               <!-- No Key Configured -->
               <div
                 v-else-if="!adminApiKeyExists"
-                class="flex items-center justify-between"
+                class="settings-inline-fields min-w-0 settings-field-row flex items-center justify-between"
               >
                 <span class="text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.adminApiKey.notConfigured") }}
@@ -100,26 +69,8 @@
                   :disabled="adminApiKeyOperating"
                   class="btn btn-primary btn-sm"
                 >
-                  <svg
-                    v-if="adminApiKeyOperating"
-                    class="mr-1 h-4 w-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                  <LoadingSpinner v-if="adminApiKeyOperating" size="sm" color="white" class="mr-1" />
                   {{
                     adminApiKeyOperating
                       ? t("admin.settings.adminApiKey.creating")
@@ -130,7 +81,7 @@
 
               <!-- Key Exists -->
               <div v-else class="space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div>
                     <label
                       class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -143,12 +94,13 @@
                       {{ adminApiKeyMasked }}
                     </code>
                   </div>
-                  <div class="flex gap-2">
+                  <!-- 高亮弧边按钮 / 删除按钮：重置凭据与不可逆吊销使用各自语义，原确认流程保持。 -->
+                  <div class="settings-inline-fields min-w-0 flex min-w-0 flex-wrap gap-2">
                     <button
                       type="button"
                       @click="regenerateAdminApiKey"
                       :disabled="adminApiKeyOperating"
-                      class="btn btn-secondary btn-sm"
+                      class="btn btn-primary btn-sm"
                     >
                       {{
                         adminApiKeyOperating
@@ -160,7 +112,7 @@
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
-                      class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"
+                      class="btn btn-danger btn-sm"
                     >
                       {{ t("admin.settings.adminApiKey.delete") }}
                     </button>
@@ -177,9 +129,9 @@
                   >
                     {{ t("admin.settings.adminApiKey.keyWarning") }}
                   </p>
-                  <div class="flex items-center gap-2">
+                  <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                     <code
-                      class="flex-1 select-all break-all rounded border border-green-300 bg-white px-3 py-2 font-mono text-sm dark:border-green-700 dark:bg-dark-800"
+                      class="min-w-0 flex-1 select-all break-all rounded border border-green-300 bg-white px-3 py-2 font-mono text-sm dark:border-green-700 dark:bg-dark-800"
                     >
                       {{ newAdminApiKey }}
                     </code>
@@ -220,14 +172,13 @@
                 v-if="overloadCooldownLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
               <template v-else>
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.overloadCooldown.enabled")
@@ -265,7 +216,7 @@
                 </div>
 
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -273,26 +224,8 @@
                     :disabled="overloadCooldownSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="overloadCooldownSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                    <LoadingSpinner v-if="overloadCooldownSaving" size="sm" color="white" class="mr-1" />
                     {{
                       overloadCooldownSaving
                         ? t("common.saving")
@@ -321,14 +254,13 @@
                 v-if="rateLimit429CooldownLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
               <template v-else>
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.rateLimit429Cooldown.enabled")
@@ -372,7 +304,7 @@
                 </div>
 
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -380,26 +312,8 @@
                     :disabled="rateLimit429CooldownSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="rateLimit429CooldownSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                    <LoadingSpinner v-if="rateLimit429CooldownSaving" size="sm" color="white" class="mr-1" />
                     {{
                       rateLimit429CooldownSaving
                         ? t("common.saving")
@@ -429,15 +343,14 @@
                 v-if="streamTimeoutLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
               <template v-else>
                 <!-- Enable Stream Timeout -->
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.streamTimeout.enabled")
@@ -552,7 +465,7 @@
 
                 <!-- Save Button -->
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -560,26 +473,8 @@
                     :disabled="streamTimeoutSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="streamTimeoutSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                    <LoadingSpinner v-if="streamTimeoutSaving" size="sm" color="white" class="mr-1" />
                     {{
                       streamTimeoutSaving
                         ? t("common.saving")
@@ -609,15 +504,14 @@
                 v-if="rectifierLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
               <template v-else>
                 <!-- Master Toggle -->
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.rectifier.enabled")
@@ -635,7 +529,7 @@
                   class="space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <!-- Thinking Signature Rectifier -->
-                  <div class="flex items-center justify-between">
+                  <div class="settings-field-row flex items-center justify-between">
                     <div>
                       <label
                         class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -655,7 +549,7 @@
                   </div>
 
                   <!-- Thinking Budget Rectifier -->
-                  <div class="flex items-center justify-between">
+                  <div class="settings-field-row flex items-center justify-between">
                     <div>
                       <label
                         class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -671,7 +565,7 @@
                   </div>
 
                   <!-- API Key Signature Rectifier -->
-                  <div class="flex items-center justify-between">
+                  <div class="settings-field-row flex items-center justify-between">
                     <div>
                       <label
                         class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -707,7 +601,7 @@
                         _, index
                       ) in rectifierForm.apikey_signature_patterns"
                       :key="index"
-                      class="flex items-center gap-2"
+                      class="settings-inline-fields min-w-0 flex items-center gap-2"
                     >
                       <input
                         v-model="rectifierForm.apikey_signature_patterns[index]"
@@ -745,7 +639,7 @@
                     <button
                       type="button"
                       @click="rectifierForm.apikey_signature_patterns.push('')"
-                      class="btn btn-ghost btn-xs text-primary-600 dark:text-primary-400"
+                      class="btn btn-secondary btn-arc"
                     >
                       + {{ t("admin.settings.rectifier.addPattern") }}
                     </button>
@@ -754,7 +648,7 @@
 
                 <!-- Save Button -->
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -762,26 +656,8 @@
                     :disabled="rectifierSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="rectifierSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                    <LoadingSpinner v-if="rectifierSaving" size="sm" color="white" class="mr-1" />
                     {{
                       rectifierSaving ? t("common.saving") : t("common.save")
                     }}
@@ -808,9 +684,8 @@
                 v-if="betaPolicyLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
@@ -834,7 +709,7 @@
                     </span>
                   </div>
 
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div class="settings-form-grid grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <!-- Action -->
                     <div>
                       <label
@@ -891,12 +766,13 @@
                     >
                       {{ t("admin.settings.betaPolicy.quickPresets") }}
                     </label>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="settings-inline-fields min-w-0 flex flex-wrap gap-2">
+                      <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         v-for="preset in betaPresets[rule.beta_token]"
                         :key="preset.label"
                         type="button"
-                        class="inline-flex items-center gap-1 rounded-md border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 transition-colors hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
+                        class="btn btn-secondary inline-flex items-center gap-1 rounded-md border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 transition-colors hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
                         @click="applyBetaPreset(rule, preset)"
                         :title="preset.description"
                       >
@@ -919,7 +795,7 @@
                     <div
                       v-for="(_, index) in rule.model_whitelist || []"
                       :key="index"
-                      class="mb-1.5 flex items-center gap-2"
+                      class="settings-inline-fields min-w-0 mb-1.5 flex items-center gap-2"
                     >
                       <input
                         v-model="rule.model_whitelist![index]"
@@ -929,10 +805,11 @@
                           t('admin.settings.betaPolicy.modelPatternPlaceholder')
                         "
                       />
+                      <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
-                        class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                        class="btn btn-danger shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                       >
                         <svg
                           class="h-4 w-4"
@@ -950,13 +827,14 @@
                       </button>
                     </div>
                     <!-- Add pattern button -->
+                    <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                     <button
                       type="button"
                       @click="
                         if (!rule.model_whitelist) rule.model_whitelist = [];
                         rule.model_whitelist.push('');
                       "
-                      class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                      class="btn btn-secondary mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                     >
                       <svg
                         class="h-3.5 w-3.5"
@@ -974,17 +852,18 @@
                       {{ t("admin.settings.betaPolicy.addModelPattern") }}
                     </button>
                     <!-- Common pattern chips -->
-                    <div class="flex flex-wrap items-center gap-1.5">
+                    <div class="settings-inline-fields min-w-0 flex flex-wrap items-center gap-1.5">
                       <span class="text-xs text-gray-400 dark:text-gray-500"
                         >{{
                           t("admin.settings.betaPolicy.commonPatterns")
                         }}:</span
                       >
+                      <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         v-for="pattern in commonModelPatterns"
                         :key="pattern"
                         type="button"
-                        class="rounded border border-gray-200 px-2 py-0.5 text-xs text-gray-600 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-700 dark:hover:bg-primary-900/30 dark:hover:text-primary-300"
+                        class="btn btn-secondary rounded border border-gray-200 px-2 py-0.5 text-xs text-gray-600 transition-colors hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-700 dark:hover:bg-primary-900/30 dark:hover:text-primary-300"
                         @click="addQuickPattern(rule, pattern)"
                       >
                         {{ pattern }}
@@ -1033,7 +912,7 @@
 
                 <!-- Save Button -->
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -1041,26 +920,8 @@
                     :disabled="betaPolicySaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="betaPolicySaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                    <LoadingSpinner v-if="betaPolicySaving" size="sm" color="white" class="mr-1" />
                     {{
                       betaPolicySaving ? t("common.saving") : t("common.save")
                     }}
@@ -1096,7 +957,7 @@
                 :key="ruleIndex"
                 class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
               >
-                <div class="mb-3 flex items-center justify-between">
+                <div class="settings-inline-fields min-w-0 settings-field-row mb-3 flex items-center justify-between">
                   <span
                     class="text-sm font-medium text-gray-900 dark:text-white"
                   >
@@ -1106,10 +967,11 @@
                       })
                     }}
                   </span>
+                  <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                   <button
                     type="button"
                     @click="removeOpenAIFastPolicyRule(ruleIndex)"
-                    class="rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    class="btn btn-danger rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     :title="t('admin.settings.openaiFastPolicy.removeRule')"
                   >
                     <svg
@@ -1169,7 +1031,7 @@
                   </template>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-4 md:grid-cols-3">
                   <!-- Service Tier -->
                   <div>
                     <label
@@ -1293,7 +1155,7 @@
                   <div
                     v-for="(_, patternIdx) in rule.model_whitelist || []"
                     :key="patternIdx"
-                    class="mb-1.5 flex items-center gap-2"
+                    class="settings-inline-fields min-w-0 mb-1.5 flex items-center gap-2"
                   >
                     <input
                       v-model="rule.model_whitelist![patternIdx]"
@@ -1305,12 +1167,13 @@
                         )
                       "
                     />
+                    <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                     <button
                       type="button"
                       @click="
                         removeOpenAIFastPolicyModelPattern(rule, patternIdx)
                       "
-                      class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      class="btn btn-danger shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     >
                       <svg
                         class="h-4 w-4"
@@ -1327,10 +1190,11 @@
                       </svg>
                     </button>
                   </div>
+                  <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                   <button
                     type="button"
                     @click="addOpenAIFastPolicyModelPattern(rule)"
-                    class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                    class="btn btn-secondary mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                   >
                     <svg
                       class="h-3.5 w-3.5"
@@ -1437,7 +1301,7 @@
             </div>
             <div class="space-y-5 p-6">
               <!-- Enable Registration -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.registration.enableRegistration")
@@ -1453,7 +1317,7 @@
 
               <!-- Email Verification -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1486,9 +1350,10 @@
                       class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-xs font-mono text-gray-700 dark:bg-dark-600 dark:text-gray-200"
                     >
                       <span>{{ suffix }}</span>
+                      <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         type="button"
-                        class="rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-dark-500 dark:hover:text-white"
+                        class="btn btn-danger rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-dark-500 dark:hover:text-white"
                         @click="
                           removeRegistrationEmailSuffixWhitelistTag(suffix)
                         "
@@ -1503,7 +1368,7 @@
                     </span>
 
                     <div
-                      class="flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-primary-300 dark:focus-within:border-primary-700"
+                      class="settings-inline-fields min-w-0 flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-primary-300 dark:focus-within:border-primary-700"
                     >
                       <input
                         v-model="registrationEmailSuffixWhitelistDraft"
@@ -1537,7 +1402,7 @@
 
               <!-- Email Domain Quota -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1554,7 +1419,7 @@
 
               <!-- Promo Code -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1569,7 +1434,7 @@
 
               <!-- Invitation Code -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1584,7 +1449,7 @@
               <!-- Password Reset - Only show when email verification is enabled -->
               <div
                 v-if="form.email_verify_enabled"
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1621,7 +1486,7 @@
 
               <!-- TOTP 2FA -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1705,7 +1570,7 @@
 
               <!-- 敏感操作 step-up 2FA -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1720,7 +1585,7 @@
 
               <!-- 会话 IP/UA 绑定 -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1735,7 +1600,7 @@
 
               <!-- 审计日志保留天数 -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-inline-fields min-w-0 settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1768,7 +1633,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between gap-4">
+              <div class="settings-field-row flex items-center justify-between gap-4">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">
                     {{ t("admin.settings.apiKeyAcl.trustForwardedIp") }}
@@ -1804,9 +1669,10 @@
                       class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-xs font-mono text-gray-700 dark:bg-dark-600 dark:text-gray-200"
                     >
                       <span>{{ header }}</span>
+                      <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         type="button"
-                        class="rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-dark-500 dark:hover:text-white"
+                        class="btn btn-danger rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-dark-500 dark:hover:text-white"
                         :aria-label="t('admin.settings.apiKeyAcl.removeForwardedClientIpHeader', { header })"
                         @click="removeForwardedClientIpHeader(header)"
                       >
@@ -1819,7 +1685,7 @@
                       </button>
                     </span>
                     <div
-                      class="flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-primary-300 dark:focus-within:border-primary-700"
+                      class="settings-inline-fields min-w-0 flex min-w-[220px] flex-1 items-center gap-1 rounded border border-transparent px-2 py-1 focus-within:border-primary-300 dark:focus-within:border-primary-700"
                     >
                       <input
                         id="forwarded-client-ip-headers"
@@ -1866,9 +1732,8 @@
                 v-if="panelRateLimitLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
@@ -1889,7 +1754,7 @@
                   </div>
                 </div>
 
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">{{
                       t("admin.settings.panelRateLimit.enabled")
@@ -1905,14 +1770,14 @@
                   v-if="panelRateLimitForm.enabled"
                   class="space-y-5 border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
-                  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div class="settings-form-grid grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
                       <label
                         class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
                         {{ t("admin.settings.panelRateLimit.userRpm") }}
                       </label>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <input
                           v-model.number="panelRateLimitForm.user_rpm"
                           data-testid="panel-rate-limit-user-rpm"
@@ -1936,7 +1801,7 @@
                       >
                         {{ t("admin.settings.panelRateLimit.heavyRpm") }}
                       </label>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <input
                           v-model.number="panelRateLimitForm.heavy_rpm"
                           type="number"
@@ -1959,7 +1824,7 @@
                       >
                         {{ t("admin.settings.panelRateLimit.publicIpRpm") }}
                       </label>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <input
                           v-model.number="panelRateLimitForm.public_ip_rpm"
                           type="number"
@@ -1978,7 +1843,7 @@
                   </div>
 
                   <div
-                    class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                    class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
                   >
                     <div>
                       <label class="font-medium text-gray-900 dark:text-white">{{
@@ -1993,7 +1858,7 @@
                 </div>
 
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -2002,26 +1867,8 @@
                     :disabled="panelRateLimitSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="panelRateLimitSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                    <LoadingSpinner v-if="panelRateLimitSaving" size="sm" color="white" class="mr-1" />
                     {{
                       panelRateLimitSaving
                         ? t("common.saving")
@@ -2047,7 +1894,7 @@
             </div>
             <div class="space-y-5 p-6">
               <!-- Enable Captcha -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.captcha.enable")
@@ -2075,12 +1922,14 @@
                     {{ t("admin.settings.captcha.provider") }}
                   </label>
                   <div
-                    class="grid grid-cols-3 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700"
+                    class="settings-form-grid grid grid-cols-3 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700"
                   >
+                    <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
                     <button
                       type="button"
                       data-testid="captcha-provider-turnstile"
-                      class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      class="settings-choice inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      :aria-pressed="captchaProviderSelection === 'turnstile'"
                       :class="
                         captchaProviderSelection === 'turnstile'
                           ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
@@ -2090,10 +1939,12 @@
                     >
                       {{ t("admin.settings.captcha.providerTurnstile") }}
                     </button>
+                    <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
                     <button
                       type="button"
                       data-testid="captcha-provider-tencent"
-                      class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      class="settings-choice inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      :aria-pressed="captchaProviderSelection === 'tencent'"
                       :class="
                         captchaProviderSelection === 'tencent'
                           ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
@@ -2103,10 +1954,12 @@
                     >
                       {{ t("admin.settings.captcha.providerTencent") }}
                     </button>
+                    <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
                     <button
                       type="button"
                       data-testid="captcha-provider-aliyun"
-                      class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      class="settings-choice inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      :aria-pressed="captchaProviderSelection === 'aliyun'"
                       :class="
                         captchaProviderSelection === 'aliyun'
                           ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
@@ -2122,7 +1975,7 @@
                 <!-- Cloudflare Turnstile fields -->
                 <div
                   v-if="captchaProviderSelection === 'turnstile'"
-                  class="grid grid-cols-1 gap-6"
+                  class="settings-form-grid grid grid-cols-1 gap-6"
                 >
                   <div>
                     <label
@@ -2178,12 +2031,14 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       {{ t("admin.settings.tencentCaptcha.region") }}
                     </label>
-                    <div class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
-                      <button
+                    <div class="settings-form-grid grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
+                      <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
+                    <button
                         type="button"
                         data-testid="tencent-captcha-region-cn"
-                        class="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
-                        :class="
+                        class="settings-choice inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
+                        :aria-pressed="form.tencent_captcha_region !== 'intl'"
+                      :class="
                           form.tencent_captcha_region !== 'intl'
                             ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
                             : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
@@ -2192,11 +2047,13 @@
                       >
                         {{ t("admin.settings.tencentCaptcha.regionCn") }}
                       </button>
-                      <button
+                      <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
+                    <button
                         type="button"
                         data-testid="tencent-captcha-region-intl"
-                        class="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
-                        :class="
+                        class="settings-choice inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
+                        :aria-pressed="form.tencent_captcha_region === 'intl'"
+                      :class="
                           form.tencent_captcha_region === 'intl'
                             ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
                             : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
@@ -2210,7 +2067,7 @@
                       {{ t("admin.settings.tencentCaptcha.regionHint") }}
                     </p>
                   </div>
-                  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div class="settings-form-grid grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div class="md:col-span-2">
                       <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                         {{ t("admin.settings.tencentCaptcha.appCredentialsTitle") }}
@@ -2320,8 +2177,8 @@
                 </div>
 
                 <!-- Aliyun Captcha 2.0 fields -->
-                <div v-else class="grid grid-cols-1 gap-6">
-                  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div v-else class="settings-form-grid grid grid-cols-1 gap-6">
+                  <div class="settings-form-grid grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
                       <label
                         class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -2329,12 +2186,14 @@
                         {{ t("admin.settings.aliyunCaptcha.region") }}
                       </label>
                       <div
-                        class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700"
+                        class="settings-form-grid grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700"
                       >
-                        <button
+                        <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
+                    <button
                           type="button"
-                          class="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
-                          :class="
+                          class="settings-choice inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
+                          :aria-pressed="form.aliyun_captcha_region !== 'sgp'"
+                      :class="
                             form.aliyun_captcha_region !== 'sgp'
                               ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
                               : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
@@ -2343,10 +2202,12 @@
                         >
                           {{ t("admin.settings.aliyunCaptcha.regionCn") }}
                         </button>
-                        <button
+                        <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
+                    <button
                           type="button"
-                          class="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
-                          :class="
+                          class="settings-choice inline-flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition"
+                          :aria-pressed="form.aliyun_captcha_region === 'sgp'"
+                      :class="
                             form.aliyun_captcha_region === 'sgp'
                               ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
                               : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
@@ -2450,7 +2311,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.linuxdo.enable")
@@ -2466,7 +2327,7 @@
                 v-if="form.linuxdo_connect_enabled"
                 class="border-t border-gray-100 pt-4 dark:border-dark-700"
               >
-                <div class="grid grid-cols-1 gap-6">
+                <div class="settings-form-grid grid grid-cols-1 gap-6">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -2530,7 +2391,7 @@
                       "
                     />
                     <div
-                      class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
+                      class="settings-inline-fields min-w-0 mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
                       <button
                         type="button"
@@ -2573,7 +2434,7 @@
               </p>
             </div>
             <div class="space-y-6 p-6">
-              <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+              <div class="settings-form-grid grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-700">
                   <div class="flex items-start justify-between gap-4">
                     <div>
@@ -2618,7 +2479,7 @@
                       </template>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <div class="settings-form-grid grid grid-cols-1 gap-4 lg:grid-cols-2">
                       <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client ID</label>
                         <input
@@ -2653,7 +2514,7 @@
                         class="input font-mono text-sm"
                         placeholder="https://your-domain.com/api/v1/auth/oauth/github/callback"
                       />
-                      <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                      <div class="settings-inline-fields min-w-0 mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                         <button
                           type="button"
                           class="btn btn-secondary btn-sm w-fit"
@@ -2712,7 +2573,7 @@
                       }}
                     </div>
 
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <div class="settings-form-grid grid grid-cols-1 gap-4 lg:grid-cols-2">
                       <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Client ID</label>
                         <input
@@ -2747,7 +2608,7 @@
                         class="input font-mono text-sm"
                         placeholder="https://your-domain.com/api/v1/auth/oauth/google/callback"
                       />
-                      <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                      <div class="settings-inline-fields min-w-0 mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                         <button
                           type="button"
                           class="btn btn-secondary btn-sm w-fit"
@@ -2794,7 +2655,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.wechatConnect.enabledLabel")
@@ -2839,7 +2700,7 @@
                     </div>
                     <div
                       v-if="form.wechat_connect_open_enabled"
-                      class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
+                      class="settings-form-grid mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
                     >
                       <div>
                         <label
@@ -2912,7 +2773,7 @@
                     </div>
                     <div
                       v-if="form.wechat_connect_mp_enabled"
-                      class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
+                      class="settings-form-grid mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
                     >
                       <div>
                         <label
@@ -2990,7 +2851,7 @@
                     </div>
                     <div
                       v-if="form.wechat_connect_mobile_enabled"
-                      class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
+                      class="settings-form-grid mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
                     >
                       <div>
                         <label
@@ -3055,7 +2916,7 @@
                   }}
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3083,7 +2944,7 @@
                       }}
                     </p>
                     <div
-                      class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
+                      class="settings-inline-fields min-w-0 mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
                       <button
                         type="button"
@@ -3136,7 +2997,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.dingtalk.enable")
@@ -3152,7 +3013,7 @@
                 v-if="form.dingtalk_connect_enabled"
                 class="border-t border-gray-100 pt-4 dark:border-dark-700"
               >
-                <div class="grid grid-cols-1 gap-6">
+                <div class="settings-form-grid grid grid-cols-1 gap-6">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3257,7 +3118,7 @@
                   <!-- bypass_registration toggle（仅 internal_only 模式下可见可用） -->
                   <div
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
-                    class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-dark-700"
+                    class="settings-field-row flex items-center justify-between pt-4 border-t border-gray-100 dark:border-dark-700"
                   >
                     <div>
                       <label class="font-medium text-gray-900 dark:text-white">{{
@@ -3275,7 +3136,7 @@
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
                     class="pt-4 border-t border-gray-100 dark:border-dark-700 space-y-2"
                   >
-                    <div class="flex items-center justify-between">
+                    <div class="settings-field-row flex items-center justify-between">
                       <div>
                         <label class="font-medium text-gray-900 dark:text-white">{{
                           t("admin.settings.dingtalk.syncDisplayName")
@@ -3287,7 +3148,7 @@
                       <Toggle v-model="form.dingtalk_connect_sync_display_name" />
                     </div>
                     <div v-if="form.dingtalk_connect_sync_display_name" class="space-y-2">
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncDisplayNameTarget") }}
                         </label>
@@ -3298,7 +3159,7 @@
                           class="input text-sm flex-1 max-w-xs"
                         />
                       </div>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
@@ -3318,7 +3179,7 @@
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
                     class="pt-4 border-t border-gray-100 dark:border-dark-700 space-y-2"
                   >
-                    <div class="flex items-center justify-between">
+                    <div class="settings-field-row flex items-center justify-between">
                       <div>
                         <label class="font-medium text-gray-900 dark:text-white">{{
                           t("admin.settings.dingtalk.syncCorpEmail")
@@ -3333,7 +3194,7 @@
                       <Toggle v-model="form.dingtalk_connect_sync_corp_email" />
                     </div>
                     <div v-if="form.dingtalk_connect_sync_corp_email" class="space-y-2">
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncCorpEmailTarget") }}
                         </label>
@@ -3344,7 +3205,7 @@
                           class="input text-sm flex-1 max-w-xs"
                         />
                       </div>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
@@ -3364,7 +3225,7 @@
                     v-if="form.dingtalk_connect_corp_restriction_policy === 'internal_only'"
                     class="pt-4 border-t border-gray-100 dark:border-dark-700 space-y-2"
                   >
-                    <div class="flex items-center justify-between">
+                    <div class="settings-field-row flex items-center justify-between">
                       <div>
                         <label class="font-medium text-gray-900 dark:text-white">{{
                           t("admin.settings.dingtalk.syncDept")
@@ -3379,7 +3240,7 @@
                       <Toggle v-model="form.dingtalk_connect_sync_dept" />
                     </div>
                     <div v-if="form.dingtalk_connect_sync_dept" class="space-y-2">
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncDeptTarget") }}
                         </label>
@@ -3390,7 +3251,7 @@
                           class="input text-sm flex-1 max-w-xs"
                         />
                       </div>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <label class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap min-w-[5rem]">
                           {{ t("admin.settings.dingtalk.syncAttrDisplayName") }}
                         </label>
@@ -3424,7 +3285,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.oidc.enable")
@@ -3440,7 +3301,7 @@
                 v-if="form.oidc_connect_enabled"
                 class="space-y-6 border-t border-gray-100 pt-4 dark:border-dark-700"
               >
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3501,7 +3362,7 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3597,7 +3458,7 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3630,7 +3491,7 @@
                       "
                     />
                     <div
-                      class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
+                      class="settings-inline-fields min-w-0 mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"
                     >
                       <button
                         type="button"
@@ -3671,7 +3532,7 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3724,9 +3585,9 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div
-                    class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+                    class="settings-field-row flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
                       <label class="font-medium text-gray-900 dark:text-white">
@@ -3740,7 +3601,7 @@
                   </div>
 
                   <div
-                    class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+                    class="settings-field-row flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
                       <label class="font-medium text-gray-900 dark:text-white">
@@ -3754,7 +3615,7 @@
                   </div>
 
                   <div
-                    class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+                    class="settings-field-row flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                   >
                     <div>
                       <label class="font-medium text-gray-900 dark:text-white">
@@ -3767,7 +3628,7 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-6 lg:grid-cols-3">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3837,7 +3698,7 @@
               </p>
             </div>
             <div class="space-y-6 p-6">
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div class="settings-form-grid grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label
                     class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -3894,7 +3755,7 @@
               </div>
 
               <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
-                <div class="mb-3 flex items-center justify-between">
+                <div class="settings-inline-fields min-w-0 settings-field-row mb-3 flex items-center justify-between">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">
                       {{ t("admin.settings.defaults.defaultSubscriptions") }}
@@ -3926,7 +3787,7 @@
                   <div
                     v-for="(item, index) in form.default_subscriptions"
                     :key="`default-sub-${index}`"
-                    class="grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
+                    class="settings-form-grid grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
                   >
                     <div>
                       <label
@@ -4018,10 +3879,10 @@
                         class="input h-[42px]"
                       />
                     </div>
-                    <div class="flex items-end">
+                    <div class="settings-inline-fields min-w-0 flex items-end">
                       <button
                         type="button"
-                        class="btn btn-secondary default-sub-delete-btn w-full text-red-600 hover:text-red-700 dark:text-red-400"
+                        class="btn btn-danger w-full"
                         @click="removeDefaultSubscription(index)"
                       >
                         {{ t("common.delete") }}
@@ -4111,7 +3972,7 @@
             </div>
             <div class="space-y-6 p-6">
               <div
-                class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">
@@ -4130,7 +3991,7 @@
                   :key="authSource.source"
                   class="rounded-xl border border-gray-200 p-4 dark:border-dark-700"
                 >
-                  <div class="flex items-center justify-between gap-4">
+                  <div class="settings-field-row flex items-center justify-between gap-4">
                     <div>
                       <div class="font-medium text-gray-900 dark:text-white">
                         {{ authSource.title }}
@@ -4156,7 +4017,7 @@
                       {{ t("admin.settings.authSourceDefaults.enabledHint") }}
                     </p>
 
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div class="settings-form-grid grid grid-cols-1 gap-4 md:grid-cols-2">
                       <div>
                         <label
                           class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -4193,7 +4054,7 @@
                     </div>
 
                     <div
-                      class="flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
+                      class="settings-field-row flex items-center justify-between rounded border border-gray-200 px-4 py-3 dark:border-dark-700"
                     >
                       <div>
                         <label
@@ -4215,7 +4076,7 @@
                       />
                     </div>
 
-                    <div class="mb-3 flex items-center justify-between">
+                    <div class="settings-inline-fields min-w-0 settings-field-row mb-3 flex items-center justify-between">
                       <div>
                         <label
                           class="font-medium text-gray-900 dark:text-white"
@@ -4256,7 +4117,7 @@
                           authSource.source
                         ].subscriptions"
                         :key="`${authSource.source}-sub-${index}`"
-                        class="grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
+                        class="settings-form-grid grid grid-cols-1 gap-3 rounded border border-gray-200 p-3 md:grid-cols-[1fr_160px_auto] dark:border-dark-600"
                       >
                         <div>
                           <label
@@ -4352,7 +4213,7 @@
                             class="input h-[42px]"
                           />
                         </div>
-                        <div class="flex items-end">
+                        <div class="settings-inline-fields min-w-0 flex items-end">
                           <button
                             type="button"
                             class="btn btn-secondary w-full text-red-600 hover:text-red-700 dark:text-red-400"
@@ -4510,7 +4371,7 @@
                     {{ t("admin.settings.gatewayForwarding.codexHardeningDesc") }}
                   </p>
                 </div>
-                <div class="grid gap-4 sm:grid-cols-2">
+                <div class="settings-form-grid grid gap-4 sm:grid-cols-2">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -4560,7 +4421,7 @@
                   <div
                     v-for="(row, i) in codexFingerprintRows"
                     :key="`codex-fp-${i}`"
-                    class="mb-2 flex items-center gap-2"
+                    class="settings-inline-fields min-w-0 mb-2 flex items-center gap-2"
                   >
                     <select v-model="row.type" class="input w-32 text-sm">
                       <option value="header_exact">{{ t("admin.settings.gatewayForwarding.codexFpTypeHeaderExact") }}</option>
@@ -4596,7 +4457,7 @@
                   </p>
                 </div>
 
-                <div class="flex items-center justify-between">
+                <div class="settings-field-row flex items-center justify-between">
                   <div class="pr-4">
                     <label
                       class="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -4630,7 +4491,7 @@
                   <div
                     v-for="(row, i) in codexBlacklistRows"
                     :key="`codex-bl-${i}`"
-                    class="mb-2 flex gap-2"
+                    class="settings-inline-fields min-w-0 mb-2 flex gap-2"
                   >
                     <input
                       v-model="row.originator"
@@ -4681,7 +4542,7 @@
                   <div
                     v-for="(row, i) in codexWhitelistRows"
                     :key="`codex-wl-${i}`"
-                    class="mb-2 flex gap-2"
+                    class="settings-inline-fields min-w-0 mb-2 flex gap-2"
                   >
                     <input
                       v-model="row.originator"
@@ -4757,14 +4618,13 @@
                 v-if="upstreamBillingProbeLoading"
                 class="flex items-center gap-2 text-gray-500"
               >
-                <div
-                  class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-                ></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
 
               <template v-else>
-                <div class="flex items-center justify-between gap-4">
+                <div class="settings-field-row flex items-center justify-between gap-4">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">
                       {{ t("admin.settings.upstreamBillingProbe.enabled") }}
@@ -4806,7 +4666,7 @@
                 </div>
 
                 <div
-                  class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
+                  class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700"
                 >
                   <button
                     type="button"
@@ -4838,11 +4698,12 @@
             </div>
             <div class="space-y-5 p-6">
               <div v-if="ollamaCloudUsageLoading" class="flex items-center gap-2 text-gray-500">
-                <div class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
               <template v-else>
-                <div class="flex items-center justify-between gap-4">
+                <div class="settings-field-row flex items-center justify-between gap-4">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">
                       {{ t("admin.settings.ollamaCloudUsage.enabled") }}
@@ -4895,7 +4756,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700">
+                <div class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700">
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
@@ -4922,11 +4783,12 @@
             </div>
             <div class="space-y-5 p-6">
               <div v-if="opencodeGoUsageLoading" class="flex items-center gap-2 text-gray-500">
-                <div class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"></div>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner size="sm" />
                 {{ t("common.loading") }}
               </div>
               <template v-else>
-                <div class="flex items-center justify-between gap-4">
+                <div class="settings-field-row flex items-center justify-between gap-4">
                   <div>
                     <label class="font-medium text-gray-900 dark:text-white">
                       {{ t("admin.settings.opencodeGoUsage.enabled") }}
@@ -4979,7 +4841,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700">
+                <div class="settings-inline-fields min-w-0 flex justify-end border-t border-gray-100 pt-4 dark:border-dark-700">
                   <button
                     type="button"
                     class="btn btn-primary btn-sm"
@@ -5007,7 +4869,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5052,7 +4914,7 @@
                     }}
                   </p>
                 </div>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   <div
                     v-for="platform in schedulingThresholdPlatforms"
                     :key="platform"
@@ -5095,7 +4957,7 @@
 
               <div
                 v-if="!form.openai_advanced_scheduler_enabled"
-                class="flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700"
               >
                 <div>
                   <label
@@ -5146,7 +5008,7 @@
                 </div>
               </div>
 
-              <div class="flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700">
+              <div class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5167,7 +5029,7 @@
 
               <div
                 v-if="form.openai_advanced_scheduler_enabled"
-                class="flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700"
               >
                 <div>
                   <label
@@ -5186,7 +5048,7 @@
 
               <div
                 v-if="form.openai_advanced_scheduler_enabled"
-                class="flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-5 dark:border-dark-700"
               >
                 <div>
                   <label
@@ -5251,7 +5113,7 @@
                   </p>
                 </div>
 
-                <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+                <div class="settings-form-grid mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
                   <label
                     v-for="field in openAIAdvancedSchedulerWeightFields"
                     :key="field.key"
@@ -5286,7 +5148,7 @@
               </p>
             </div>
             <div class="space-y-5 p-6">
-              <div class="grid gap-5 border-b border-gray-100 pb-5 dark:border-dark-700 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+              <div class="settings-form-grid grid gap-5 border-b border-gray-100 pb-5 dark:border-dark-700 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
                 <div>
                   <label
                     for="grok-default-text-model"
@@ -5312,7 +5174,7 @@
                     {{ t("admin.settings.gatewayForwarding.grokDefaultTextModelHint") }}
                   </p>
                 </div>
-                <div class="flex items-center justify-between gap-5 md:min-w-72">
+                <div class="settings-field-row flex items-center justify-between gap-5 md:min-w-72">
                   <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {{ t("admin.settings.gatewayForwarding.grokCrossClientMap") }}
@@ -5378,7 +5240,7 @@
               </div>
 
               <!-- Fingerprint Unification -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5401,7 +5263,7 @@
               </div>
 
               <!-- Metadata Passthrough -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5422,7 +5284,7 @@
               </div>
 
               <!-- CCH Signing -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5437,7 +5299,7 @@
               </div>
 
               <!-- Claude OAuth System Prompt Injection -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5500,7 +5362,7 @@
                           {{ getClaudeOAuthPresetLabel(block.preset) }}
                         </div>
                       </div>
-                      <div class="flex items-center gap-2">
+                      <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                         <button
                           type="button"
                           class="btn btn-secondary btn-sm px-2"
@@ -5559,7 +5421,7 @@
                     </div>
 
                     <div v-show="block.expanded">
-                      <div class="grid gap-3 md:grid-cols-2">
+                      <div class="settings-form-grid grid gap-3 md:grid-cols-2">
                         <div>
                           <label
                             class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300"
@@ -5611,9 +5473,9 @@
                       </div>
 
                       <div
-                        class="mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_160px]"
+                        class="settings-form-grid mt-3 grid gap-3 md:grid-cols-[minmax(0,1fr)_160px]"
                       >
-                        <div class="flex items-center justify-between gap-4">
+                        <div class="settings-field-row flex items-center justify-between gap-4">
                           <div>
                             <label
                               class="text-xs font-medium text-gray-600 dark:text-gray-300"
@@ -5638,7 +5500,7 @@
                   </div>
                 </div>
 
-                <div class="mt-3 flex flex-wrap gap-2">
+                <div class="settings-inline-fields min-w-0 mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
                     class="btn btn-secondary btn-sm"
@@ -5668,7 +5530,7 @@
               </div>
 
               <!-- Anthropic Cache TTL 1h Injection -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5693,7 +5555,7 @@
               </div>
 
               <!-- messages cache_control 改写 -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5716,7 +5578,7 @@
               </div>
 
               <!-- 客户端 dateline 归一化（仅 Anthropic OAuth/SetupToken） -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5831,7 +5693,7 @@
               </div>
 
               <!-- Codex 版本号自动同步 -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5886,7 +5748,7 @@
               </div>
 
               <!-- Claude Code 版本号自动同步 -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5931,7 +5793,7 @@
             </div>
             <div class="space-y-5 p-6">
               <!-- Global Toggle -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -5947,7 +5809,7 @@
 
               <!-- Providers -->
               <div v-if="webSearchConfig.enabled" class="space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="settings-inline-fields min-w-0 settings-field-row flex items-center justify-between">
                   <label
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
@@ -5976,10 +5838,10 @@
                 >
                   <!-- Collapsible header -->
                   <div
-                    class="flex cursor-pointer items-center justify-between px-4 py-3"
+                    class="settings-inline-fields min-w-0 settings-field-row flex cursor-pointer items-center justify-between px-4 py-3"
                     @click="toggleProviderExpand(pIdx)"
                   >
-                    <div class="flex items-center gap-3">
+                    <div class="settings-inline-fields min-w-0 flex items-center gap-3">
                       <svg
                         class="h-4 w-4 text-gray-400 transition-transform"
                         :class="{ 'rotate-90': expandedProviders[pIdx] }"
@@ -6027,9 +5889,10 @@
                         }}
                       </span>
                     </div>
+                    <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                     <button
                       type="button"
-                      class="text-red-500 hover:text-red-700 text-xs"
+                      class="btn btn-danger text-red-500 hover:text-red-700 text-xs"
                       @click.stop="removeWebSearchProvider(pIdx)"
                     >
                       {{
@@ -6068,11 +5931,12 @@
                         />
                         <div
                           v-if="provider.api_key || provider.api_key_configured"
-                          class="absolute inset-y-0 right-0 flex items-center pr-1.5"
+                          class="settings-inline-fields min-w-0 absolute inset-y-0 right-0 flex items-center pr-1.5"
                         >
+                          <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                           <button
                             type="button"
-                            class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            class="btn btn-secondary rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             :title="
                               apiKeyVisible[pIdx]
                                 ? t(
@@ -6119,9 +5983,10 @@
                               />
                             </svg>
                           </button>
+                          <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                           <button
                             type="button"
-                            class="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            class="btn btn-secondary rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                             :class="{
                               'opacity-30 cursor-not-allowed':
                                 !provider.api_key,
@@ -6151,7 +6016,7 @@
                     </div>
 
                     <!-- Quota + Subscription in compact row -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="settings-form-grid grid grid-cols-2 gap-3">
                       <div>
                         <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.quotaLimit")
@@ -6196,7 +6061,7 @@
                     </div>
 
                     <!-- Usage display -->
-                    <div class="flex items-center gap-2">
+                    <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                       <span class="text-xs text-gray-500"
                         >{{
                           t("admin.settings.webSearchEmulation.quotaUsage")
@@ -6235,10 +6100,11 @@
                             : "∞"
                         }}</span
                       >
+                      <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         v-if="(provider.quota_used ?? 0) > 0"
                         type="button"
-                        class="text-xs text-primary-600 hover:text-primary-700"
+                        class="btn btn-secondary text-xs text-primary-600 hover:text-primary-700"
                         @click="resetWebSearchUsage(pIdx)"
                       >
                         {{ t("admin.settings.webSearchEmulation.resetUsage") }}
@@ -6246,7 +6112,7 @@
                     </div>
 
                     <!-- Proxy + Test on same row -->
-                    <div class="flex items-end gap-3">
+                    <div class="settings-inline-fields min-w-0 flex items-end gap-3">
                       <div class="flex-1">
                         <label class="text-xs text-gray-500">{{
                           t("admin.settings.webSearchEmulation.proxy")
@@ -6284,7 +6150,7 @@
               >
                 {{ t("admin.settings.webSearchEmulation.testResultTitle") }}
               </h3>
-              <div class="flex items-center gap-2">
+              <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                 <input
                   v-model="wsTestQuery"
                   type="text"
@@ -6341,7 +6207,7 @@
                   </p>
                 </div>
               </div>
-              <div class="mt-4 flex justify-end">
+              <div class="settings-inline-fields min-w-0 mt-4 flex justify-end">
                 <button
                   type="button"
                   class="btn btn-secondary btn-sm"
@@ -6365,7 +6231,7 @@
           </div>
           <div class="space-y-4 p-6">
             <!-- User error requests visibility -->
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.user_error_view.label') }}
@@ -6401,7 +6267,7 @@
             <div class="space-y-6 p-6">
               <!-- Backend Mode -->
               <div
-                class="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
+                class="settings-field-row settings-neutral-option flex items-center justify-between"
               >
                 <div>
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">
@@ -6414,7 +6280,7 @@
 	                <Toggle v-model="form.backend_mode_enabled" />
 	              </div>
 
-	              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+	              <div class="settings-form-grid grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label
                     class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -6477,7 +6343,7 @@
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.tablePreferencesDescription") }}
                 </p>
-                <div class="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="settings-form-grid mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <label
                       class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -6534,7 +6400,7 @@
                     :key="index"
                     class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
                   >
-                    <div class="mb-3 flex items-center justify-between">
+                    <div class="settings-inline-fields min-w-0 settings-field-row mb-3 flex items-center justify-between">
                       <span
                         class="text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
@@ -6544,9 +6410,10 @@
                           })
                         }}
                       </span>
+                      <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         type="button"
-                        class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                        class="btn btn-danger rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                         @click="removeEndpoint(index)"
                       >
                         <svg
@@ -6564,7 +6431,7 @@
                         </svg>
                       </button>
                     </div>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div class="settings-form-grid grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <label
                           class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400"
@@ -6626,9 +6493,10 @@
                   </div>
                 </div>
 
+                <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                 <button
                   type="button"
-                  class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
+                  class="btn btn-secondary mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                   @click="addEndpoint"
                 >
                   <svg
@@ -6717,14 +6585,12 @@
                 <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.homeContentHint") }}
                 </p>
-                <!-- iframe CSP Warning -->
-                <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">
-                  {{ t("admin.settings.site.homeContentIframeWarning") }}
-                </p>
+                <!-- 提示信息：原iframe兼容性说明使用信息模块，文字保留。 -->
+                <InfoNotice class="mt-2">{{ t("admin.settings.site.homeContentIframeWarning").replace(/^⚠️?\s*/, '') }}</InfoNotice>
               </div>
 
               <!-- Compact Home Page -->
-              <div class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700">
+              <div class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.site.compactHome")
@@ -6738,7 +6604,7 @@
 
               <!-- Hide CCS Import Button -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -6772,7 +6638,7 @@
                 :key="item.id || index"
                 class="rounded-lg border border-gray-200 p-4 dark:border-dark-600"
               >
-                <div class="mb-3 flex items-center justify-between">
+                <div class="settings-field-row mb-3 flex items-center justify-between">
                   <span
                     class="text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
@@ -6780,12 +6646,13 @@
                       t("admin.settings.customMenu.itemLabel", { n: index + 1 })
                     }}
                   </span>
-                  <div class="flex items-center gap-2">
+                  <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                     <!-- Move up -->
+                    <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                     <button
                       v-if="index > 0"
                       type="button"
-                      class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
+                      class="btn btn-secondary rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
                       :title="t('admin.settings.customMenu.moveUp')"
                       @click="moveMenuItem(index, -1)"
                     >
@@ -6804,10 +6671,11 @@
                       </svg>
                     </button>
                     <!-- Move down -->
+                    <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                     <button
                       v-if="index < form.custom_menu_items.length - 1"
                       type="button"
-                      class="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
+                      class="btn btn-secondary rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
                       :title="t('admin.settings.customMenu.moveDown')"
                       @click="moveMenuItem(index, 1)"
                     >
@@ -6826,9 +6694,10 @@
                       </svg>
                     </button>
                     <!-- Delete -->
+                    <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                     <button
                       type="button"
-                      class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      class="btn btn-danger rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                       :title="t('admin.settings.customMenu.remove')"
                       @click="removeMenuItem(index)"
                     >
@@ -6849,7 +6718,7 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="settings-form-grid grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <!-- Label -->
                   <div>
                     <label
@@ -6932,13 +6801,15 @@
               </div>
 
               <div class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-dark-600">
-                <label class="block"><span class="input-label">{{ t('customization.logoCdn') }}</span><input v-model="form.ai_logo_cdn_base_url" type="url" class="input" /></label>
+                <!-- 填写框 / 数字展示：单行与多行 Logo URL 同用等宽，标签保持正文。 -->
+                <label class="block"><span class="input-label">{{ t('customization.logoCdn') }}</span><input v-model="form.ai_logo_cdn_base_url" type="url" class="input font-mono" /></label>
                 <label class="block"><span class="input-label">{{ t('customization.logoPresets') }}</span><textarea :value="(form.custom_ai_logo_presets || []).join('\n')" class="input font-mono" rows="4" @change="form.custom_ai_logo_presets = ($event.target as HTMLTextAreaElement).value.split(/\n/).map(value => value.trim()).filter(Boolean)" /></label>
               </div>
               <!-- Add button -->
+              <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
               <button
                 type="button"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
+                class="btn btn-secondary flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                 @click="addMenuItem"
               >
                 <svg
@@ -6989,15 +6860,17 @@
 	            </div>
 
 	            <div class="space-y-6 p-6">
-	              <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_220px]">
+	              <div class="settings-form-grid grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_220px]">
 	                <div>
 	                  <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
 	                    {{ localText("展示形式", "Display mode") }}
 	                  </label>
-	                  <div class="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
+	                  <div class="settings-form-grid grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
+                    <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
                     <button
                       type="button"
-                      class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      class="settings-choice inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      :aria-pressed="form.login_agreement_mode === 'modal'"
                       :class="
                         form.login_agreement_mode === 'modal'
                           ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
@@ -7008,9 +6881,11 @@
                       <Icon name="shield" size="sm" />
                       {{ localText("弹窗", "Modal") }}
                     </button>
+                    <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
                     <button
                       type="button"
-                      class="inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      class="settings-choice inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                      :aria-pressed="form.login_agreement_mode === 'checkbox'"
                       :class="
                         form.login_agreement_mode === 'checkbox'
                           ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
@@ -7047,7 +6922,7 @@
               </div>
 
               <div>
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="settings-inline-fields min-w-0 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                       {{ localText("协议文档", "Agreement documents") }}
@@ -7077,7 +6952,7 @@
                     :key="doc.id || index"
                     class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800/60"
                   >
-                    <div class="mb-3 flex items-center justify-between gap-3">
+                    <div class="settings-inline-fields min-w-0 settings-field-row mb-3 flex items-center justify-between gap-3">
                       <div class="flex min-w-0 items-center gap-3">
                         <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-dark-200">
                           <Icon
@@ -7094,17 +6969,18 @@
                           />
                         </span>
                         <div class="min-w-0">
-                          <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                          <p class="break-words text-sm font-semibold text-gray-900 dark:text-white">
                             {{ doc.title || localText("未命名文档", "Untitled document") }}
                           </p>
-                          <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+                          <p class="break-words text-xs text-gray-500 dark:text-gray-400">
                             {{ loginAgreementRoutePath(doc, index) }}
                           </p>
                         </div>
                       </div>
+                      <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                       <button
                         type="button"
-                        class="rounded-md p-2 text-red-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-red-900/20"
+                        class="btn btn-danger rounded-md p-2 text-red-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-red-900/20"
                         :disabled="
                           form.login_agreement_enabled &&
                           form.login_agreement_documents.length <= 1
@@ -7115,7 +6991,7 @@
                       </button>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                    <div class="settings-form-grid grid grid-cols-1 gap-3 lg:grid-cols-2">
                       <div>
                         <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           {{ localText("文档名称", "Document title") }}
@@ -7131,7 +7007,7 @@
                         <label class="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-400">
                           {{ localText("路由标识", "Route slug") }}
                         </label>
-                        <div class="flex overflow-hidden rounded-lg border border-gray-300 bg-white focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 dark:border-dark-600 dark:bg-dark-900">
+                        <div class="settings-inline-fields min-w-0 flex overflow-hidden rounded-lg border border-gray-300 bg-white focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 dark:border-dark-600 dark:bg-dark-900">
                           <span class="inline-flex flex-shrink-0 items-center border-r border-gray-200 bg-gray-50 px-3 text-sm text-gray-500 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-400">
                             /legal/
                           </span>
@@ -7185,7 +7061,7 @@
             </p>
           </div>
           <div class="space-y-5 p-6">
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.channelMonitor.enabled') }}
@@ -7202,11 +7078,13 @@
                 <label class="input-label">
                   {{ t('admin.settings.features.channelMonitor.mode') }}
                 </label>
-                <div class="mt-1.5 inline-flex w-full max-w-md rounded-lg border border-gray-200 bg-gray-50 p-1 dark:border-dark-600 dark:bg-dark-900/40">
-                  <button
+                <div class="settings-inline-fields min-w-0 mt-1.5 inline-flex w-full max-w-md rounded-lg border border-gray-200 bg-gray-50 p-1 dark:border-dark-600 dark:bg-dark-900/40">
+                  <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
+                    <button
                     type="button"
-                    class="inline-flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
-                    :class="
+                    class="settings-choice inline-flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                    :aria-pressed="form.channel_monitor_mode === 'v2'"
+                      :class="
                       form.channel_monitor_mode === 'v2'
                         ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
                         : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
@@ -7215,10 +7093,12 @@
                   >
                     {{ t('admin.settings.features.channelMonitor.modeV2') }}
                   </button>
-                  <button
+                  <!-- 普通按钮：模式选项保留原模型与事件，触摸命中及选中语义明确。 -->
+                    <button
                     type="button"
-                    class="inline-flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
-                    :class="
+                    class="settings-choice inline-flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition"
+                    :aria-pressed="form.channel_monitor_mode === 'v1'"
+                      :class="
                       form.channel_monitor_mode === 'v1'
                         ? 'bg-white text-primary-700 shadow-sm dark:bg-dark-800 dark:text-primary-300'
                         : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'
@@ -7316,7 +7196,7 @@
             </p>
           </div>
           <div class="space-y-5 p-6">
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.availableChannels.enabled') }}
@@ -7340,7 +7220,7 @@
             </p>
           </div>
           <div class="space-y-5 p-6">
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.modelPlaza.enabled') }}
@@ -7352,7 +7232,7 @@
               <Toggle v-model="form.model_plaza_enabled" />
             </div>
 
-            <div v-if="form.model_plaza_enabled" class="flex items-center justify-between">
+            <div v-if="form.model_plaza_enabled" class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.modelPlaza.requireAuth') }}
@@ -7420,7 +7300,7 @@
             </p>
           </div>
           <div class="space-y-5 p-6">
-            <div class="flex items-center justify-between gap-4">
+            <div class="settings-field-row flex items-center justify-between gap-4">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.pluginManagement.enabled') }}
@@ -7453,7 +7333,7 @@
             </p>
           </div>
           <div class="space-y-5 p-6">
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.riskControl.enabled') }}
@@ -7477,7 +7357,7 @@
               </p>
             </div>
 
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.riskControl.cyberSessionBlock') }}
@@ -7515,7 +7395,7 @@
             </p>
           </div>
           <div class="space-y-5 p-6">
-            <div class="flex items-center justify-between">
+            <div class="settings-field-row flex items-center justify-between">
               <div>
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('admin.settings.features.affiliate.enabled') }}
@@ -7528,7 +7408,7 @@
             </div>
 
             <div v-if="form.affiliate_enabled" class="space-y-6">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.settings.features.affiliate.adminRechargeRebate') }}
@@ -7613,7 +7493,7 @@
 
               <!-- 专属用户管理 -->
               <div class="border-t border-gray-100 pt-6 dark:border-dark-700">
-                <div class="mb-3 flex items-center justify-between">
+                <div class="settings-inline-fields min-w-0 settings-field-row mb-3 flex items-center justify-between">
                   <div>
                     <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                       {{ t('admin.settings.features.affiliate.customUsers.title') }}
@@ -7631,7 +7511,7 @@
                   </button>
                 </div>
 
-                <div class="mb-3 flex items-center gap-2">
+                <div class="settings-inline-fields min-w-0 mb-3 flex items-center gap-2">
                   <input
                     v-model="affiliateState.search"
                     type="text"
@@ -7700,13 +7580,15 @@
                           <span v-else class="text-gray-400">{{ t('admin.settings.features.affiliate.customUsers.useGlobal') }}</span>
                         </td>
                         <td class="px-3 py-2 text-sm">
-                          <div class="flex items-center gap-2">
-                            <button type="button" class="text-primary-600 hover:underline" @click="openAffiliateModal(entry)">
+                          <div class="settings-inline-fields min-w-0 flex items-center gap-2">
+                            <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
+                            <button type="button" class="btn btn-secondary text-primary-600 hover:underline" @click="openAffiliateModal(entry)">
                               {{ t('common.edit') }}
                             </button>
+                            <!-- 删除按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                             <button
                               type="button"
-                              class="text-red-600 hover:underline"
+                              class="btn btn-danger text-red-600 hover:underline"
                               @click="askResetAffiliateUser(entry)"
                             >
                               {{ t('common.delete') }}
@@ -7718,11 +7600,11 @@
                   </table>
                 </div>
 
-                <div v-if="affiliateState.total > affiliateState.pageSize" class="mt-3 flex items-center justify-between text-sm">
+                <div v-if="affiliateState.total > affiliateState.pageSize" class="settings-field-row mt-3 flex items-center justify-between text-sm">
                   <span class="text-gray-500">
                     {{ t('admin.settings.features.affiliate.customUsers.totalLabel', { total: affiliateState.total }) }}
                   </span>
-                  <div class="flex items-center gap-2">
+                  <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                     <button
                       type="button"
                       class="btn btn-secondary btn-sm"
@@ -7763,15 +7645,16 @@
                 <!-- Chip showing the picked user; clicking it re-opens the search -->
                 <div
                   v-if="affiliateModal.selectedUser"
-                  class="flex items-center justify-between rounded-md border border-primary-200 bg-primary-50 px-3 py-2 dark:border-primary-700/50 dark:bg-primary-900/20"
+                  class="settings-inline-fields min-w-0 settings-field-row flex items-center justify-between rounded-md border border-primary-200 bg-primary-50 px-3 py-2 dark:border-primary-700/50 dark:bg-primary-900/20"
                 >
                   <div class="text-sm">
                     <span class="font-medium text-gray-900 dark:text-white">{{ affiliateModal.selectedUser.email }}</span>
                     <span class="ml-1 text-xs text-gray-500">({{ affiliateModal.selectedUser.username }})</span>
                   </div>
+                  <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                   <button
                     type="button"
-                    class="text-lg leading-none text-gray-400 hover:text-red-600"
+                    class="btn btn-secondary text-lg leading-none text-gray-400 hover:text-red-600"
                     :title="t('admin.settings.features.affiliate.modal.changeUser')"
                     @click="clearSelectedAffiliateUser"
                   >
@@ -7791,11 +7674,12 @@
                     v-if="affiliateModal.userResults.length > 0"
                     class="mt-1 max-h-40 overflow-y-auto rounded border border-gray-200 dark:border-dark-700"
                   >
+                    <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
                     <button
                       v-for="u in affiliateModal.userResults"
                       :key="u.id"
                       type="button"
-                      class="w-full px-3 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-800"
+                      class="dropdown-item w-full px-3 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-800"
                       @click="selectAffiliateUser(u)"
                     >
                       {{ u.email }} <span class="text-xs text-gray-500">({{ u.username }})</span>
@@ -7847,7 +7731,7 @@
               </div>
             </div>
 
-            <div class="mt-6 flex items-center justify-between gap-3">
+            <div class="settings-field-row mt-6 flex items-center justify-between gap-3">
               <p
                 v-if="!affiliateModalCanSubmit"
                 class="text-xs text-gray-500 dark:text-gray-400"
@@ -7855,7 +7739,7 @@
                 {{ t('admin.settings.features.affiliate.modal.errorEmpty') }}
               </p>
               <span v-else></span>
-              <div class="flex gap-2">
+              <div class="settings-inline-fields min-w-0 flex gap-2">
                 <button type="button" class="btn btn-secondary" @click="closeAffiliateModal">
                   {{ t('common.cancel') }}
                 </button>
@@ -7900,7 +7784,7 @@
             <p class="mt-2 text-xs text-gray-400">
               {{ t('admin.settings.features.affiliate.batchModal.clearHint') }}
             </p>
-            <div class="mt-6 flex justify-end gap-2">
+            <div class="settings-inline-fields min-w-0 mt-6 flex justify-end gap-2">
               <button type="button" class="btn btn-secondary" @click="affiliateBatchModal.open = false">
                 {{ t('common.cancel') }}
               </button>
@@ -7956,7 +7840,7 @@
             </div>
             <div class="space-y-4 p-6">
               <!-- Enable toggle -->
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.payment.enabled")
@@ -7969,7 +7853,7 @@
               </div>
               <template v-if="form.payment_enabled">
                 <!-- Row 1: Product name -->
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div class="settings-form-grid grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
@@ -8008,7 +7892,7 @@
                   </div>
                 </div>
                 <!-- Row 2: Balance toggle + amounts -->
-                <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                <div class="settings-form-grid grid grid-cols-2 gap-3 sm:grid-cols-5">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
@@ -8222,7 +8106,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.cancelRateLimit")
                     }}</label>
-                    <div class="flex items-center gap-2">
+                    <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                       <button
                         type="button"
                         :class="[
@@ -8312,7 +8196,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.alipayForceQRCode")
                     }}</label>
-                    <div class="flex items-center gap-2">
+                    <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                       <button
                         type="button"
                         :class="[
@@ -8344,7 +8228,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.alipayMobilePrecreateDeepLink")
                     }}</label>
-                    <div class="flex items-center gap-2">
+                    <div class="settings-inline-fields min-w-0 flex items-center gap-2">
                       <button
                         type="button"
                         :class="[
@@ -8378,7 +8262,7 @@
                   <label class="input-label">{{
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
-                  <div class="mt-1.5 flex flex-wrap gap-2">
+                  <div class="settings-inline-fields min-w-0 mt-1.5 flex flex-wrap gap-2">
                     <button
                       v-for="pt in allPaymentTypes"
                       :key="pt.value"
@@ -8420,7 +8304,7 @@
                   </p>
                 </div>
                 <!-- Row 5: Help image + text -->
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="settings-form-grid grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.helpImage")
@@ -8504,7 +8388,7 @@
           <!-- SMTP Settings - Only show when email verification is enabled -->
           <div v-if="form.email_verify_enabled" class="card">
             <div
-              class="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+              class="settings-inline-fields min-w-0 settings-field-row flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-dark-700"
             >
               <div>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -8520,26 +8404,8 @@
                 :disabled="testingSmtp || loadFailed"
                 class="btn btn-secondary btn-sm"
               >
-                <svg
-                  v-if="testingSmtp"
-                  class="h-4 w-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
+                <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                <LoadingSpinner v-if="testingSmtp" size="sm" />
                 {{
                   testingSmtp
                     ? t("admin.settings.smtp.testing")
@@ -8548,7 +8414,7 @@
               </button>
             </div>
             <div class="space-y-6 p-6">
-              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div class="settings-form-grid grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label
                     class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -8649,7 +8515,7 @@
 
               <!-- Use TLS Toggle -->
               <div
-                class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
+                class="settings-field-row flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
               >
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
@@ -8677,7 +8543,7 @@
               </p>
             </div>
             <div class="p-6">
-              <div class="flex items-end gap-4">
+              <div class="settings-inline-fields min-w-0 flex items-end gap-4">
                 <div class="flex-1">
                   <label
                     class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -8701,26 +8567,8 @@
                   "
                   class="btn btn-secondary"
                 >
-                  <svg
-                    v-if="sendingTestEmail"
-                    class="h-4 w-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+                  <LoadingSpinner v-if="sendingTestEmail" size="sm" />
                   {{
                     sendingTestEmail
                       ? t("admin.settings.testEmail.sending")
@@ -8744,7 +8592,7 @@
               </p>
             </div>
             <div class="px-6 py-6">
-              <div class="flex items-center justify-between gap-4">
+              <div class="settings-field-row flex items-center justify-between gap-4">
                 <div>
                   <label
                     class="mb-0 block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -8775,7 +8623,7 @@
               </p>
             </div>
             <div class="px-6 py-6 space-y-4">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <label
                   class="mb-0 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.balanceNotify.enabled") }}</label
@@ -8835,7 +8683,7 @@
               </p>
             </div>
             <div class="px-6 py-6 space-y-4">
-              <div class="flex items-center justify-between">
+              <div class="settings-field-row flex items-center justify-between">
                 <label
                   class="mb-0 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >{{ t("admin.settings.quotaNotify.enabled") }}</label
@@ -8852,7 +8700,7 @@
                     v-for="(entry, index) in form.account_quota_notify_emails ||
                     []"
                     :key="index"
-                    class="flex items-center gap-2"
+                    class="settings-inline-fields min-w-0 flex items-center gap-2"
                   >
                     <label
                       class="relative inline-flex items-center cursor-pointer shrink-0"
@@ -8875,9 +8723,10 @@
                         t('admin.settings.quotaNotify.emailPlaceholder')
                       "
                     />
+                    <!-- 删除按钮：移除通知收件人，保留原数组更新与禁用条件。 -->
                     <button
                       @click="form.account_quota_notify_emails.splice(index, 1)"
-                      class="btn btn-secondary px-2"
+                      class="btn btn-danger btn-icon"
                       type="button"
                     >
                       <Icon name="x" size="xs" class="h-4 w-4" />
@@ -8906,38 +8755,21 @@
         </div>
 
         <!-- Save Button -->
-        <div v-show="activeTab !== 'backup'" class="flex justify-end">
+        <div v-show="activeTab !== 'backup'" class="settings-inline-fields min-w-0 flex justify-end">
           <button
             type="submit"
             :disabled="saving || loadFailed"
             class="btn btn-primary"
           >
-            <svg
-              v-if="saving"
-              class="h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+            <LoadingSpinner v-if="saving" size="sm" color="white" />
             {{
               saving
                 ? t("admin.settings.saving")
                 : t("admin.settings.saveSettings")
             }}
           </button>
+        </div>
         </div>
       </form>
 
@@ -8979,6 +8811,9 @@
 </template>
 
 <script setup lang="ts">
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
+import RouteSwitch from "@/components/common/RouteSwitch.vue";
+import InfoNotice from "@/components/common/InfoNotice.vue";
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { listPlatformIds } from "@/constants/platformCatalog";
 import { useI18n } from "vue-i18n";
@@ -9105,66 +8940,16 @@ type SettingsTab =
   | "email"
   | "backup";
 const activeTab = ref<SettingsTab>("general");
-const settingsTabs = [
-  { key: "general" as SettingsTab, icon: "home" as const },
-  { key: "agreement" as SettingsTab, icon: "document" as const },
-  { key: "features" as SettingsTab, icon: "bolt" as const },
-  { key: "security" as SettingsTab, icon: "shield" as const },
-  { key: "users" as SettingsTab, icon: "user" as const },
-  { key: "gateway" as SettingsTab, icon: "server" as const },
-  { key: "payment" as SettingsTab, icon: "creditCard" as const },
-  { key: "email" as SettingsTab, icon: "mail" as const },
-  { key: "backup" as SettingsTab, icon: "database" as const },
-];
+// 路由切换组件：原九个分区横向排列，业务activeTab与保存保持。
+const settingsTabs: SettingsTab[] = ["general", "agreement", "features", "security", "users", "gateway", "payment", "email", "backup"];
+const settingsTabOptions = computed(() => settingsTabs.map(value => ({ value, label: t(`admin.settings.tabs.${value}`) })));
 
-const settingsTabKeyboardActions = {
-  ArrowLeft: -1,
-  ArrowUp: -1,
-  ArrowRight: 1,
-  ArrowDown: 1,
-  Home: "first",
-  End: "last",
-} as const;
+async function selectSettingsTab(tab: string): Promise<void> {
+  if (settingsTabs.includes(tab as SettingsTab)) {
+    if (activeTab.value === tab) return;
+    activeTab.value = tab as SettingsTab;
 
-function selectSettingsTab(tab: SettingsTab): void {
-  activeTab.value = tab;
-}
-
-function focusSettingsTab(tab: SettingsTab): void {
-  window.requestAnimationFrame(() => {
-    document.getElementById(`settings-tab-${tab}`)?.focus();
-  });
-}
-
-function handleSettingsTabKeydown(event: KeyboardEvent, tab: SettingsTab): void {
-  const action =
-    settingsTabKeyboardActions[
-      event.key as keyof typeof settingsTabKeyboardActions
-    ];
-  if (action === undefined) {
-    return;
   }
-
-  event.preventDefault();
-  const currentIndex = settingsTabs.findIndex((item) => item.key === tab);
-  let nextIndex = currentIndex < 0 ? 0 : currentIndex;
-
-  if (action === "first") {
-    nextIndex = 0;
-  } else if (action === "last") {
-    nextIndex = settingsTabs.length - 1;
-  } else {
-    nextIndex =
-      (nextIndex + action + settingsTabs.length) % settingsTabs.length;
-  }
-
-  const nextTab = settingsTabs[nextIndex]?.key;
-  if (!nextTab) {
-    return;
-  }
-
-  selectSettingsTab(nextTab);
-  focusSettingsTab(nextTab);
 }
 
 const { copyToClipboard } = useClipboard();
@@ -13310,129 +13095,30 @@ watch(
 </script>
 
 <style scoped>
-.default-sub-group-select :deep(.select-trigger) {
-  @apply h-[42px];
-}
-
-.default-sub-delete-btn {
-  @apply h-[42px];
-}
-
-/* ============ 系统设置 Tab 导航 ============ */
-.settings-tabs-shell {
-  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl;
-  top: 4.75rem;
-  box-shadow:
-    0 12px 28px rgb(15 23 42 / 0.07),
-    0 1px 0 rgb(255 255 255 / 0.9) inset;
-}
-
-.settings-tabs-scroll {
-  @apply overflow-x-auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.settings-tabs-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.settings-tabs {
-  @apply flex min-w-max items-center gap-1;
-}
-
-.settings-tab {
-  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
-}
-
-@media (min-width: 768px) {
-  .settings-tabs {
-    @apply min-w-full;
-  }
-
-  .settings-tab {
-    @apply min-w-0 flex-1 basis-0 overflow-hidden px-2 text-[13px];
-  }
-
-  .settings-tab-icon {
-    @apply h-6 w-6;
-  }
-}
-
-.settings-tab::before {
-  @apply absolute inset-0 -z-10 rounded-xl opacity-0 transition-opacity duration-200;
-  content: "";
-  background: linear-gradient(135deg, rgb(248 250 252 / 0.95), rgb(241 245 249 / 0.8));
-}
-
-.settings-tab:hover::before,
-.settings-tab:focus-visible::before {
-  opacity: 1;
-}
-
-.settings-tab:focus-visible {
-  @apply ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
-}
-
-.settings-tab-active {
-  @apply border-primary-200/80 bg-white text-primary-700 shadow-sm dark:border-primary-400/30 dark:bg-dark-700/95 dark:text-primary-200;
-  box-shadow:
-    0 8px 18px rgb(15 23 42 / 0.08),
-    0 1px 0 rgb(255 255 255 / 0.92) inset;
-}
-
-.settings-tab-active::before {
-  opacity: 0;
-}
-
-.settings-tab-active::after {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.25rem;
-  left: 0.75rem;
-  height: 2px;
-  border-radius: 9999px;
-  content: "";
-  background: linear-gradient(90deg, #14b8a6, #0ea5e9);
-}
-
-.settings-tab-icon {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors duration-200 dark:text-gray-400;
-}
-
-.settings-tab:hover .settings-tab-icon,
-.settings-tab:focus-visible .settings-tab-icon {
-  @apply text-gray-700 dark:text-gray-200;
-}
-
-.settings-tab-active .settings-tab-icon {
-  @apply bg-primary-50 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300;
-}
-
-.settings-tab-label {
-  @apply min-w-0 overflow-hidden text-ellipsis whitespace-nowrap leading-none;
-}
-</style>
-
-<style>
-/* Dark-mode overrides for the settings tabs shell. Kept in an UNSCOPED block
-   because Vue's scoped-CSS compiler was dropping the `:global(.dark) ...`
-   rules in the production build, leaving inactive tabs unreadable on dark. */
-.dark .settings-tabs-shell {
-  border-color: rgb(51 65 85 / 0.65);
-  background: rgb(15 23 42 / 0.86);
-  box-shadow:
-    0 16px 36px rgb(0 0 0 / 0.28),
-    0 1px 0 rgb(255 255 255 / 0.06) inset;
-}
-
-.dark .settings-tab::before {
-  background: linear-gradient(135deg, rgb(30 41 59 / 0.9), rgb(51 65 85 / 0.62));
-}
-
-.dark .settings-tab-active {
-  box-shadow:
-    0 12px 26px rgb(0 0 0 / 0.22),
-    0 1px 0 rgb(255 255 255 / 0.08) inset;
+/* 路由切换组件 / 展示信息模块：原横向分区占独立行，正文使用全部可用宽度。 */
+.settings-page { min-width: 0; container: settings-page / inline-size; }
+.settings-layout { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.settings-section-switch { align-self: flex-start; }
+.settings-main { width: 100%; }
+.settings-neutral-option { padding: 12px 14px; background: var(--bg); border: 0; border-radius: 18px; }
+.settings-main { min-width: 0; container: settings-main / inline-size; overflow-wrap: anywhere; }
+/* 填写框 / 普通按钮：长说明、地址与操作组各自换行，不以裁切隐藏内容；开关保留原布尔状态。 */
+.settings-main .settings-form-grid > * { min-width: 0; max-width: 100%; }
+.settings-main :deep(.input), .settings-main :deep(.select), .settings-main :deep(.select-wrapper) { min-width: 0; max-width: 100%; }
+.settings-main .settings-field-row { min-width: 0; max-width: 100%; flex-wrap: wrap; gap: 12px; }
+.settings-main .settings-field-row > div:first-child { min-width: 0; max-width: 100%; }
+/* 普通按钮 / 填写框：仅标记直接承载输入或按钮的行，完整文案可换行，不覆盖子组件内部布局。 */
+.settings-main .settings-inline-fields { min-width: 0; max-width: 100%; flex-wrap: wrap; }
+.settings-main .settings-inline-fields > * { min-width: 0; max-width: 100%; }
+.settings-main .settings-inline-fields > .flex-1 { flex-basis: 160px; }
+.settings-main .btn { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.settings-main label.whitespace-nowrap { min-width: 0; white-space: normal; }
+.settings-main :deep(code), .settings-main :deep(p) { overflow-wrap: anywhere; }
+/* 普通按钮：模式选项共享32/44px命中，保留原真实选中面与模型。 */
+.settings-main .settings-choice { min-height: var(--button-height, 32px); padding: 5px 10px; border-radius: 8px; font-size: 13px; line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
+/* 填写框：设置正文低于560px时，原多列表单变单列，固定宽度控件收回容器内。 */
+@container settings-main (max-width: 560px) {
+  .settings-main .settings-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .settings-main .settings-form-grid > * { min-width: 0; grid-column: auto; }
 }
 </style>

@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-10-14
+updated: 2026-10-19
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -20,9 +20,13 @@ sources:
 
 The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo and account-quota extensions attached to their official surfaces. The source includes the merged update and official-menu restoration; running release evidence belongs to the Project Authority.
 
+## Console opt-in integration
+
+The independent [Console adapter](console-microfrontend.md) adds a separate ESM build, embedded layout/lifecycle and real account-page topbar callbacks. Standalone and Console share the [AI-owned first-design-system visual layer](embedded-design-system.md); business behavior and original backend API ownership remain unchanged.
+
 ## Responsibility
 
-Vue 3/Vite owns route views, client state and API interaction. The maintained presentation is the merged official frontend, including official light/dark mode, component utilities, layout, controls, charts and auth behavior. It is not the former Anthropic/Kreeperai design system.
+Vue 3/Vite owns route views, client state and API interaction. The maintained presentation uses kreeper-first-design-system in the original Vue components, shared styles and instance chart helpers. Existing authentication, feature/role menus, API calls and light/dark preference remain owned by the application. The retired Anthropic/Kreeperai tokens are not reintroduced.
 
 ## Functional Extensions
 
@@ -55,3 +59,5 @@ Exact current checks, protection point and production status are owned by the [P
 - [Customization Inventory](../concepts/customization-inventory.md)
 - [Backend](backend.md)
 - [Development and Testing](../guides/development-and-testing.md)
+
+AI-owned shared visual adaptation and standalone/Console integration boundaries are described in [Kreepai Shared Design System](embedded-design-system.md).

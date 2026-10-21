@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -399,7 +401,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+  <!-- 展示信息模块：一级中性运维卡，队列/失败数字保留各自语义。 -->
+  <section class="ops-system-log-table card p-4">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.systemLogs.title') }}</h3>
@@ -413,12 +416,13 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-dark-700 dark:bg-dark-800/70">
+    <div class="mb-4 rounded-[18px] bg-[var(--bg)] p-3">
       <div class="mb-2 flex items-center justify-between">
         <div class="text-xs font-semibold text-gray-700 dark:text-gray-200">{{ t('admin.ops.systemLogs.runtimeConfig') }}</div>
         <span v-if="runtimeLoading" class="text-xs text-gray-500">{{ t('common.loading') }}</span>
       </div>
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
+      <!-- 填写框 / 复选框：运行配置按实际模块宽度排布，仍使用原生表单模型。 -->
+      <div class="ops-runtime-config-fields">
         <label class="text-xs text-gray-600 dark:text-gray-300">
           {{ t('admin.ops.systemLogs.level') }}
           <Select v-model="runtimeConfig.level" class="mt-1" :options="runtimeLevelOptions" />
@@ -445,9 +449,9 @@ onMounted(async () => {
           <LogRetentionSelect v-model="runtimeConfig.request_retention_days" :label="t('admin.ops.systemLogs.requestRetentionDays')" allow-forever class="mt-1" />
           <span class="mt-1 block text-[11px] text-gray-500 dark:text-gray-400">{{ t('admin.ops.systemLogs.requestRetentionDaysHint') }}</span>
         </label>
-        <div class="md:col-span-2 xl:col-span-6">
-          <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div class="ops-runtime-config-actions">
+          <div class="ops-runtime-actions-row">
+            <div class="ops-runtime-choices flex flex-wrap items-center gap-x-4 gap-y-2">
               <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
                 <input v-model="runtimeConfig.caller" type="checkbox" />
                 {{ t('admin.ops.systemLogs.caller') }}
@@ -461,7 +465,7 @@ onMounted(async () => {
                 {{ t('admin.ops.systemLogs.persistAccessLogs') }}
               </label>
             </div>
-            <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+            <div class="flex flex-wrap items-center gap-2">
               <button type="button" class="btn btn-primary btn-sm" :disabled="runtimeSaving || runtimeLoading || !runtimeConfigLoaded" @click="saveRuntimeConfig">
                 {{ runtimeSaving ? t('common.saving') : t('admin.ops.systemLogs.saveAndApply') }}
               </button>
@@ -476,19 +480,17 @@ onMounted(async () => {
       <p v-if="health.last_error" class="mt-2 text-xs text-red-600 dark:text-red-400">{{ t('admin.ops.systemLogs.latestWriteError') }} {{ health.last_error }}</p>
     </div>
 
-    <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-5">
-      <label class="text-xs text-gray-600 dark:text-gray-300">
-        {{ t('admin.ops.systemLogs.timeRange') }}
-        <Select v-model="filters.time_range" class="mt-1" :options="timeRangeOptions" />
-      </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
-        {{ t('admin.ops.systemLogs.startTime') }}
-        <input v-model="filters.start_time" type="datetime-local" class="input mt-1" />
-      </label>
-      <label class="text-xs text-gray-600 dark:text-gray-300">
-        {{ t('admin.ops.systemLogs.endTime') }}
-        <input v-model="filters.end_time" type="datetime-local" class="input mt-1" />
-      </label>
+    <!-- 路由切换组件 / 日期范围选择器：时间组合按实际卡片宽度分行，不参与普通字段的窄列。 -->
+    <div class="ops-system-log-time-filters mb-4">
+      <div class="ops-system-log-time-range text-xs text-gray-600 dark:text-gray-300">
+        <span>{{ t('admin.ops.systemLogs.timeRange') }}</span>
+        <RouteSwitch v-model="filters.time_range" :label="t('admin.ops.systemLogs.timeRange')" :options="timeRangeOptions" />
+      </div>
+      <DateRangeFields v-model:start="filters.start_time" v-model:end="filters.end_time" time />
+    </div>
+
+    <!-- 填写框 / 选择下拉菜单：常规过滤字段保留原值与查询，列宽不足时自然换行。 -->
+    <div class="ops-system-log-filter-grid mb-4">
       <label class="text-xs text-gray-600 dark:text-gray-300">
         {{ t('admin.ops.systemLogs.level') }}
         <Select v-model="filters.level" class="mt-1" :options="filterLevelOptions" />
@@ -599,3 +601,24 @@ onMounted(async () => {
     </div>
   </section>
 </template>
+
+<style scoped>
+/* 填写框 / 复选框：配置字段与完整勾选标签按容器换行，触摸保持44px命中区。 */
+.ops-runtime-config-fields { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,180px),1fr)); gap: 12px; min-width: 0; }
+.ops-runtime-config-fields > label { min-width: 0; }
+.ops-runtime-config-actions { grid-column: 1 / -1; min-width: 0; }
+.ops-runtime-actions-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.ops-runtime-choices { min-width: 0; }
+.ops-runtime-choices label { cursor: pointer; }
+@media (pointer: coarse) { .ops-runtime-choices label { min-height: 44px; } }
+/* 路由切换组件 / 日期范围选择器：360px起的完整时间组合独立占行；手机只允许预设轨道自身横滚。 */
+.ops-system-log-time-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); align-items: start; gap: 12px; min-width: 0; }
+.ops-system-log-time-range { display: grid; justify-items: start; gap: 4px; min-width: 0; }
+.ops-system-log-time-range .kreepai-route-switch { max-width: 100%; }
+/* 日期范围选择器：按钮按所属完整字段的可用宽度测量，避免旧短占位宽度把已选日期锁成多行。 */
+.ops-system-log-time-filters :deep(.date-range-fields) { container-type: inline-size; }
+.ops-system-log-time-filters :deep([data-testid="date-range-trigger"]) { max-width: 100cqi; }
+/* 填写框 / 选择下拉菜单：普通字段180px起按实际正文分列，不使用含侧栏的视口断点强排五列。 */
+.ops-system-log-filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); align-items: start; gap: 12px; min-width: 0; }
+.ops-system-log-filter-grid > label { min-width: 0; overflow-wrap: anywhere; }
+</style>

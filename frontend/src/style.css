@@ -743,7 +743,8 @@
 
   /* 表头固定时添加底部阴影，增强视觉层次 */
   .table-wrapper thead.sticky {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    box-shadow: none;
+    border-bottom: 1px solid var(--border, #e5e7eb);
   }
 }
 

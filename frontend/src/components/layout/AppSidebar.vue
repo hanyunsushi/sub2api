@@ -1,9 +1,10 @@
 <template>
+  <template v-if="!headless">
   <aside
     class="sidebar"
     :class="[
       sidebarCollapsed ? 'w-[72px]' : 'w-64',
-      { '-translate-x-full lg:translate-x-0': !mobileOpen }
+      { '-translate-x-full min-[769px]:translate-x-0': !mobileOpen }
     ]"
   >
     <!-- Logo/Brand -->
@@ -29,13 +30,15 @@
       </div>
     </div>
 
+    <!-- 填写框：筛选原权限菜单，清空恢复原树；Console继续由Host提供筛选。 -->
+    <div v-if="!sidebarCollapsed" class="kreepai-sidebar-filter"><input v-model="navigationQuery" type="search" :placeholder="t('common.search')" :aria-label="t('common.search')" @keydown.esc="navigationQuery = ''" /></div>
     <!-- Navigation -->
     <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->
         <div class="sidebar-section">
-          <template v-for="item in adminNavItems" :key="item.path">
+          <template v-for="item in filteredAdminNavItems" :key="item.path">
             <!-- Collapsible group (has children) -->
             <template v-if="item.children?.length">
               <button
@@ -62,7 +65,7 @@
                 </span>
               </button>
               <!-- Children -->
-              <div v-if="!sidebarCollapsed && isGroupExpanded(item)" class="mb-1 ml-4 border-l border-gray-200 pl-2 dark:border-dark-600">
+              <div v-if="!sidebarCollapsed && (navigationQuery.trim() || isGroupExpanded(item))" class="mb-1 ml-4 border-l border-gray-200 pl-2 dark:border-dark-600">
                 <router-link
                   v-for="child in item.children"
                   :key="child.path"
@@ -110,7 +113,7 @@
           </div>
 
           <router-link
-            v-for="item in personalNavItems"
+            v-for="item in filteredPersonalNavItems"
             :key="item.path"
             :to="item.path"
             class="sidebar-link mb-1"
@@ -130,7 +133,7 @@
       <template v-else-if="!appStore.backendModeEnabled">
         <div class="sidebar-section">
           <router-link
-            v-for="item in userNavItems"
+            v-for="item in filteredUserNavItems"
             :key="item.path"
             :to="item.path"
             class="sidebar-link mb-1"
@@ -181,13 +184,15 @@
   <transition name="fade">
     <div
       v-if="mobileOpen"
-      class="fixed inset-0 z-30 bg-black/50 lg:hidden"
+      class="fixed inset-0 z-[139] bg-black/50 min-[769px]:hidden"
       @click="closeMobile"
     ></div>
   </transition>
+  </template>
 </template>
 
 <script setup lang="ts">
+import { useConsoleNavigation, type ConsoleNavigationItem } from '@/runtime/console-actions'
 import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -199,6 +204,8 @@ import { sanitizeUrl } from '@/utils/url'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
 import { resolveSiteBillingMode } from '@/utils/siteBillingMode'
 import { useBatchImageAccess } from '@/composables/useBatchImageAccess'
+
+const props = defineProps<{ headless?: boolean }>()
 
 interface NavItem {
   path: string
@@ -244,7 +251,7 @@ const appStore = useAppStore()
 const authStore = useAuthStore()
 const onboardingStore = useOnboardingStore()
 const adminSettingsStore = useAdminSettingsStore()
-const { canUseBatchImage, refreshBatchImageAccess } = useBatchImageAccess()
+const { canUseBatchImage, refreshBatchImageAccess, batchImageAccessLoading } = useBatchImageAccess()
 
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const mobileOpen = computed(() => appStore.mobileOpen)
@@ -845,19 +852,50 @@ const adminNavItems = computed((): NavItem[] => {
   if (authStore.isSimpleMode) {
     const filtered = visible.filter(item => !item.hideInSimpleMode)
     filtered.push({ path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon })
-    filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon }, { path: '/admin/settings/external-subscriptions', label: t('customization.externalSubscriptions'), icon: CreditCardIcon })
+    filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon, children: [{ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon }, { path: '/admin/settings/external-subscriptions', label: t('customization.externalSubscriptions'), icon: CreditCardIcon }] })
     for (const cm of customMenuItemsForAdmin.value) {
       filtered.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg })
     }
     return filtered
   }
 
-  visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon }, { path: '/admin/settings/external-subscriptions', label: t('customization.externalSubscriptions'), icon: CreditCardIcon })
+  visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon, children: [{ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon }, { path: '/admin/settings/external-subscriptions', label: t('customization.externalSubscriptions'), icon: CreditCardIcon }] })
   for (const cm of customMenuItemsForAdmin.value) {
     visible.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg })
   }
   return visible
 })
+
+// 侧边栏：只筛选原树，不改变功能开关、权限或发布给Host的菜单。
+const navigationQuery = ref('')
+function filterNavigation(items: NavItem[]): NavItem[] {
+  const query = navigationQuery.value.trim().toLowerCase()
+  if (!query) return items
+  return items.flatMap(item => {
+    const children = item.children ? filterNavigation(item.children) : undefined
+    if (item.label.toLowerCase().includes(query) || item.path.toLowerCase().includes(query)) return [item]
+    return children?.length ? [{ ...item, children }] : []
+  })
+}
+const filteredAdminNavItems = computed(() => filterNavigation(adminNavItems.value))
+const filteredPersonalNavItems = computed(() => filterNavigation(personalNavItems.value))
+const filteredUserNavItems = computed(() => filterNavigation(userNavItems.value))
+
+const initialNavigationPending = ref(true)
+// 多项目路由导航：无头模式只计算和发布原菜单，绝不挂第二套侧栏 DOM。
+function describeNavigation(items: NavItem[]): ConsoleNavigationItem[] {
+  return items.map(item => ({
+    key: item.path, label: item.label,
+    icon: item.iconSvg ? () => h('span', { class: 'sidebar-original-svg', innerHTML: sanitizeSvg(item.iconSvg!) }) : item.icon ? () => h(item.icon!) : undefined,
+    path: item.expandOnly ? undefined : item.path,
+    expanded: item.children ? isGroupExpanded(item) : undefined,
+    children: item.children ? describeNavigation(item.children) : undefined,
+  }))
+}
+useConsoleNavigation(() => !authStore.isAuthenticated ? [] : isAdmin.value ? [
+  { key: 'admin', label: '管理后台', group: true, children: describeNavigation(adminNavItems.value) },
+  { key: 'personal', label: t('nav.myAccount'), group: true, children: describeNavigation(personalNavItems.value) },
+] : describeNavigation(userNavItems.value), () => !initialNavigationPending.value && !batchImageAccessLoading.value && (!isAdmin.value || !adminSettingsStore.loading))
 
 function toggleSidebar() {
   appStore.toggleSidebar()
@@ -935,8 +973,8 @@ function handleGroupClick(item: NavItem) {
 // Initialize theme
 const savedTheme = localStorage.getItem('theme')
 if (
-  savedTheme === 'dark' ||
-  (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  !props.headless && (savedTheme === 'dark' ||
+  (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches))
 ) {
   isDark.value = true
   document.documentElement.classList.add('dark')
@@ -954,7 +992,7 @@ watch(
 )
 
 onMounted(() => {
-  void refreshBatchImageAccess()
+  void refreshBatchImageAccess().finally(() => { initialNavigationPending.value = false })
   if (isAdmin.value) {
     adminSettingsStore.fetch()
   }

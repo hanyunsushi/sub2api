@@ -1,13 +1,15 @@
 <template>
-  <div class="relative w-full">
+  <!-- 填写框：通用搜索沿用共享 input；原生 v-model 保留 IME 提交与搜索防抖。 -->
+  <div class="relative min-w-0 w-full">
     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
       <Icon name="search" size="md" class="text-gray-400" />
     </div>
     <input
       v-model="searchValue"
       type="text"
-      class="input pl-10"
+      class="input min-w-0 pl-10"
       :placeholder="placeholder"
+      :aria-label="placeholder"
     />
   </div>
 </template>

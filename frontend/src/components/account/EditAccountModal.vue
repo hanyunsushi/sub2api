@@ -26,6 +26,14 @@
         <p class="input-hint">{{ t('admin.accounts.notesHint') }}</p>
       </div>
 
+      <!-- 品牌标识 / 填写框：恢复原Logo选择器；留空恢复供应商自动匹配，预设与自定义URL沿用公共功能。 -->
+      <LogoPicker
+        v-model="accountLogoUrl"
+        :label="locale?.startsWith('zh') ? '账号 Logo' : 'Account logo'"
+        :hint="locale?.startsWith('zh') ? '选择预设或填写图片 URL；留空则按账号来源自动匹配。' : 'Choose a preset or enter an image URL; leave blank to match the provider automatically.'"
+        input-test-id="edit-account-logo-url"
+      />
+
       <!-- API Key fields (only for apikey type) -->
       <div v-if="account.type === 'apikey'" class="space-y-4">
         <div v-if="!isCNApiKeyAccount || editApiProtocol !== 'adaptive'">
@@ -3250,6 +3258,7 @@ import type {
   TempUnschedulableScope
 } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import LogoPicker from '@/components/common/LogoPicker.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import Select from '@/components/common/Select.vue'
 import HelpTooltip from '@/components/common/HelpTooltip.vue'
@@ -3350,7 +3359,7 @@ const emit = defineEmits<{
   updated: [account: Account]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const appStore = useAppStore()
 const browserTimeZone = getBrowserTimeZone()
 
@@ -3488,6 +3497,8 @@ interface TempUnschedRuleForm {
 
 // State
 const submitting = ref(false)
+const accountLogoUrl = ref('')
+const originalAccountLogoUrl = ref('')
 const editBaseUrl = ref('https://api.anthropic.com')
 const editApiKey = ref('')
 
@@ -4279,6 +4290,22 @@ const applyOpenAIModelMappingCredentials = (credentials: Record<string, unknown>
   }
 }
 
+// 品牌标识：兼容旧logo_url，只在Logo变更时合并已有extra，不触碰凭据和业务开关。
+const readAccountLogoUrl = (extra: Record<string, unknown> | undefined) => {
+  const custom = typeof extra?.custom_logo_url === 'string' ? extra.custom_logo_url.trim() : ''
+  return custom || (typeof extra?.logo_url === 'string' ? extra.logo_url.trim() : '')
+}
+
+const applyAccountLogoToPayload = (payload: Record<string, unknown>) => {
+  const nextLogo = accountLogoUrl.value.trim()
+  if (nextLogo === originalAccountLogoUrl.value) return
+  const extra = { ...((payload.extra ?? props.account?.extra ?? {}) as Record<string, unknown>) }
+  if (nextLogo) extra.custom_logo_url = nextLogo
+  else delete extra.custom_logo_url
+  delete extra.logo_url
+  payload.extra = extra
+}
+
 const syncFormFromAccount = (newAccount: Account | null) => {
   if (!newAccount) {
     return
@@ -4293,6 +4320,8 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   mixedChannelWarningDetails.value = null
   mixedChannelWarningRawMessage.value = ''
   mixedChannelWarningAction.value = null
+  accountLogoUrl.value = readAccountLogoUrl(newAccount.extra)
+  originalAccountLogoUrl.value = accountLogoUrl.value
   form.name = newAccount.name
   form.notes = newAccount.notes || ''
   form.proxy_id = newAccount.proxy_id
@@ -6081,6 +6110,8 @@ const handleSubmit = async () => {
       }
       updatePayload.extra = newExtra
     }
+
+    applyAccountLogoToPayload(updatePayload)
 
     const canContinue = await ensureAntigravityMixedChannelConfirmed(async () => {
       await submitUpdateAccount(accountID, updatePayload)

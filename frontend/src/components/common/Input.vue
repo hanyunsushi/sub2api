@@ -1,11 +1,12 @@
 <template>
-  <div class="w-full">
+  <!-- 填写框：共享 input 负责单行几何与焦点，组件保留值、只读和原校验事件。 -->
+  <div class="min-w-0 w-full">
     <label v-if="label" :for="id" class="input-label mb-1.5 block">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
     <div class="relative">
-      <!-- Prefix Icon Slot -->
+      <!-- 卡片SVG：前缀仅作字段提示，不接收点击。 -->
       <div
         v-if="$slots.prefix"
         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400 dark:text-dark-400"
@@ -23,8 +24,10 @@
         :placeholder="placeholderText"
         :autocomplete="autocomplete"
         :readonly="readonly"
+        :aria-invalid="error ? true : undefined"
+        :aria-describedby="id && (error || hint) ? `${id}-feedback` : undefined"
         :class="[
-          'input w-full transition-all duration-200',
+          'input min-w-0 w-full transition-all duration-200',
           $slots.prefix ? 'pl-11' : '',
           $slots.suffix ? 'pr-11' : '',
           error ? 'input-error ring-2 ring-red-500/20' : '',
@@ -37,7 +40,7 @@
         @keyup.enter="$emit('enter', $event)"
       />
 
-      <!-- Suffix Slot (e.g. Password Toggle or Clear Button) -->
+      <!-- 普通按钮：后缀槽允许密码显示或清除动作，由调用方提供名称和事件。 -->
       <div
         v-if="$slots.suffix"
         class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 dark:text-dark-400"
@@ -45,11 +48,11 @@
         <slot name="suffix"></slot>
       </div>
     </div>
-    <!-- Hint / Error Text -->
-    <p v-if="error" class="input-error-text mt-1.5">
+    <!-- 提示信息 / 警告信息：错误优先于帮助文字，并关联到真实输入节点。 -->
+    <p v-if="error" :id="id ? `${id}-feedback` : undefined" class="input-error-text mt-1.5">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="input-hint mt-1.5">
+    <p v-else-if="hint" :id="id ? `${id}-feedback` : undefined" class="input-hint mt-1.5">
       {{ hint }}
     </p>
   </div>

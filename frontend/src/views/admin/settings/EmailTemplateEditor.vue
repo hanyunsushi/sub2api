@@ -44,9 +44,8 @@
         v-if="loadingList"
         class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
       >
-        <span
-          class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary-600"
-        ></span>
+        <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+        <LoadingSpinner size="sm" />
         {{ t("common.loading") }}
       </div>
 
@@ -174,11 +173,12 @@
                 {{ t("admin.settings.emailTemplates.placeholdersHelp") }}
               </p>
               <div class="mt-3 flex flex-wrap gap-2">
+                <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
                 <button
                   v-for="placeholder in placeholderList"
                   :key="placeholder"
                   type="button"
-                  class="rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-xs text-gray-700 transition-colors hover:border-primary-300 hover:text-primary-600 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:border-primary-500 dark:hover:text-primary-300"
+                  class="btn btn-secondary rounded-full border border-gray-200 bg-white px-3 py-1 font-mono text-xs text-gray-700 transition-colors hover:border-primary-300 hover:text-primary-600 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:border-primary-500 dark:hover:text-primary-300"
                   @click="copyPlaceholder(placeholder)"
                 >
                   {{ placeholder }}
@@ -230,6 +230,7 @@
 </template>
 
 <script setup lang="ts">
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { adminAPI } from "@/api";

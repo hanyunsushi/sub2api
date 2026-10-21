@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
     @mouseleave="onLeave"
     @click="onClick"
   >
-    <!-- Trigger Icon -->
+    <!-- 浮层和反馈：悬浮/点击提示无三角或圆点箭头，保留透明命中桥。 -->
     <slot name="trigger">
       <svg
         class="h-4 w-4 cursor-help text-gray-400 transition-colors hover:text-primary-600 dark:text-gray-500 dark:hover:text-primary-400"
@@ -152,7 +152,6 @@ onBeforeUnmount(() => {
           </svg>
         </button>
         <slot>{{ content }}</slot>
-        <div class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900 dark:bg-gray-800"></div>
       </div>
     </Teleport>
   </div>

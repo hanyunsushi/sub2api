@@ -1,3 +1,4 @@
+import pixelOfficialLogoURL from '@/assets/provider-logos/pixel.jpg'
 export interface ProviderBrandInfo {
   label: string
   iconModel: string | null
@@ -292,7 +293,7 @@ const providerBrandMap: Array<[string[], ProviderBrandPreset]> = [
   ],
   [
     ['ai-pixel', 'pixel'],
-    { iconModel: null, label: 'PX', background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
+    { iconModel: null, iconUrl: pixelOfficialLogoURL, label: 'PX', background: '#FDF2F8', color: '#BE185D', border: '#FBCFE8' },
   ],
   [
     ['liust'],

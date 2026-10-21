@@ -1,5 +1,6 @@
 <template>
-  <div class="card p-4">
+  <!-- 展示信息模块 / 数字展示 / 组件绘制动画：嵌入Canvas使用本系统图表适配，保留原数据模型。 -->
+  <div class="kreepai-token-trend card p-4">
     <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
       {{ t('admin.dashboard.tokenUsageTrend') }}
     </h3>
@@ -7,7 +8,7 @@
       <LoadingSpinner />
     </div>
     <div v-else-if="trendData.length > 0 && chartData" class="h-48">
-      <Line :data="chartData" :options="lineOptions" />
+      <Line :plugins="embeddedChartPlugins" role="img" aria-label="Token用量趋势图" :data="chartData" :options="lineOptions" />
     </div>
     <div
       v-else
@@ -19,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { consoleChartPlugins, consoleSeriesColors } from '@/styles/design-system/chart-style'
+const embeddedChartPlugins = consoleChartPlugins()
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -58,14 +61,15 @@ const isDarkMode = computed(() => {
   return document.documentElement.classList.contains('dark')
 })
 
+const seriesColors = consoleSeriesColors(['#3b82f6', '#10b981', '#f59e0b', '#06b6d4', '#8b5cf6'])
 const chartColors = computed(() => ({
   text: isDarkMode.value ? '#e5e7eb' : '#374151',
   grid: isDarkMode.value ? '#374151' : '#e5e7eb',
-  input: '#3b82f6',
-  output: '#10b981',
-  cacheCreation: '#f59e0b',
-  cacheRead: '#06b6d4',
-  cacheHitRate: '#8b5cf6'
+  input: seriesColors[0],
+  output: seriesColors[1],
+  cacheCreation: seriesColors[2],
+  cacheRead: seriesColors[3],
+  cacheHitRate: seriesColors[4]
 }))
 
 const chartData = computed(() => {

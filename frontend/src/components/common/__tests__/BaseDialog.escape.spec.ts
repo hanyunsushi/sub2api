@@ -1,20 +1,22 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import BaseDialog from '../BaseDialog.vue'
 
 enableAutoUnmount(afterEach)
-const pressEscape = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+const pressEscape = () => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
 
 describe('stacked dialog Escape handling', () => {
   it('closes only the most recently opened dialog, then allows the parent to close', async () => {
     const parent = mount(BaseDialog, { props: { show: true, title: 'Parent' } })
     const child = mount(BaseDialog, { props: { show: true, title: 'Child' } })
     pressEscape()
-    expect(child.emitted('close')).toHaveLength(1)
+    await vi.waitFor(() => expect(child.emitted('close')).toHaveLength(1))
     expect(parent.emitted('close')).toBeUndefined()
     await child.setProps({ show: false })
+    await vi.waitFor(() => expect(document.body.querySelector('[aria-label="Child"]')).toBeNull())
+    await new Promise(resolve => setTimeout(resolve, 30))
     pressEscape()
-    expect(parent.emitted('close')).toHaveLength(1)
+    await vi.waitFor(() => expect(parent.emitted('close')).toHaveLength(1))
   })
 
   it('does not dismiss a parent behind a child that disallows Escape', () => {

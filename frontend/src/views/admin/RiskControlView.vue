@@ -275,8 +275,8 @@
               <Select v-model="filters.group_id" :options="groupFilterOptions" @change="reloadLogsFromFirstPage" />
               <Select v-model="filters.endpoint" :options="endpointOptions" @change="reloadLogsFromFirstPage" />
               <input v-model.trim="filters.search" type="search" class="input" :placeholder="t('admin.riskControl.filters.search')" @keyup.enter="reloadLogsFromFirstPage" />
-              <input v-model="filters.from" type="datetime-local" class="input" :title="t('admin.riskControl.filters.from')" @change="reloadLogsFromFirstPage" />
-              <input v-model="filters.to" type="datetime-local" class="input" :title="t('admin.riskControl.filters.to')" @change="reloadLogsFromFirstPage" />
+              <!-- 日期范围选择器：保留原过滤字段、时分精度与查询触发。 -->
+<DateRangeFields v-model:start="filters.from" v-model:end="filters.to" time @change="reloadLogsFromFirstPage" />
             </div>
           </div>
 
@@ -1147,6 +1147,7 @@
 </template>
 
 <script setup lang="ts">
+import DateRangeFields from '@/components/common/DateRangeFields.vue'
 import { computed, onMounted, onUnmounted, reactive, ref, toRaw } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'

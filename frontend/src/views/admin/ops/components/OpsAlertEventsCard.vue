@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
+import RefreshButton from '@/components/common/RefreshButton.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -368,7 +371,8 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 </script>
 
 <template>
-  <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <!-- 展示卡片：一级运维数据模块使用共享中性表面，内部布局与状态色保持。 -->
+  <div class="card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
     <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>
@@ -376,28 +380,18 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <Select :model-value="timeRange" :options="timeRangeOptions" class="w-[120px]" @change="timeRange = String($event || '24h')" />
+        <RouteSwitch :label="t('admin.dashboard.timeRange')" :model-value="timeRange" :options="timeRangeOptions" class="max-w-full" @update:model-value="timeRange = String($event || '24h')" />
         <Select :model-value="severity" :options="severityOptions" class="w-[88px]" @change="severity = String($event || '')" />
         <Select :model-value="status" :options="statusOptions" class="w-[110px]" @change="status = String($event || '')" />
         <Select :model-value="emailSent" :options="emailSentOptions" class="w-[110px]" @change="emailSent = String($event || '')" />
-        <button
-          class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
-          :disabled="loading"
-          @click="loadFirstPage"
-        >
-          <svg class="h-3.5 w-3.5" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {{ t('common.refresh') }}
-        </button>
+        <!-- 普通按钮 / 悬浮效果：手动重载复用标准刷新，等待绑定原请求状态。 -->
+        <RefreshButton :loading="loading" :label="t('common.refresh')" @refresh="loadFirstPage" />
       </div>
     </div>
 
     <div v-if="loading" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-      <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
+      <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+      <LoadingSpinner size="sm" />
       {{ t('admin.ops.alertEvents.loading') }}
     </div>
 
@@ -544,10 +538,8 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
           </tbody>
         </table>
         <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-gray-500 dark:text-gray-400">
-          <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <!-- 加载反馈：真实请求等待使用固定占位点阵。 -->
+          <LoadingSpinner size="sm" />
           {{ t('admin.ops.alertEvents.loading') }}
         </div>
         <div v-else-if="!hasMore && events.length > 0" class="py-3 text-center text-xs text-gray-400">
@@ -660,7 +652,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
               <div class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
               <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
             </div>
-            <Select :model-value="historyRange" :options="historyRangeOptions" class="w-[140px]" @change="historyRange = String($event || '7d')" />
+            <RouteSwitch :label="t('admin.dashboard.timeRange')" :model-value="historyRange" :options="historyRangeOptions" @update:model-value="historyRange = String($event || '7d')" />
           </div>
 
           <div v-if="historyLoading" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">

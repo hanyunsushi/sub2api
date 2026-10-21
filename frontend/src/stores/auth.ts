@@ -84,6 +84,7 @@ export const useAuthStore = defineStore('auth', () => {
   const tokenExpiresAt = ref<number | null>(null) // 过期时间戳（毫秒）
   const runMode = ref<'standard' | 'simple'>('standard')
   const pendingAuthSession = ref<PendingAuthSessionSummary | null>(null)
+  let backgroundStopped = false
   let refreshIntervalId: ReturnType<typeof setInterval> | null = null
   let tokenRefreshTimeoutId: ReturnType<typeof setTimeout> | null = null
 
@@ -151,6 +152,7 @@ export const useAuthStore = defineStore('auth', () => {
    * Refreshes user data every 60 seconds
    */
   function startAutoRefresh(): void {
+    if (backgroundStopped) return
     // Clear existing interval if any
     stopAutoRefresh()
 
@@ -178,6 +180,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param expiresAtMs - Token expiry timestamp in milliseconds
    */
   function scheduleTokenRefreshAt(expiresAtMs: number): void {
+    if (backgroundStopped) return
     // Clear any existing timeout
     if (tokenRefreshTimeoutId) {
       clearTimeout(tokenRefreshTimeoutId)
@@ -515,6 +518,7 @@ export const useAuthStore = defineStore('auth', () => {
     setToken,
     logout,
     checkAuth,
+    stopBackgroundRefresh: () => { backgroundStopped = true; stopAutoRefresh(); stopTokenRefresh() },
     refreshUser,
     setPendingAuthSession,
     clearPendingAuthSession

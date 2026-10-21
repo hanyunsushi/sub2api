@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { defineComponent } from 'vue'
 import { flushPromises, mount } from '@vue/test-utils'
 import OpsOpenAITokenStatsCard from '../OpsOpenAITokenStatsCard.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
 
 const mockGetOpenAITokenStats = vi.fn()
 
@@ -132,9 +133,9 @@ describe('OpsOpenAITokenStatsCard', () => {
       },
     })
     await flushPromises()
-    await wrapper.findAllComponents(SelectStub)[1].vm.$emit('update:modelValue', 'pagination')
+    await wrapper.findAllComponents(SelectStub)[0].vm.$emit('update:modelValue', 'pagination')
     await flushPromises()
-    await wrapper.findAll('button')[1].trigger('click')
+    await wrapper.findAll('button').find(button => button.text() === 'admin.ops.openaiTokenStats.nextPage')!.trigger('click')
     await flushPromises()
     expect(mockGetOpenAITokenStats).toHaveBeenLastCalledWith(expect.objectContaining({ page: 2 }))
 
@@ -181,8 +182,7 @@ describe('OpsOpenAITokenStatsCard', () => {
       })
     )
 
-    const selects = wrapper.findAllComponents(SelectStub)
-    await selects[0].vm.$emit('update:modelValue', '1h')
+    await wrapper.findComponent(RouteSwitch).vm.$emit('update:modelValue', '1h')
     await flushPromises()
 
     expect(mockGetOpenAITokenStats).toHaveBeenCalledWith(
@@ -218,7 +218,7 @@ describe('OpsOpenAITokenStatsCard', () => {
     await flushPromises()
 
     let selects = wrapper.findAllComponents(SelectStub)
-    await selects[1].vm.$emit('update:modelValue', 'pagination')
+    await selects[0].vm.$emit('update:modelValue', 'pagination')
     await flushPromises()
 
     expect(mockGetOpenAITokenStats).toHaveBeenCalledWith(
@@ -228,9 +228,7 @@ describe('OpsOpenAITokenStatsCard', () => {
       })
     )
 
-    const buttons = wrapper.findAll('button')
-    expect(buttons.length).toBeGreaterThanOrEqual(2)
-    await buttons[1].trigger('click')
+    await wrapper.findAll('button').find(button => button.text() === 'admin.ops.openaiTokenStats.nextPage')!.trigger('click')
     await flushPromises()
 
     expect(mockGetOpenAITokenStats).toHaveBeenCalledWith(
@@ -241,10 +239,10 @@ describe('OpsOpenAITokenStatsCard', () => {
     )
 
     selects = wrapper.findAllComponents(SelectStub)
-    await selects[1].vm.$emit('update:modelValue', 'topn')
+    await selects[0].vm.$emit('update:modelValue', 'topn')
     await flushPromises()
     selects = wrapper.findAllComponents(SelectStub)
-    await selects[2].vm.$emit('update:modelValue', 50)
+    await selects[1].vm.$emit('update:modelValue', 50)
     await flushPromises()
 
     expect(mockGetOpenAITokenStats).toHaveBeenCalledWith(

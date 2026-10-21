@@ -1,6 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
+import type { ReactElement } from 'react'
 import OpsDashboardHeader from '../OpsDashboardHeader.vue'
+import type { DateRange } from '@/components/common/date-range/date-range-picker-react'
 
 vi.mock('@/api', () => ({ adminAPI: { groups: { getAll: vi.fn().mockResolvedValue([]) } } }))
 vi.mock('@/api/admin/ops', () => ({ opsAPI: { getRealtimeTrafficSummary: vi.fn().mockResolvedValue({ enabled: true, summary: null }) } }))
@@ -10,45 +12,85 @@ vi.mock('vue-i18n', async () => ({
   useI18n: () => ({ t: (key: string) => key })
 }))
 enableAutoUnmount(afterEach)
-beforeEach(() => vi.stubEnv('TZ', 'Asia/Shanghai'))
-afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs() })
+afterEach(() => vi.useRealTimers())
 
-async function openCustomRange(now: Date) {
+async function mountRange(now: Date, custom?: { start: string; end: string }) {
   expect(now.getTimezoneOffset()).toBe(-480)
   vi.useFakeTimers()
   vi.setSystemTime(now)
   const wrapper = mount(OpsDashboardHeader, {
-    props: { platform: '', groupId: null, timeRange: '1h', queryMode: 'auto', loading: false, lastUpdated: null },
-    global: { stubs: {
-      Select: true, HelpTooltip: true, Icon: true,
-      BaseDialog: { props: ['show'], template: '<div v-if="show"><slot /></div>' }
-    } }
+    props: { platform: '', groupId: null, timeRange: custom ? 'custom' : '1h', customStartTime: custom?.start, customEndTime: custom?.end, queryMode: 'auto', loading: false, lastUpdated: null },
+    global: { stubs: { Select: true, HelpTooltip: true, Icon: true, SystemDateRangePicker: true, BaseDialog: true } }
   })
   await flushPromises()
-  const selector = wrapper.findAllComponents({ name: 'Select' }).find(select =>
-    select.props('options').some((option: { value: unknown }) => option.value === 'custom')
-  )!
-  selector.vm.$emit('update:modelValue', 'custom')
-  await flushPromises()
-  return wrapper
+  const picker = wrapper.findComponent({ name: 'SystemDateRangePicker' })
+  const clockInputs = () => {
+    const controls = picker.props('renderRangeControls')(picker.props('modelValue')) as ReactElement<{ children: ReactElement<{ children: unknown[] }>[] }>
+    return controls.props.children.map(label => label.props.children[1] as ReactElement<{ value: string; onChange: (event: { target: { value: string } }) => void }>)
+  }
+  return { wrapper, picker, clockInputs }
 }
 
-describe('ops custom time range timezone', () => {
+describe('ops unified time range timezone', () => {
   it.each([
     [14, 23, '2026-10-09T13:23', '2026-10-09T14:23'],
     [0, 15, '2026-10-08T23:15', '2026-10-09T00:15']
   ] as const)('prefills the previous local hour at %i:%i', async (hour, minute, start, end) => {
-    const wrapper = await openCustomRange(new Date(2026, 9, 9, hour, minute))
-    const inputs = wrapper.findAll<HTMLInputElement>('input[type="datetime-local"]')
-    expect(inputs.map(input => input.element.value)).toEqual([start, end])
+    const { picker, clockInputs } = await mountRange(new Date(2026, 9, 9, hour, minute))
+    const range = picker.props('modelValue') as DateRange
+    expect(range.start.getTime()).toBe(new Date(start).getTime())
+    expect(range.end.getTime()).toBe(new Date(end).getTime())
+    expect(clockInputs().map(input => input.props.value)).toEqual([start.slice(11), end.slice(11)])
   })
 
-  it('submits the previous real hour without applying the timezone offset twice', async () => {
-    const now = new Date(2026, 9, 9, 14, 23)
-    const wrapper = await openCustomRange(now)
-    await wrapper.findAll('button').find(button => button.text() === 'common.confirm')!.trigger('click')
-    expect(wrapper.emitted('update:customTimeRange')).toEqual([
-      [new Date(now.getTime() - 3600000).toISOString(), now.toISOString()]
-    ])
+  it('submits selected calendar days with original clocks only when Apply emits', async () => {
+    const { wrapper, picker, clockInputs } = await mountRange(new Date(2026, 9, 9, 14, 23))
+    const range = { start: new Date(2026, 9, 5), end: new Date(2026, 9, 7) }
+    picker.props('renderRangeControls')(range)
+    expect(wrapper.emitted('update:customTimeRange')).toBeUndefined()
+    expect(clockInputs().map(input => input.props.value)).toEqual(['13:23', '14:23'])
+    picker.vm.$emit('change', range)
+    await flushPromises()
+    expect(wrapper.emitted('update:customTimeRange')).toEqual([[new Date(2026, 9, 5, 13, 23).toISOString(), new Date(2026, 9, 7, 14, 23).toISOString()]])
+    expect(wrapper.emitted('update:timeRange')).toEqual([['custom']])
+  })
+
+  it.each(['5m', '30m', '1h', '6h', '24h'])('retains the rolling %s query value after preset confirmation', async mode => {
+    const { wrapper, picker } = await mountRange(new Date(2026, 9, 9, 14, 23))
+    const index = ['5m', '30m', '1h', '6h', '24h'].indexOf(mode)
+    const preset = picker.props('presets')[index]
+    picker.props('onPresetSelect')(preset, index)
+    await flushPromises()
+    expect(wrapper.emitted('update:timeRange')).toBeUndefined()
+    picker.vm.$emit('change', preset.range(new Date()))
+    await flushPromises()
+    expect(wrapper.emitted('update:timeRange')).toEqual([[mode]])
+    expect(wrapper.emitted('update:customTimeRange')).toBeUndefined()
+  })
+
+  it('distinguishes same-day minute presets and keeps clock edits in the confirmed custom range', async () => {
+    const { wrapper, picker, clockInputs } = await mountRange(new Date(2026, 9, 9, 14, 23))
+    const [five, thirty] = picker.props('presets').map((preset: { range: (date: Date) => DateRange }) => preset.range(new Date()))
+    expect(picker.props('isSameRange')(five, thirty)).toBe(false)
+    clockInputs()[0].props.onChange({ target: { value: '09:17' } })
+    clockInputs()[1].props.onChange({ target: { value: '18:43' } })
+    await flushPromises()
+    expect(wrapper.emitted('update:customTimeRange')).toBeUndefined()
+    picker.vm.$emit('change', { start: new Date(2026, 9, 1), end: new Date(2026, 9, 20) })
+    await flushPromises()
+    expect(wrapper.emitted('update:customTimeRange')).toEqual([[new Date(2026, 9, 1, 9, 17).toISOString(), new Date(2026, 9, 20, 18, 43).toISOString()]])
+  })
+
+  it('restores committed custom minutes and blocks inverted or empty clock drafts', async () => {
+    const custom = { start: new Date(2026, 9, 1, 9, 17).toISOString(), end: new Date(2026, 9, 20, 18, 43).toISOString() }
+    const { picker, clockInputs } = await mountRange(new Date(2026, 9, 20, 20), custom)
+    expect(clockInputs().map(input => input.props.value)).toEqual(['09:17', '18:43'])
+    const sameDay = { start: new Date(2026, 9, 20), end: new Date(2026, 9, 20) }
+    clockInputs()[1].props.onChange({ target: { value: '08:00' } })
+    await flushPromises()
+    expect(picker.props('canApplyRange')(sameDay)).toBe(false)
+    clockInputs()[1].props.onChange({ target: { value: '' } })
+    await flushPromises()
+    expect(picker.props('canApplyRange')(sameDay)).toBe(false)
   })
 })

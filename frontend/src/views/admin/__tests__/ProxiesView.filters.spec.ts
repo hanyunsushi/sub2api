@@ -95,7 +95,7 @@ describe('proxy list filter pagination', () => {
     await wrapper.get('[data-test="page"]').trigger('click')
     await flushPromises()
 
-    await wrapper.get('button[title="common.refresh"]').trigger('click')
+    wrapper.getComponent({ name: 'RefreshButton' }).vm.$emit('refresh')
     await flushPromises()
 
     expect(listProxies.mock.lastCall?.[0]).toBe(2)
