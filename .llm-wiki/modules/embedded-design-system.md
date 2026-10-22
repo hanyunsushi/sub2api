@@ -1,6 +1,6 @@
 ---
 title: Kreepai Shared Design System
-updated: 2026-10-21
+updated: 2026-10-22
 sources:
   - frontend/src/styles/design-system/
   - frontend/tailwind.config.js
@@ -159,3 +159,9 @@ Toast maps existing appStore.toasts into shared FeedbackMessages (nonmodal, exis
 LoginView uses novalidate to suppress the browser's unstyleable native validation bubble. Its existing validateForm still gates email, password, captcha and agreement before auth calls; validationToastMessage continues to create the original feedback. Accessible inline errors expose the same messages through aria-invalid/describedby. LoginAgreementPrompt removes stale utility overrides and uses the existing native checkbox contract; acceptance/rejection and storage revision logic remain original.
 
 FeedbackMessages uses a20px filled Apple semantic circle and white mark. Message stacks retain16px paint padding around the animated panels inside their scrolling boundary; panel edges remain16px from the viewport. This prevents rectangular clipping of motion/shadows, while preserving nonmodal behavior, original dismiss timers and optional actions. Shared canonical/QZ copies match, except AI retains its existing LoadingSpinner import. The Host's private brand font preload is independent of this app's body fonts. Runtime and rollback evidence belong to [authority](../../agent.md#登录校验与反馈绘制修正2026-10-20当前已部署).
+
+## Design-sync production release 2026-10-22
+
+The user-confirmation dialog now keeps its source NDialogProvider/lifecycle ownership and simple native fade-scale transition; the shared complex Headless/Motion surface remains limited to the application dialogs that already use it. Main-action hover uses the 32px/32% white inner-light layer with 400ms entry/exit; ordinary/default-arc hover retains the gray inset treatment and text-2. The feedback stack/material, default white-background design-system logo and desktop SVG empty/result states are sourced from the shared design-system assets. Native product logos and route/business behavior remain app-owned.
+
+The pushed frontend commit `2091a0f0eb6ae8ff0d87b5c0c5125de4fa70c42a` was embedded into the application image without changing the `0.2.16` product version or backend source. Runtime image/container identity, nine local routes, public health/home/login, unchanged PostgreSQL/Redis and volumes, database/appdata backups and rollback tag are recorded in [project authority](../../agent.md#设计系统反馈修复部署2026-10-22已部署). Public HTTP checks are not production authenticated visual acceptance.
