@@ -22,3 +22,7 @@ Three AI test files/15 tests, changed-source lint, native type/i18n/build and MF
 Console assembly rebuilds AI only;155 Host/QingZhou/marketing assets match the active baseline after release-base normalization. Native AI preserves the backend hash,0.2.16 product version, formal mounts and1290 historical static assets. Console7 routes/10 assets and native7 routes/6 assets pass HTTP/digest/cache validation after activation. Separate native authenticated visual acceptance is not claimed. Exact identities, receipt paths and rollback are in agent.md; original request-network cause remains unconfirmed.
 
 Both authority symlinks, Wiki links/two-click reachability, CodeGraph sync and Git diff checks pass. The protected OCI operations-guide diff hash is unchanged. Existing dirty work is preserved; no new commit or memory update.
+
+# 发布与恢复收尾
+
+运维合同及当前产物/恢复材料已同步。源码发布和文档后续提交分别记录；历史数据缺口不伪造恢复点。详细验证与真实运行身份归agent.md及operations-retention。

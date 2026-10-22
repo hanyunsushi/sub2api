@@ -33,6 +33,10 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 恢复前验证manifest和artifact可用性、保护当前状态、在隔离环境演练。恢复数据库/内容是独立数据回退，普通代码回滚不隐式执行全库覆盖。配置/密钥与外部依赖按项目表同步恢复；同机材料不等于异地灾备。
 
+# 精确清理工具
+
+共享执行器为[OCI保留校验工具](/Users/hinaw/console-kreeper/scripts/oci-retention.py)，服务器入口`/usr/local/lib/kreeper-oci-operations/retention.py`。清单必须显式列出删除路径/镜像、保留版本、有效恢复点和健康路由。先运行`sudo python3 /usr/local/lib/kreeper-oci-operations/retention.py /绝对路径/plan.json --seal`生成只读回执，复核后以同一清单加`--apply`；任何容器身份、挂载、服务PID或候选元数据漂移均拒绝。工具不扫描项目根决定删除对象，不删卷，不重启服务。历史材料不足时允许少于三个回滚。
+
 # 发布和清理
 
 读取agent.md和Git状态→审核所有待发布源码/生成物→必要测试/类型/构建→提交推送到项目现有发布分支（无远端不擅自公开私有数据项目）→版本/数据恢复点→限定项目切换→健康、路由、digest/版本、挂载和数据哈希验证→精确清理→权威/Wiki同步及Git收尾。文档-only提交不触发无意义应用重建。
@@ -43,3 +47,7 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 - [项目权威](../../agent.md)
 - [Wiki索引](../_index.md)
+
+# 本轮验收
+
+本轮源码检查点`191902bca`；本轮独立服务仅改文档，原应用、PostgreSQL/Redis及正式卷保留；Console中的前端按干净提交重建。 当前镜像加三个`codex-pre-*`回滚tag；构建暂存目录已移除，非敏感构建/激活摘要保存在OCI恢复目录。五月AI Search草稿已以`f3e83a911`提交并推送`codex/ai-search`，作为历史草稿归档，不计入生产发布；旧工作区已移除。 具体活动digest、恢复清单、私有副本及未验范围归[项目权威](../../agent.md)。共享OCI结果见[发布与恢复验收](/Users/hinaw/console-kreeper/.llm-wiki/guides/oci-runtime-and-recovery.md)。
