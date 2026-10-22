@@ -1,6 +1,6 @@
 ---
 title: OCI Operations and Artifact Retention
-updated: 2026-10-15
+updated: 2026-10-17
 ---
 
 # OCI Operations and Artifact Retention
@@ -13,6 +13,8 @@ Build from a clean committed archive, pass COMMIT/VERSION/DATE build arguments, 
 
 The bound external-subscription scheme release on 2026-10-15 followed this application-only path: clean archive, rollback tag, PostgreSQL/application-data backups, image build with explicit metadata, and `up -d --no-deps --wait` for `sub2api`. The exact image digest, container IDs, route checks and backup location are recorded in the [Project Authority](../../agent.md); this guide intentionally does not duplicate volatile release identifiers.
 
-The historical local retention helper at `/Users/hinaw/Documents/Codex/2026-09-17/oci/oci-retention-cleanup.sh` is absent in this workspace. Review the explicit OCI tag list and active image reference before deleting old tags. Sub2API retains the active `sub2api-custom:codex` image plus exactly the three newest `sub2api-custom:codex-pre-*` rollback tags. Keep backups and formal volumes; shared builder caches and other projects remain outside routine application release cleanup. Recheck rollback count, active/tag identity and health afterward.
+Sub2API retains the active `sub2api-custom:codex` image plus exactly the three newest `sub2api-custom:codex-pre-*` rollback tags. Review the explicit OCI tag list and active image reference before deleting old tags. Keep backups and formal volumes; shared builder caches and other projects remain outside routine application release cleanup. Recheck rollback count, active/tag identity and health afterward.
+
+For separately authorized shared-host cache cleanup, the persistent entry is `/Users/hinaw/.local/share/oci-maintenance/oci-retention-cleanup.sh`, replacing the missing dated task-directory helper. It defaults to dry-run with a private plan; review the exact image IDs and protected inventory, then run `--apply --plan /absolute/path/to/plan.json`. This rebuilt mode preserves every tagged image and every volume, requires exactly three Sub2API/website rollback tags, rejects plan drift and concurrent builds, and only removes untagged images without digests or container references plus unused builder cache. It verifies container/service identity, mounts, protected file hashes and local application health afterward. It does not install a timer or implement the historical QingZhou volume-purge mode. Operational verification is owned by the [Project Authority](../../agent.md).
 
 Never use `docker compose down -v`, a volume-enabled prune, or a broad image deletion. Preserve `sub2api-oci_sub2api_data`, `sub2api-oci_postgres_data`, and `sub2api-oci_redis_data`; verify `/health`, representative routes, active digest, and volume mounts after any release or cleanup.

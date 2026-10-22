@@ -32,3 +32,5 @@ updated: 2026-10-12
 - [Kreepai Shared Design System](modules/embedded-design-system.md)
 
 - [AI design review](modules/ai-design-review.md)
+
+- [发布、备份与保留合同](guides/operations-retention.md)
