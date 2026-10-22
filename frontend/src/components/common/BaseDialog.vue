@@ -1,5 +1,5 @@
 <template>
-  <FeedbackSurface :show="show" modal :label="title" :label-id="dialogId" :panel-class="`kf-feedback-panel modal-content kf-dialog-width-${width} ${widthClasses}`" scope-class="console-kreepai-surface kreepai-design-system" :z-index="zIndex" :close-on-escape="closeOnEscape" :close-on-click-outside="closeOnClickOutside" @close="emit('close')">
+  <FeedbackSurface :show="show" modal :animation="animation" :label="title" :label-id="dialogId" :panel-class="`kf-feedback-panel modal-content kf-dialog-width-${width} ${widthClasses}`" scope-class="console-kreepai-surface kreepai-design-system" :z-index="zIndex" :close-on-escape="closeOnEscape" :close-on-click-outside="closeOnClickOutside" @close="emit('close')">
           <!-- Header -->
           <div class="modal-header">
             <h3 class="modal-title" aria-hidden="true">
@@ -45,6 +45,7 @@ interface Props {
   closeOnClickOutside?: boolean
   showCloseButton?: boolean
   zIndex?: number
+  animation?: 'source' | 'fade-scale'
 }
 
 interface Emits {
@@ -56,7 +57,8 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnEscape: true,
   closeOnClickOutside: false,
   showCloseButton: true,
-  zIndex: 1000
+  zIndex: 1000,
+  animation: 'source'
 })
 
 const emit = defineEmits<Emits>()

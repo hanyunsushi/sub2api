@@ -1,5 +1,6 @@
 <template>
-  <BaseDialog :show="show" :title="title" width="narrow" @close="handleCancel">
+  <!-- 提示信息 / 组件绘制动画：确认沿用原淡入缩放，不使用新增的翻转/模糊。 -->
+  <BaseDialog :show="show" :title="title" width="narrow" animation="fade-scale" @close="handleCancel">
     <div class="space-y-4">
       <p class="text-sm text-gray-600 dark:text-gray-400">{{ message }}</p>
       <slot></slot>
