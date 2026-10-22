@@ -31,6 +31,9 @@
 
       <!-- Right: Announcements + Docs + Language + Subscriptions + Balance + User Dropdown -->
       <div class="flex items-center gap-3">
+        <!-- AI Search -->
+        <AISearchBox v-if="user" />
+
         <!-- Announcement Bell -->
         <AnnouncementBell v-if="user" />
 
@@ -314,6 +317,7 @@ import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
 import FloatingDropdown from '@/components/common/FloatingDropdown.vue'
+import AISearchBox from '@/components/layout/AISearchBox.vue'
 import Icon from '@/components/icons/Icon.vue'
 
 const router = useRouter()
