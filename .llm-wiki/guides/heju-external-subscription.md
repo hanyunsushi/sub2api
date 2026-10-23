@@ -66,7 +66,7 @@ curl --fail-with-body --max-time 15 'https://www.hejuapi.com/api/usage/token/' \
 
 ## 验证证据和限制
 
-2026-10-24读取官网上述两份文档，并实现独立的 `external_subscription_heju.go` 适配、前端预设与数据展示。无凭据 GET 的实际结果为 `/api/status` HTTP 200、`/api/usage/token/` HTTP 401（Token not provided）、`/api/usage/account` HTTP 401（A valid API key is required）。随后在用户配置/发布授权下，从现有合聚模型账号复用密钥，服务器直接向官网执行上述两条只读GET均200：账号余额29.032322 USD，Key不限额、累计15480008原始额度、expires_at=0；累计换算30.960016。没有调用模型或创建管理权限。真实有限额分支未实测，由HTTP夹具回归验证；部署、配置和回滚证据归项目权威。
+2026-10-24读取官网上述两份文档，并实现独立的 `external_subscription_heju.go` 适配、前端预设与数据展示。无凭据 GET 的实际结果为 `/api/status` HTTP 200、`/api/usage/token/` HTTP 401（Token not provided）、`/api/usage/account` HTTP 401（A valid API key is required）。随后在用户配置/发布授权下，从既有模型账号复用密钥，服务器直接向官网执行上述两条只读GET均200，核对单位、累计用量与不限额分支。真实账号数值仅保存在私有验收回执，不作为接口文档内容。没有调用模型或创建管理权限。真实有限额分支未实测，由HTTP夹具回归验证；部署、配置和回滚证据归项目权威。
 
 ## See Also
 
