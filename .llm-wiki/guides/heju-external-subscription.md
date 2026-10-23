@@ -1,5 +1,5 @@
 ---
-title: 合聚 API 外部订阅接入调研
+title: 合聚 API 外部订阅接入
 updated: 2026-10-24
 sources:
   - https://www.hejuapi.com/docs/quickstart/token-balance-api
@@ -73,3 +73,5 @@ curl --fail-with-body --max-time 15 'https://www.hejuapi.com/api/usage/token/' \
 - [Customization Inventory](../concepts/customization-inventory.md#external-subscriptions)
 - [Backend Module](../modules/backend.md)
 - [Project Authority](../../agent.md)
+
+- [配置与发布证据](heju-release-20261024.json)

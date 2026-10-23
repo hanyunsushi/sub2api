@@ -1,0 +1,89 @@
+{
+  "updated": "2026-10-24",
+  "source_commit": "c4b32ba1263801e9332023f680505bd9a9959c0b",
+  "upstream_version": "0.2.16",
+  "native": {
+    "image": "sha256:742f71382c5d262b124bbe9c1237538dc9c8e06b66402ca6b340dd5791bc81bb",
+    "container": "b8ec2ec0ccf09d8acec8131601e2f8fae8546d92741c31f7cfbbcac779d5b550",
+    "health": "healthy",
+    "restarts": 0,
+    "backup_path": "/home/ubuntu/oci-recovery/sub2api/20261023T182516Z",
+    "other_containers_unchanged": 11,
+    "mounts_unchanged": true,
+    "runtime_configuration_unchanged": true,
+    "other_providers_unchanged": true
+  },
+  "console": {
+    "releaseId": "console-20261024-heju-a",
+    "previous": "console-20261024-logo-scroll-a",
+    "backup": "/home/ubuntu/oci-recovery/console/20261023T182249Z",
+    "source_commit": "c4b32ba1263801e9332023f680505bd9a9959c0b",
+    "manifest_files": 1194,
+    "preserved_child_files": 969,
+    "other_children_byte_identical": true,
+    "host_unchanged_except_bootstrap_paths": true,
+    "archive_sha256": "60553a64c5f1017cfdf7c02627d6ef234c4db98ab1e372a7bb5b7d4efa946860",
+    "archive_bytes": 156192055,
+    "containersUnchanged": 12,
+    "servicesUnchanged": true
+  },
+  "verification": {
+    "provider_configured": true,
+    "credential_reused_from_existing_model_account": true,
+    "provider": "hejuapi",
+    "scheme": "heju_api_key",
+    "upstream_read_only_requests_succeeded": true,
+    "no_model_inference_requests": true,
+    "frontend_tests": {
+      "files": 396,
+      "passed": 3009,
+      "final_unhandled_errors": 0,
+      "workers": 2,
+      "initial_full_run": "all assertions passed; two old KeyUsage timer teardown errors, isolated rerun and bounded full rerun passed"
+    },
+    "backend_tests": "full ordinary Go suite passed; tagged full suite only failed the newly changed default-list contract; corrected contract plus impacted service/server tests passed",
+    "typecheck_lint_native_mfe_builds": "passed from clean source archive",
+    "public_checks": 23,
+    "public_asset_hashes": "matched",
+    "browser": {
+      "native_and_console_authenticated_heju_card": "passed",
+      "viewports": [
+        1280,
+        390
+      ],
+      "document_horizontal_overflow": false,
+      "key_quota_separate_from_wallet": true,
+      "unlimited_key_has_no_synthetic_progress": true,
+      "console_edit_dialog_filter": "none",
+      "console_edit_dialog_transform": "identity scale",
+      "physical_touch": "not tested",
+      "limited_live_key": "not tested; HTTP fixture covers limited branch"
+    }
+  },
+  "retention": {
+    "native_current_plus_rollback_tags": [
+      "sub2api-custom:codex",
+      "sub2api-custom:codex-pre-heju-20261024",
+      "sub2api-custom:codex-pre-native-review-20261023T143500Z",
+      "sub2api-custom:codex-pre-design-sync-20261022T103545-0800"
+    ],
+    "console_current_plus_rollback_releases": [
+      "console-20261024-heju-a",
+      "console-20261024-logo-scroll-a",
+      "console-20261023-font-cards-b",
+      "console-20261023-marketing-modal-a"
+    ],
+    "verified_kept_manifest_files": 4779,
+    "verified_compatibility_references": 1070,
+    "exact_seal_apply_cleanup": true,
+    "no_volumes_or_database_backups_deleted": true
+  },
+  "private_recovery": {
+    "directory": "~/.local/share/oci-recovery/20261024-heju/",
+    "sub2api_manifest_files_verified": 8,
+    "console_manifest_files_verified": 5,
+    "current_console_archive_sha256": "60553a64c5f1017cfdf7c02627d6ef234c4db98ab1e372a7bb5b7d4efa946860",
+    "full_restore_boot_drill": false,
+    "new_native_image_exported_off_host": false
+  }
+}
