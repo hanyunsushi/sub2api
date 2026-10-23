@@ -34,6 +34,10 @@ export function scopeMicrofrontendCss(css, project) {
       else rule.remove()
     }
   }
+  // 组件绘制动画：body上的遮罩本身就是scope root；在根页面几何拆分后保留它自己的fixed定位。
+  root.walkRules(rule => {
+    rule.selectors = rule.selectors.map(selector => selector.replace(/^\.qz-shift5-route-transition(?=[.\s:]|$)/, ':scope.qz-shift5-route-transition'))
+  })
   const scope = postcss.atRule({ name: 'scope', params: `(.console-${project}-surface)` })
   const output = postcss.root()
   // Font registration is global; retain original font names and sources.
