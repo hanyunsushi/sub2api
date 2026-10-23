@@ -1,5 +1,6 @@
 import { apiClient } from '@/api/client'
 export type ExternalSubscriptionScheme =
+  | 'heju_api_key'
   | 'pixel_access_token'
   | 'qlhazycoder_bearer_token'
   | 'a6api_cookie_newapi_user'
@@ -20,6 +21,7 @@ export type ExternalSubscriptionScheme =
   | 'active_with_auth_me_balance'
 
 export type ExternalSubscriptionTemplate =
+  | 'heju_api_key'
   | 'pixel_access_token'
   | 'newapi_console'
   | 'active_subscriptions'
@@ -85,7 +87,16 @@ export interface ExternalSubscriptionProviderInput {
   sort_order: number
 }
 
+export interface ExternalSubscriptionTokenQuota {
+  unlimited: boolean
+  total_limit_usd?: number
+  used_usd: number
+  remaining_usd?: number
+  expires_at?: string
+}
+
 export interface ExternalSubscriptionStatus {
+  token_quota?: ExternalSubscriptionTokenQuota
   provider: string
   name: string
   scheme?: ExternalSubscriptionScheme
@@ -143,6 +154,7 @@ function cloneStatuses(statuses: ExternalSubscriptionStatus[]) {
   return statuses.map(status => ({
     ...status,
     match_keywords: [...status.match_keywords],
+    ...(status.token_quota ? { token_quota: { ...status.token_quota } } : {}),
     subscriptions: status.subscriptions.map(subscription => ({ ...subscription })),
   }))
 }

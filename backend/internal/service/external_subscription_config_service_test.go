@@ -125,7 +125,11 @@ func TestExternalSubscriptionConfigServiceListProvidersBuildsUnifiedDefaultsAndI
 	require.False(t, modelflare.Enabled)
 	require.False(t, modelflare.APITokenConfigured)
 	require.Empty(t, modelflare.UserID)
-	require.Len(t, providers, 13)
+	require.Len(t, providers, 14)
+	heju := requireExternalSubscriptionProvider(t, providers, "hejuapi")
+	require.Equal(t, ExternalSubscriptionSchemeHejuAPIKey, heju.Scheme)
+	require.False(t, heju.Enabled)
+	require.False(t, heju.APITokenConfigured)
 }
 
 func TestExternalSubscriptionConfigServiceGetStatusesReadsA6APICookieAndNestedUserQuota(t *testing.T) {

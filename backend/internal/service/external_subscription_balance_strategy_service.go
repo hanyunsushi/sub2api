@@ -40,6 +40,8 @@ func (s *ExternalSubscriptionService) getStatusWithBalanceStrategy(ctx context.C
 
 func (s *ExternalSubscriptionService) getStatusForTemplate(ctx context.Context, cfg externalSubscriptionProviderConfig, template string) (*ExternalSubscriptionStatus, error) {
 	switch template {
+	case ExternalSubscriptionTemplateHejuAPIKey:
+		return s.getHejuAPIKeyStatus(ctx, cfg)
 	case ExternalSubscriptionTemplatePixelAccessToken:
 		return s.getPixelAccessTokenStatus(ctx, cfg)
 	case ExternalSubscriptionTemplateNewAPIConsole:

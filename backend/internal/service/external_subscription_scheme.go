@@ -25,6 +25,11 @@ const (
 )
 
 var externalSubscriptionSchemeDefinitions = map[string]externalSubscriptionSchemeSpec{
+	ExternalSubscriptionSchemeHejuAPIKey: {
+		template:        ExternalSubscriptionTemplateHejuAPIKey,
+		balanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+		authMode:        externalSubscriptionAuthBearer,
+	},
 	ExternalSubscriptionSchemePixelAccessToken: {
 		template:        ExternalSubscriptionTemplatePixelAccessToken,
 		balanceStrategy: ExternalSubscriptionBalanceStrategyPixelUserQuota,
@@ -122,6 +127,8 @@ var externalSubscriptionSchemeDefinitions = map[string]externalSubscriptionSchem
 
 func canonicalExternalSubscriptionSchemeForProviderID(providerID string) (string, bool) {
 	switch strings.TrimSpace(strings.ToLower(providerID)) {
+	case "heju", "hejuapi":
+		return ExternalSubscriptionSchemeHejuAPIKey, true
 	case "pixel":
 		return ExternalSubscriptionSchemePixelAccessToken, true
 	case "qlhazycoder":
@@ -143,7 +150,8 @@ func canonicalExternalSubscriptionSchemeForProviderID(providerID string) (string
 
 func canonicalExternalSubscriptionScheme(scheme string) bool {
 	switch strings.TrimSpace(strings.ToLower(scheme)) {
-	case ExternalSubscriptionSchemePixelAccessToken,
+	case ExternalSubscriptionSchemeHejuAPIKey,
+		ExternalSubscriptionSchemePixelAccessToken,
 		ExternalSubscriptionSchemeQLHazyCoderBearerToken,
 		ExternalSubscriptionSchemeA6APICookieNewAPIUser,
 		ExternalSubscriptionSchemePackyCodeBearerNewAPIUser,
@@ -188,6 +196,9 @@ func externalSubscriptionSchemeForPair(template, strategy string) string {
 		strategy = defaultExternalSubscriptionBalanceStrategy("", template)
 	}
 
+	if template == ExternalSubscriptionTemplateHejuAPIKey {
+		return ExternalSubscriptionSchemeHejuAPIKey
+	}
 	// Vendor schemes are selected from the provider ID during normalization.
 	// Pair-only fallback is for custom/legacy records, except for the unique
 	// Pixel template/strategy pair which is safe to identify without a vendor.

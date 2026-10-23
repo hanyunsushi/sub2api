@@ -464,6 +464,19 @@ func TestAPIContracts(t *testing.T) {
 				"message": "success",
 				"data": [
 					{
+                        "id": "hejuapi",
+                        "name": "合聚 API",
+                        "enabled": false,
+                        "scheme": "heju_api_key",
+                        "template": "heju_api_key",
+                        "balance_strategy": "auto",
+                        "api_base_url": "https://www.hejuapi.com",
+                        "api_token_configured": false,
+                        "refresh_token_configured": false,
+                        "match_keywords": ["heju", "hejuapi.com", "合聚"],
+                        "sort_order": 66
+                    },
+                    {
 						"id": "buzz",
 						"name": "Buzz",
 						"enabled": false,

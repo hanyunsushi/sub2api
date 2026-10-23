@@ -161,6 +161,12 @@ export const buildAccountExternalQuotaProgressMeta = (
 
   if (!status) return null
 
+  // 数字展示：自动额度条只使用同一 Key 的已用/剩余，不混入账号钱包。
+  if (preference.mode === 'status_total' && status.token_quota) {
+    if (status.token_quota.unlimited) return null
+    status = { ...status, ...status.token_quota }
+  }
+
   const total = preference.mode === 'custom_total'
     ? Math.max(0, Number(preference.customTotal ?? 0))
     : isFiniteNumber(status.total_limit_usd)

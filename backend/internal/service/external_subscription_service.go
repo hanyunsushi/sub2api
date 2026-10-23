@@ -22,22 +22,33 @@ type ExternalSubscriptionSettings struct {
 	RefreshToken string
 }
 
+// ExternalSubscriptionTokenQuota is scoped to one model API key, separately
+// from the account wallet fields on ExternalSubscriptionStatus.
+type ExternalSubscriptionTokenQuota struct {
+	Unlimited     bool       `json:"unlimited"`
+	TotalLimitUSD *float64   `json:"total_limit_usd,omitempty"`
+	UsedUSD       float64    `json:"used_usd"`
+	RemainingUSD  *float64   `json:"remaining_usd,omitempty"`
+	ExpiresAt     *time.Time `json:"expires_at,omitempty"`
+}
+
 type ExternalSubscriptionStatus struct {
-	Provider      string                     `json:"provider"`
-	Enabled       bool                       `json:"enabled"`
-	Configured    bool                       `json:"configured"`
-	Currency      string                     `json:"currency"`
-	SiteURL       string                     `json:"site_url"`
-	ErrorCode     string                     `json:"error_code,omitempty"`
-	ErrorMessage  string                     `json:"error_message,omitempty"`
-	TotalLimitUSD *float64                   `json:"total_limit_usd,omitempty"`
-	UsedUSD       float64                    `json:"used_usd"`
-	RemainingUSD  *float64                   `json:"remaining_usd,omitempty"`
-	ExpiresAt     *time.Time                 `json:"expires_at,omitempty"`
-	DaysRemaining *int                       `json:"days_remaining,omitempty"`
-	ActiveCount   int                        `json:"active_count"`
-	Subscriptions []ExternalSubscriptionItem `json:"subscriptions"`
-	RefreshedAt   time.Time                  `json:"refreshed_at,omitempty"`
+	TokenQuota    *ExternalSubscriptionTokenQuota `json:"token_quota,omitempty"`
+	Provider      string                          `json:"provider"`
+	Enabled       bool                            `json:"enabled"`
+	Configured    bool                            `json:"configured"`
+	Currency      string                          `json:"currency"`
+	SiteURL       string                          `json:"site_url"`
+	ErrorCode     string                          `json:"error_code,omitempty"`
+	ErrorMessage  string                          `json:"error_message,omitempty"`
+	TotalLimitUSD *float64                        `json:"total_limit_usd,omitempty"`
+	UsedUSD       float64                         `json:"used_usd"`
+	RemainingUSD  *float64                        `json:"remaining_usd,omitempty"`
+	ExpiresAt     *time.Time                      `json:"expires_at,omitempty"`
+	DaysRemaining *int                            `json:"days_remaining,omitempty"`
+	ActiveCount   int                             `json:"active_count"`
+	Subscriptions []ExternalSubscriptionItem      `json:"subscriptions"`
+	RefreshedAt   time.Time                       `json:"refreshed_at,omitempty"`
 }
 
 type ExternalSubscriptionItem struct {

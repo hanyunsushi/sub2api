@@ -122,7 +122,7 @@
               <!-- 数字展示 / 展示信息模块：余额和已用按卡片实际宽度并列，长金额完整换行。 -->
               <div class="external-subscription-metrics">
               <div class="external-subscription-balance-row">
-                <div class="external-subscription-card-label">{{ localText('余额', 'Balance') }}</div>
+                <div class="external-subscription-card-label">{{ card.scheme === 'heju_api_key' ? localText('账号余额', 'Account balance') : localText('余额', 'Balance') }}</div>
                 <div
                   class="external-subscription-balance-value font-mono"
                   :title="formatCardBalance(card)"
@@ -132,16 +132,23 @@
               </div>
 
               <div v-if="formatStatusUsage(card.status)" class="external-subscription-balance-row">
-                <div class="external-subscription-card-label">{{ localText('已用', 'Used') }}</div>
+                <div class="external-subscription-card-label">{{ card.status?.token_quota ? localText('Key 累计消耗', 'Key lifetime usage') : localText('已用', 'Used') }}</div>
                 <div class="external-subscription-balance-value font-mono">
                   {{ formatStatusUsage(card.status) }}
                 </div>
               </div>
 
+              <!-- 数字展示：Key 限额独立于共享账号钱包，不相加推算总额。 -->
+              <div v-if="card.status?.token_quota" class="external-subscription-balance-row">
+                <div class="external-subscription-card-label">{{ localText('Key 剩余额度', 'Key remaining quota') }}</div>
+                <div class="external-subscription-balance-value font-mono" data-testid="heju-key-quota">
+                  {{ card.status.token_quota.unlimited ? localText('不限额', 'Unlimited') : formatMoney(card.status.token_quota.remaining_usd, card.status.currency) }}
+                </div>
+              </div>
               </div>
               <div class="external-subscription-card-facts mt-3">
                 <div class="external-subscription-fact min-w-0">
-                  <div class="external-subscription-card-label">{{ localText('期限', 'Expiry') }}</div>
+                  <div class="external-subscription-card-label">{{ card.scheme === 'heju_api_key' ? localText('Key 期限', 'Key expiry') : localText('期限', 'Expiry') }}</div>
                   <div class="external-subscription-fact-value truncate">
                     {{ formatCardExpiry(card) }}
                   </div>
@@ -150,7 +157,7 @@
 
               <div v-if="getCardQuotaProgress(card)" class="external-subscription-quota-progress mt-3">
                 <div class="flex items-center justify-between gap-2">
-                  <span class="external-subscription-card-label">{{ localText('额度', 'Quota') }}</span>
+                  <span class="external-subscription-card-label">{{ card.status?.token_quota ? localText('Key 额度', 'Key quota') : localText('额度', 'Quota') }}</span>
                   <span class="external-subscription-quota-progress-value font-mono">
                     {{ formatCardQuotaUsage(card) }}
                   </span>
@@ -457,6 +464,14 @@ type ExternalSubscriptionSchemeDefinition = {
 
 const activeSchemeDefinitions: ExternalSubscriptionSchemeDefinition[] = [
   {
+    value: 'heju_api_key', template: 'heju_api_key', balance_strategy: 'auto',
+    presetKey: 'heju-api-key', providerId: 'hejuapi', providerName: '合聚 API',
+    apiBaseUrl: 'https://www.hejuapi.com', sortOrder: 66,
+    keywords: ['heju', 'hejuapi.com', '合聚'],
+    label: localText => localText('合聚：API Key', 'Heju: API Key'),
+    description: localText => localText('模型 API Key → 账号余额与 Key 额度', 'Model API key → account balance and key quota'),
+  },
+  {
     value: 'pixel_access_token',
     template: 'pixel_access_token',
     balance_strategy: 'pixel_user_quota',
@@ -696,6 +711,7 @@ const apiTokenPlaceholder = computed(() => {
   if (requiresPixelAccessToken.value) return 'Pixel Access Token'
   if (isCookieCredential.value) return localText('浏览器登录 Cookie', 'Browser login Cookie')
   if (requiresConsoleToken.value) return localText('控制台访问 Token', 'Console access token')
+  if (form.scheme === 'heju_api_key') return 'sk-...'
   if (form.scheme === 'openrouter_api_key') return 'sk-or-...'
   if (form.scheme === 'cloudflare_api_token_account_id') return 'Cloudflare API Token'
   return 'sk-...'
@@ -712,7 +728,7 @@ const apiTokenLabel = computed(() => (
   requiresPixelAccessToken.value ? localText('访问令牌', 'Access Token') : (isA6APIForm.value || isModelFlareForm.value)
     ? localText('登录 Cookie', 'Login Cookie')
     : requiresConsoleToken.value ? localText('控制台访问 Token', 'Console Access Token')
-      : form.scheme === 'openrouter_api_key' ? 'API Key'
+      : (form.scheme === 'openrouter_api_key' || form.scheme === 'heju_api_key') ? 'API Key'
       : form.scheme === 'cloudflare_api_token_account_id' ? 'API Token'
       : 'API Token'
 ))
@@ -1067,7 +1083,7 @@ function cardStatusText(card: ExternalSubscriptionCard) {
 function formatTokenMeta(card: ExternalSubscriptionCard) {
   if (card.template === 'pixel_access_token') return card.apiTokenConfigured ? 'Access Token ready' : localText('访问令牌未配置', 'Access Token missing')
   if (card.scheme === 'a6api_cookie_newapi_user' || card.scheme === 'modelflare_cookie_user') return card.apiTokenConfigured ? localText('登录 Cookie 已配置', 'Browser Cookie ready') : localText('登录 Cookie 未配置', 'Browser Cookie missing')
-  if (card.scheme === 'openrouter_api_key') return card.apiTokenConfigured ? 'API Key ready' : localText('API Key 未配置', 'API Key missing')
+  if (card.scheme === 'openrouter_api_key' || card.scheme === 'heju_api_key') return card.apiTokenConfigured ? 'API Key ready' : localText('API Key 未配置', 'API Key missing')
   return card.apiTokenConfigured ? 'API Token ready' : localText('Token 未配置', 'Token missing')
 }
 
@@ -1090,13 +1106,14 @@ function formatStatusBalance(status?: ExternalSubscriptionStatus) {
 }
 
 function formatStatusUsage(status?: ExternalSubscriptionStatus) {
-  return formatMoney(status?.used_usd, status?.currency)
+  if (status?.scheme === 'heju_api_key' && !status.token_quota) return ''
+  return formatMoney(status?.token_quota?.used_usd ?? status?.used_usd, status?.currency)
 }
 
 function formatStatusExpiry(status?: ExternalSubscriptionStatus) {
   if (!status) return '-'
   if (status.error_code) return isInvalidToken(status.error_code) ? localText('请更新 Token', 'Update token') : (status.error_message || localText('请检查配置', 'Check settings'))
-  return formatDate(status.expires_at)
+  return formatDate(status.token_quota ? status.token_quota.expires_at : status.expires_at)
 }
 
 function formatCardBalance(card: ExternalSubscriptionCard) {

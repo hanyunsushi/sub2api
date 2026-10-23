@@ -25,6 +25,7 @@ updated: 2026-10-12
 
 # Guides
 
+- [合聚 API 外部订阅接入调研](guides/heju-external-subscription.md) - 官方只读接入、凭据、单位与账号/Key统计范围
 - [Development and Testing](guides/development-and-testing.md) - Minimal local workflow
 - [OCI Operations and Artifact Retention](guides/oci-operations.md) - Safe application-only release, rollback, and cleanup
 - [OCI Authentik OIDC](guides/oci-authentik-oidc.md) - Isolated Authentik deployment and OIDC handoff boundary

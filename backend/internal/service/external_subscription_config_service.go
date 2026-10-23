@@ -21,6 +21,7 @@ const (
 	// External subscription schemes are the user-facing contract that binds a
 	// request template to its balance endpoint. Template and strategy remain in
 	// the payload for backward compatibility with older clients and settings.
+	ExternalSubscriptionSchemeHejuAPIKey                  = "heju_api_key"
 	ExternalSubscriptionSchemePixelAccessToken            = "pixel_access_token"
 	ExternalSubscriptionSchemeQLHazyCoderBearerToken      = "qlhazycoder_bearer_token"
 	ExternalSubscriptionSchemeA6APICookieNewAPIUser       = "a6api_cookie_newapi_user"
@@ -48,6 +49,7 @@ const (
 	ExternalSubscriptionTemplateRawChatSubscriptions       = "rawchat_subscriptions"
 	ExternalSubscriptionTemplateMimoTokenPlan              = "mimo_token_plan"
 	ExternalSubscriptionTemplatePixelAccessToken           = "pixel_access_token"
+	ExternalSubscriptionTemplateHejuAPIKey                 = "heju_api_key"
 
 	ExternalSubscriptionBalanceStrategyAuto                    = "auto"
 	ExternalSubscriptionBalanceStrategyPixelUserQuota          = "pixel_user_quota"
@@ -732,6 +734,14 @@ func externalSubscriptionProviderErrorStatus(provider externalSubscriptionStored
 func defaultExternalSubscriptionProviders() []externalSubscriptionStoredProvider {
 	return []externalSubscriptionStoredProvider{
 		{
+			ID: "hejuapi", Name: "合聚 API", Enabled: false,
+			Scheme:          ExternalSubscriptionSchemeHejuAPIKey,
+			Template:        ExternalSubscriptionTemplateHejuAPIKey,
+			BalanceStrategy: ExternalSubscriptionBalanceStrategyAuto,
+			APIBaseURL:      "https://www.hejuapi.com",
+			MatchKeywords:   []string{"heju", "hejuapi.com", "合聚"}, SortOrder: 66,
+		},
+		{
 			ID:              "buzz",
 			Name:            "Buzz",
 			Enabled:         false,
@@ -990,7 +1000,7 @@ func normalizeExternalSubscriptionStoredProvider(provider externalSubscriptionSt
 		return externalSubscriptionStoredProvider{}, infraerrors.BadRequest("EXTERNAL_SUBSCRIPTION_BALANCE_STRATEGY_INVALID", "external subscription provider balance strategy is invalid")
 	}
 	provider.APIBaseURL = normalizeExternalSubscriptionAPIBaseURL(provider.APIBaseURL, strings.TrimSpace(provider.APIBaseURL))
-	if provider.Template == ExternalSubscriptionTemplatePixelAccessToken || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyPixelUserQuota {
+	if provider.Template == ExternalSubscriptionTemplateHejuAPIKey || provider.Template == ExternalSubscriptionTemplatePixelAccessToken || provider.BalanceStrategy == ExternalSubscriptionBalanceStrategyPixelUserQuota {
 		provider.APIBaseURL = strings.TrimSuffix(provider.APIBaseURL, "/v1")
 	}
 	if provider.APIBaseURL == "" {
@@ -1069,7 +1079,8 @@ func isExternalSubscriptionBalanceStrategy(strategy string) bool {
 
 func isExternalSubscriptionTemplate(template string) bool {
 	switch template {
-	case ExternalSubscriptionTemplateNewAPIConsole,
+	case ExternalSubscriptionTemplateHejuAPIKey,
+		ExternalSubscriptionTemplateNewAPIConsole,
 		ExternalSubscriptionTemplatePixelAccessToken,
 		ExternalSubscriptionTemplateActiveSubscriptions,
 		ExternalSubscriptionTemplateBuzzBalance,
@@ -1219,6 +1230,13 @@ func cloneExternalSubscriptionProviderStatuses(input []ExternalSubscriptionProvi
 		out[i] = item
 		out[i].MatchKeywords = append([]string(nil), item.MatchKeywords...)
 		out[i].Subscriptions = cloneExternalSubscriptionItems(item.Subscriptions)
+		if item.TokenQuota != nil {
+			quota := *item.TokenQuota
+			quota.TotalLimitUSD = cloneFloat64Pointer(quota.TotalLimitUSD)
+			quota.RemainingUSD = cloneFloat64Pointer(quota.RemainingUSD)
+			quota.ExpiresAt = cloneTimePointer(quota.ExpiresAt)
+			out[i].TokenQuota = &quota
+		}
 		out[i].TotalLimitUSD = cloneFloat64Pointer(item.TotalLimitUSD)
 		out[i].RemainingUSD = cloneFloat64Pointer(item.RemainingUSD)
 		out[i].ExpiresAt = cloneTimePointer(item.ExpiresAt)

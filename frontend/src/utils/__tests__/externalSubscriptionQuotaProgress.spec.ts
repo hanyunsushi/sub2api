@@ -329,3 +329,21 @@ describe('external subscription quota progress', () => {
     expect(meta?.percent).toBeCloseTo(25)
   })
 })
+
+
+describe('Heju key quota scope', () => {
+  it('uses key limits rather than the larger shared account wallet', () => {
+    const meta = buildAccountExternalQuotaProgressMeta(status({
+      provider: 'heju', template: 'heju_api_key', remaining_usd: 120.5,
+      token_quota: { unlimited: false, total_limit_usd: 10, used_usd: 2.5, remaining_usd: 7.5 },
+    }), { enabled: true, mode: 'status_total' })
+    expect(meta).toMatchObject({ total: 10, used: 2.5, remaining: 7.5, percent: 25 })
+  })
+
+  it('does not create an unlimited key progress bar from the account wallet', () => {
+    expect(buildAccountExternalQuotaProgressMeta(status({
+      provider: 'heju', template: 'heju_api_key', remaining_usd: 29.03,
+      token_quota: { unlimited: true, used_usd: 30.96 },
+    }), { enabled: true, mode: 'status_total' })).toBeNull()
+  })
+})
