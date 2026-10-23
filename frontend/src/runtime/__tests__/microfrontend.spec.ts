@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { beginEmbeddedRequests, endEmbeddedRequests, embeddedRequestSignal } from '../environment'
 import { scopeMicrofrontendCss, microfrontendTeleportTransform } from '../../../scripts/microfrontend-css-scope.mjs'
 import { consolePublicNavigation } from '../console-navigation'
+import postcss from 'postcss'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 describe('Console public navigation follows original feature and authentication boundaries', () => {
   it('keeps home, key usage and public model plaza reachable for anonymous visitors', () => {
@@ -21,6 +24,14 @@ describe('Console public navigation follows original feature and authentication 
 })
 
 describe('Console opt-in artifact adapters', () => {
+  it('keeps the real route overlay fixed on the CSS scope root, including reduced motion', () => {
+    const motionCss = readFileSync(resolve(__dirname, '../../styles/design-system/motion.css'), 'utf8')
+    const css = postcss.parse(scopeMicrofrontendCss(motionCss, 'kreepai'))
+    const overlays: import('postcss').Rule[] = []
+    css.walkRules(':scope.qz-shift5-route-transition', rule => { overlays.push(rule) })
+    expect(overlays.some(rule => rule.nodes.some(node => node.type === 'decl' && node.prop === 'position' && node.value === 'fixed'))).toBe(true)
+    expect(overlays.some(rule => rule.parent?.type === 'atrule' && rule.parent.params.includes('prefers-reduced-motion') && rule.nodes.some(node => node.type === 'decl' && node.prop === 'display' && node.value === 'none'))).toBe(true)
+  })
   it('scopes Tailwind resets and public root styles without leaking into the Host', () => {
     const css = scopeMicrofrontendCss('html,body{font-size:14px}*{box-sizing:border-box}.btn{color:blue}@keyframes spin{to{transform:rotate(360deg)}}', 'kreepai')
     expect(css).toContain('@scope (.console-kreepai-surface)')

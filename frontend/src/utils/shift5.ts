@@ -56,10 +56,13 @@ function positionContentOverlay(node: HTMLDivElement, host: HTMLElement | null) 
   }
   const rect = host.getBoundingClientRect()
   node.classList.add('is-content')
-  node.style.top = `${rect.top}px`
-  node.style.left = `${rect.left}px`
-  node.style.width = `${rect.width}px`
-  node.style.height = `${rect.height}px`
+  // 组件绘制动画 / 页面滚动条：遮罩只取正文与视口交集，不能增加宿主body的滚动范围。
+  const headerBottom = host.closest('.app-main')?.querySelector('.layout-header')?.getBoundingClientRect().bottom ?? 0
+  const top = Math.max(0, headerBottom, rect.top), left = Math.max(0, rect.left)
+  node.style.setProperty('top', `${top}px`, 'important')
+  node.style.setProperty('left', `${left}px`, 'important')
+  node.style.setProperty('width', `${Math.max(0, Math.min(window.innerWidth, rect.right) - left)}px`, 'important')
+  node.style.setProperty('height', `${Math.max(0, Math.min(window.innerHeight, rect.bottom) - top)}px`, 'important')
 }
 
 function ensureOverlay(stage: string, scopeHost: HTMLElement | null = null) {
@@ -197,7 +200,7 @@ export async function runShift5Enter(root: HTMLElement | null, animate = true) {
     }
     await startShift5Leave(activeScope)
     if (token !== transitionToken) return
-    const host = ['content', 'settings'].includes(activeScope) ? root : null
+    const host = ['content', 'settings'].includes(activeScope) || globalThis.__SUB2API_MICROFRONTEND__ ? root : null
     const current = ensureOverlay('revealing', host)
     fullShellTransitionPending.value = false
     const blocks = collectBlocks(root)

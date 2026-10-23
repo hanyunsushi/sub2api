@@ -72,6 +72,10 @@ The existing design-system timings, DotMatrix size and visual categories remain 
 
 ## Verification boundary
 
+### Scoped route overlay and Host scrolling
+
+The microfrontend CSS adapter maps the body-mounted Shift5 overlay to `:scope.qz-shift5-route-transition` after document-root geometry is removed. The overlay is its own scope root; an ordinary descendant selector leaves it static and appends a full page of temporary document flow. `positionContentOverlay` clips its explicit geometry to the visible content/viewport intersection below the Host header, including full-scope embedded entrances. This preserves native body scrolling, the Shell's sticky navigation and the existing animation timings. The regression uses the actual motion stylesheet and checks fixed positioning plus the reduced-motion rule; compiled browser acceptance additionally measures body/Shell heights and navigation bounds during immediate scrolling. Standalone application publication is a separate operation from a Console MFE release.
+
 Use the original Vitest/jsdom configuration, typecheck, standalone build and MFE build. Real compiled-ESM checks must cover populated accounts, long amounts, dropdowns/dialogs, touch/keyboard, anonymous and ordinary-user navigation, route switching and cleanup. Shared layer coverage does not prove every specialized route, chart/brand treatment, payment or OAuth flow has been reviewed. Production deployment and real authentication are independent gates.
 
 ## See Also
