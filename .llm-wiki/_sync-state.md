@@ -26,3 +26,7 @@ Both authority symlinks, Wiki links/two-click reachability, CodeGraph sync and G
 # 发布与恢复收尾
 
 运维合同及当前产物/恢复材料已同步。源码发布和文档后续提交分别记录；历史数据缺口不伪造恢复点。详细验证与真实运行身份归agent.md及operations-retention。
+
+## Logo and route overlay scroll - 2026-10-24
+
+Scope: Console branding and the AI/marketing scoped route overlay. Source, browser, release and recovery evidence: [Host receipt](/Users/hinaw/console-kreeper/.llm-wiki/guides/logo-scroll-release-20261024.json). Other pending audit edits are preserved separately.
