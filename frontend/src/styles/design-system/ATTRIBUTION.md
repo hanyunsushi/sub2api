@@ -150,3 +150,10 @@ SOFTWARE.
 ## HeroUI ordinary radio styling
 
 The ordinary radio control/indicator CSS is adapted from [HeroUI](https://github.com/heroui-inc/heroui), `@heroui/styles` 3.2.6 (Copyright 2025 NextUI Inc., Apache-2.0). Original component CSS is preserved under `upstream/heroui`; the [Apache license](licenses/HeroUI-Apache-2.0.txt) is included. Slots and states map to Naive native input DOM, colors/fonts map to QingZhou, and host orientation remains intact. Source animations use 200ms indicator scale/background and 100ms pressed control scale; this adds no HeroUI runtime dependency.
+
+
+The native AI sidebar reuses Console Kreeper's `KreeperSidebarMenu.vue`,
+`sidebar-motion-react.tsx`, `sidebar-motion.ts` and associated sidebar CSS.
+The original Vue/React Motion implementation is retained; the adapter uses
+this application's existing `motion/react` runtime and a local structural menu type.
+These QingZhou-derived components retain the existing CC BY-NC-SA 4.0 attribution.

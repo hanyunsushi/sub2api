@@ -30,8 +30,8 @@ export function FeedbackMount(p: FeedbackMountProps) {
     window.addEventListener('keydown', keydown, true)
     return () => window.removeEventListener('keydown', keydown, true)
   }, [p.open, p.modal])
-  // 提示信息 / 组件绘制动画：确认框复用原250/200ms淡入缩放；消息和其他Modal保留原源码动效。
-  const simple = p.animation === 'fade-scale'
+  // 提示信息 / 组件绘制动画：所有模态弹窗复原250/200ms淡入缩放；仅右上角非模态消息保留原源码动效。
+  const simple = p.modal || p.animation === 'fade-scale'
   const pose = reduced ? { initial: false as const, animate: { opacity: 1, filter: 'none', transform: 'none' }, exit: { opacity: 0 }, transition: { duration: 0 } } : simple ? {
     initial: { opacity: 0, filter: 'none', transform: 'scale(0.95)' },
     animate: { opacity: 1, filter: 'none', transform: 'scale(1)', transition: { duration: .25, ease: 'easeOut' as const } },

@@ -40,12 +40,12 @@ describe('real ConfirmDialog feedback integration', () => {
     expect(panel().querySelector('[data-confirm-detail]')?.textContent).toBe('Original slot detail')
   })
 
-  it('keeps ordinary BaseDialog on the original source animation', () => {
+  it('restores ordinary BaseDialog to the same native fade-scale animation', () => {
     const wrapper = mount(BaseDialog, { props: { show: true, title: 'Original modal' } })
-    expect(wrapper.props('animation')).toBe('source')
-    expect(wrapper.getComponent(FeedbackSurface).props('animation')).toBe('source')
-    expect(panel().style.transform).toBe('perspective(500px) rotateX(-20deg) scale(0.8)')
-    expect(panel().style.filter).toBe('blur(4px)')
+    expect(wrapper.props('animation')).toBe('fade-scale')
+    expect(wrapper.getComponent(FeedbackSurface).props('animation')).toBe('fade-scale')
+    expect(panel().style.transform).toBe('scale(0.95)')
+    expect(panel().style.filter).toBe('none')
   })
 
   it('keeps translated labels and emits confirm once without changing the owner show state', async () => {

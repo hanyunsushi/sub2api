@@ -7,20 +7,11 @@
         <LoadingSpinner size="md" />
       </div>
 
-      <!-- Empty State -->
-      <div v-else-if="subscriptions.length === 0" class="card p-12 text-center">
-        <div
-          class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
-        >
-          <Icon name="creditCard" size="xl" class="text-gray-400" />
-        </div>
-        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-          {{ t('userSubscriptions.noActiveSubscriptions') }}
-        </h3>
-        <p class="text-gray-500 dark:text-dark-400">
-          {{ t('userSubscriptions.noActiveSubscriptionsDesc') }}
-        </p>
-      </div>
+      <!-- 提示信息 / 卡片SVG：空订阅保留原标题和说明，共用设计系统占位图。 -->
+      <EmptyState v-else-if="subscriptions.length === 0"
+        :title="t('userSubscriptions.noActiveSubscriptions')"
+        :description="t('userSubscriptions.noActiveSubscriptionsDesc')"
+      />
 
       <!-- 展示卡片 / 区分-信息牌 / 区分-状态牌：中性一级卡，平台由真实图标/蓝信息牌标识，健康状态独立。 -->
       <div v-else class="subscription-grid grid gap-6">
@@ -254,7 +245,7 @@ import { useAppStore } from '@/stores/app'
 import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import Icon from '@/components/icons/Icon.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import { formatDateTimeToMinute } from '@/utils/format'
 import { hasPeakRate, formatPeakRateWindow, serverTimezoneLabel } from '@/utils/peak-rate'

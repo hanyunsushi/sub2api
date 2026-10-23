@@ -1,0 +1,178 @@
+/* 侧边栏 / 组件绘制动画：控制台原菜单几何与Motion源码，仅挂在AI独立站侧栏。 */
+/* 侧边栏例外：全局 [class*="-item"] 圆角兜底会匹配 Naive UI 的
+   .n-menu-item-content，必须在全局层明确恢复侧栏的 8px 行圆角。 */
+.kreepai-layout .sidebar .sidebar-menu .n-menu,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item,
+.kreepai-layout .sidebar .sidebar-menu .n-submenu,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content::before {
+  border-radius: 8px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu,
+.kreepai-layout .sidebar .sidebar-menu > .n-menu,
+.kreepai-layout .sidebar .sidebar-menu .n-submenu > .n-menu-item {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.kreepai-layout .sidebar .sidebar-menu { box-sizing: border-box !important; }
+.kreepai-layout .sidebar .sidebar-menu {
+  scrollbar-gutter: stable;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-submenu {
+  --n-item-height: 32px;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 32px !important;
+  margin: 0 0 2px !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  contain: inline-size;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-submenu-children {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding-left: 16px !important;
+  border-left: 0 !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-submenu-children:not([data-motion-pop-id]) { position: relative !important; width: auto !important; margin: 2px 0 2px 12px !important; }
+.kreepai-layout .sidebar .sidebar-menu .n-submenu-children::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--sidebar-border);
+  pointer-events: none;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-submenu-children .n-menu-item {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 32px !important;
+  margin: 0 0 1px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-submenu-children .n-submenu {
+  min-height: 32px !important;
+  margin: 0 0 1px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-submenu-children .n-menu-item-content {
+  padding-left: 12px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content {
+  display: grid !important;
+  grid-template-columns: 24px minmax(0, 1fr) 16px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 6px 12px !important;
+  background: transparent !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content::before {
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  border-radius: 8px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content .n-menu-item-content__icon {
+  width: 16px !important;
+  height: 16px !important;
+  margin-right: 8px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content:hover::before {
+  background: var(--sidebar-hover) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--selected::before,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--child-active::before {
+  background: var(--sidebar-selected) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--selected .n-menu-item-content__icon,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--child-active .n-menu-item-content__icon,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--selected .n-menu-item-content__icon .n-icon,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--selected .n-menu-item-content__icon svg,
+.kreepai-layout .sidebar .sidebar-menu .n-menu-item-content--child-active .n-menu-item-content__icon svg {
+  color: var(--accent) !important;
+}
+
+
+/* 分组标签样式 */
+.kreepai-layout .sidebar .menu-group-label {
+  font-size: 13px; font-weight: 600; color: var(--sidebar-muted);
+  letter-spacing: 0; text-transform: uppercase; opacity: 1;
+}
+.kreepai-layout .sidebar .n-menu-item-group-title {
+  margin-top: 12px; padding: 0 12px 4px !important;
+  font-size: 11px; font-weight: 500; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--sidebar-muted) !important; opacity: 1;
+}
+.kreepai-layout .sidebar .n-menu { width: 100%; min-width: 0; max-width: 100%; overflow: hidden; contain: inline-size; background: transparent !important; color: var(--sidebar-fg); font-size: 13px; }
+.kreepai-layout .sidebar .n-menu-item { width: 100%; min-width: 0; max-width: 100%; height: 32px !important; margin: 0 0 2px; overflow: hidden; }
+.kreepai-layout .sidebar .n-menu-item-content {
+  box-sizing: border-box; display: grid; grid-template-columns: 24px minmax(0,1fr) 16px; width: 100%; min-width: 0; max-width: 100%; min-height: 32px !important; height: 32px !important; margin: 0; padding: 6px 12px !important;
+  position: relative; z-index: 0; overflow: hidden;
+  border-radius: 8px !important; color: var(--sidebar-muted); font-size: 13px; font-weight: 500; line-height: 20px;
+  transition: color .15s ease, background-color .15s ease, outline-color .15s ease !important;
+}
+.kreepai-layout .sidebar .n-menu-item-content::before {
+  left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important; border-radius: 8px !important; background: transparent !important;
+}
+.kreepai-layout .sidebar .n-menu-item-content:hover, .kreepai-layout .sidebar .n-menu-item-content--selected { background: transparent !important; }
+.kreepai-layout .sidebar .n-menu-item-content:hover::before { background: var(--sidebar-hover) !important; }
+.kreepai-layout .sidebar .n-menu-item-content--selected::before, .kreepai-layout .sidebar .n-menu-item-content--child-active::before { background: var(--sidebar-selected) !important; }
+.kreepai-layout .sidebar .n-menu-item-content:hover .n-menu-item-content-header,
+.kreepai-layout .sidebar .n-menu-item-content--selected .n-menu-item-content-header,
+.kreepai-layout .sidebar .n-menu-item-content--child-active .n-menu-item-content-header {
+  color: var(--sidebar-fg) !important;
+}
+.kreepai-layout .sidebar .n-menu-item-content--selected .n-menu-item-content-header,
+.kreepai-layout .sidebar .n-menu-item-content--child-active .n-menu-item-content-header { font-weight: 600; }
+.kreepai-layout .sidebar .n-menu-item-content:focus-visible { outline: 2px solid var(--sidebar-ring); outline-offset: -2px; }
+.kreepai-layout .sidebar .n-menu-item-content--selected::after { display: none; }
+.kreepai-layout .sidebar .n-menu-item-content-header,
+.kreepai-layout .sidebar .n-menu-item-content__icon,
+.kreepai-layout .sidebar .n-menu-item-content__arrow { position: relative; z-index: 2; }
+.kreepai-layout .sidebar .n-menu-item-content .n-menu-item-content__icon { width: 16px !important; height: 16px !important; margin-right: 8px !important; color: var(--sidebar-muted); font-size: 16px !important; }
+.kreepai-layout .sidebar .n-menu-item-content--selected .n-menu-item-content__icon,
+.kreepai-layout .sidebar .n-menu-item-content--child-active .n-menu-item-content__icon { color: var(--accent) !important; }
+.kreepai-layout .sidebar .n-menu-item-content--selected .n-menu-item-content__icon .n-icon,
+.kreepai-layout .sidebar .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon { color: var(--accent) !important; }
+.kreepai-layout .sidebar .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg,
+.kreepai-layout .sidebar .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg { color: var(--accent) !important; }
+.kreepai-layout .sidebar .n-menu-item-content-header { min-width: 0; max-width: 100%; overflow: hidden; overflow-wrap: anywhere; white-space: normal; text-overflow: ellipsis; }
+.kreepai-layout .sidebar .n-menu-item-content__arrow {
+  display: inline-flex; align-items: center; justify-content: center; align-self: center; justify-self: center; width: 16px; height: 20px; margin: 0; color: var(--sidebar-muted); opacity: .5; transform: rotate(-90deg) !important; transform-origin: center;
+  transition: transform .25s cubic-bezier(.87, 0, .13, 1), color .25s cubic-bezier(.87, 0, .13, 1) !important;
+}
+/* 侧边栏：单列优先于全局三列网格，SVG水平/垂直居中，隐藏文字不占列。 */
+.kreepai-layout .sidebar.is-collapsed .n-menu-item-content { grid-template-columns: minmax(0, 1fr) !important; place-items: center; padding: 6px 0 !important; }
+.kreepai-layout .sidebar.is-collapsed .n-menu-item-content-header {
+  position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important;
+  overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important;
+}
+.kreepai-layout .sidebar.is-collapsed .n-menu-item-content__arrow { display: none !important; }
+/* 侧边栏 / 菜单归类级别：折叠分组以4px圆点居中占位。 */
+.kreepai-layout .sidebar .menu-group-dot { display: none; }
+.kreepai-layout .sidebar.is-collapsed .n-menu-item-group-title { display: flex; align-items: center; justify-content: center; height: 16px; min-height: 16px; margin: 6px 0 2px !important; padding: 0 !important; overflow: hidden; opacity: 1; }
+.kreepai-layout .sidebar.is-collapsed .menu-group-label { display: flex; align-items: center; justify-content: center; }
+.kreepai-layout .sidebar.is-collapsed .menu-group-text { display: none; }
+.kreepai-layout .sidebar.is-collapsed .menu-group-dot { display: block; width: 4px; height: 4px; border-radius: 50% !important; background: var(--sidebar-muted); }
+.kreepai-layout .sidebar.is-collapsed .n-menu-item-content .n-menu-item-content__icon { margin: 0 !important; }
+/* 侧边栏 / 菜单归类级别：立即隐藏收回中的子树，不把二、三级 SVG 留在图标轨道。 */
+.kreepai-layout .sidebar.is-collapsed .n-submenu-children { display: none !important; }
+.kreepai-layout .sidebar .n-submenu[aria-expanded="false"] > .n-menu-item > .n-menu-item-content .n-menu-item-content__arrow { transform: rotate(-90deg) !important; }
+.kreepai-layout .sidebar .n-submenu[aria-expanded="true"] > .n-menu-item > .n-menu-item-content .n-menu-item-content__arrow { transform: rotate(0deg) !important; }

@@ -1,6 +1,6 @@
 ---
 title: Kreepai Shared Design System
-updated: 2026-10-22
+updated: 2026-10-23
 sources:
   - frontend/src/styles/design-system/
   - frontend/tailwind.config.js
@@ -54,7 +54,7 @@ Official sources read for this adaptation: [Data visualization colors](https://c
 
 ## Native shell details
 
-The native shell uses 264/72px sidebar tracks and a 64px glass header. Business content uses the original AI 16/24/32px responsive padding and fills its available width without a 1360px cap. Named `kreepai-content` containers apply the original 768/1024px thresholds to actual content width; native and embedded AppLayout share the same content class. Console uses the Shell application-owned content mode with zero extra Host padding, maximum width or centering margin. QingZhou content defaults do not define global design-system geometry for other applications. Original role/feature-filtered menu groups remain; filtering uses their labels/paths and preserves children. At <=768px the original mobile drawer takes over, with 300px width and a backdrop above the header. The account/locale/subscription menus share a per-header mutual-exclusion state, with keyboard Escape/focus cleanup. The original backend language reload behavior remains.
+The native shell uses 264/72px sidebar tracks and a 64px glass header. `AppSidebar` now passes its original role/feature-filtered tree into the same `KreeperSidebarMenu` and React Motion source as Console. The local structural menu type avoids adding Naive UI; `motion/react` uses the existing runtime. Shared projection, subtree transitions, group labels, icon tracks and keyboard handling are retained, while standalone owns navigation, theme and mobile state. The brand glass, subdued corner version, body-font header title and continuous mobile-menu SVG match Console; desktop native scrolling and the 300px mobile drawer keep their respective gutters. Business content uses the original AI 16/24/32px responsive padding and fills its available width without a 1360px cap. Named `kreepai-content` containers apply the original 768/1024px thresholds to actual content width; native and embedded AppLayout share the same content class. Console uses the Shell application-owned content mode with zero extra Host padding, maximum width or centering margin. QingZhou content defaults do not define global design-system geometry for other applications. Original role/feature-filtered menu groups remain; filtering uses their labels/paths and preserves children. At <=768px the original mobile drawer takes over, with 300px width and a backdrop above the header. The account/locale/subscription menus share a per-header mutual-exclusion state, with keyboard Escape/focus cleanup. The original backend language reload behavior remains.
 
 Native `styles/design-system/native.css` and `PageScrollbar.vue` reserve the desktop 16px rail with an 8px centered thumb; <=768px removes both rail and slot. Native document scrolling is retained. Embedded mode does not mount this rail or import native document CSS; Host owns scrolling. Scroll drag/cancel/unmount listeners are cleaned up.
 
@@ -162,6 +162,15 @@ FeedbackMessages uses a20px filled Apple semantic circle and white mark. Message
 
 ## Design-sync production release 2026-10-22
 
-The user-confirmation dialog now keeps its source NDialogProvider/lifecycle ownership and simple native fade-scale transition; the shared complex Headless/Motion surface remains limited to the application dialogs that already use it. Main-action hover uses the 32px/32% white inner-light layer with 400ms entry/exit; ordinary/default-arc hover retains the gray inset treatment and text-2. The feedback stack/material, default white-background design-system logo and desktop SVG empty/result states are sourced from the shared design-system assets. Native product logos and route/business behavior remain app-owned.
+The 2026-10-22 release restored confirmation motion only. The current AI contract below supersedes its ordinary-modal motion; the Naive provider belongs to the canonical reusable system, while AI keeps its existing Headless lifecycle. Main-action hover uses the 32px/32% white inner-light layer with 400ms entry/exit; ordinary/default-arc hover retains the gray inset treatment and text-2. The feedback stack/material, default white-background design-system logo and desktop SVG empty/result states are sourced from the shared design-system assets. Native product logos and route/business behavior remain app-owned.
 
 The pushed frontend commit `2091a0f0eb6ae8ff0d87b5c0c5125de4fa70c42a` was embedded into the application image without changing the `0.2.16` product version or backend source. Runtime image/container identity, nine local routes, public health/home/login, unchanged PostgreSQL/Redis and volumes, database/appdata backups and rollback tag are recorded in [project authority](../../agent.md#设计系统反馈修复部署2026-10-22已部署). Public HTTP checks are not production authenticated visual acceptance.
+
+
+## Account-page review and native modal motion
+
+All modal `FeedbackSurface` instances use opacity and scale(.95→1), entering250ms easeOut and leaving200ms easeIn; the backdrop only fades. `BaseDialog` defaults to `fade-scale`, and modal surfaces enforce this even for historical callers requesting `source`. Perspective, rotation, blur and spring remain exclusive to the nonmodal upper-right `FeedbackMessages` stack. Modal panels use the existing18px card surface, border and flyout shadow. Headless still owns focus, topmost Escape, scroll locking and exit cleanup; Vue keeps forms, original widths, async actions and events. This is the user's AI-specific motion restoration, not a new global animation category.
+
+AccountActionMenu joins the existing16px dropdown surface with12px padding,8px/40px neutral items and8px anchor gap. Real menu measurement, viewport clamping, conditional credential operations and callbacks remain original. Account scheduling uses the existing accessible `Toggle`,40×23px track/17px thumb, with the original disabled state and server callback.
+
+DataTable's desktop/card defaults, AvailableChannelsTable's two responsive branches and the empty user-subscriptions page all use `EmptyState`. It centers the supplied160×100px transparent SVG and12.5/20 body text, while retaining translated titles/descriptions and caller actions. Loading and failures remain distinct states. These shared owners are included in both native and MFE builds; compiled MFE validation is separate from deployment.

@@ -4,18 +4,10 @@
     <div v-if="loading" class="col-span-full grid min-h-44 place-items-center"><LoadingSpinner /></div>
 
     <template v-else-if="!data || data.length === 0">
-      <div class="col-span-full rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-dark-700 dark:bg-dark-900">
+      <div class="col-span-full text-center">
         <slot name="empty">
-          <div class="flex flex-col items-center">
-            <Icon
-              name="inbox"
-              size="xl"
-              class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500"
-            />
-            <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
-              {{ t('empty.noData') }}
-            </p>
-          </div>
+          <!-- 提示信息 / 卡片SVG：表格和卡片空态复用设计系统占位图。 -->
+          <EmptyState :title="t('empty.noData')" />
         </slot>
       </div>
     </template>
@@ -172,16 +164,8 @@
             :class="['py-12 text-center text-gray-500 dark:text-dark-400', getAdaptivePaddingClass()]"
           >
             <slot name="empty">
-              <div class="flex flex-col items-center">
-                <Icon
-                  name="inbox"
-                  size="xl"
-                  class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500"
-                />
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  {{ t('empty.noData') }}
-                </p>
-              </div>
+              <!-- 提示信息 / 卡片SVG：表格和卡片空态复用设计系统占位图。 -->
+          <EmptyState :title="t('empty.noData')" />
             </slot>
           </td>
         </tr>
@@ -250,11 +234,11 @@
 
 <script setup lang="ts">
 import LoadingSpinner from './LoadingSpinner.vue'
+import EmptyState from './EmptyState.vue'
 import { computed, ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useVirtualizer, observeElementRect as observeElementRectDefault } from '@tanstack/vue-virtual'
 import { useI18n } from 'vue-i18n'
 import type { Column } from './types'
-import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()
 

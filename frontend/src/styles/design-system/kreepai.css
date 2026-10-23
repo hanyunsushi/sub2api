@@ -400,7 +400,7 @@
   /* 展示信息模块 / 顶栏：触摸正文14/12，原侧栏抽屉继续使用；窄屏内容可换行。 */
   :root.kreepai-design-system .kreepai-layout-main, :root.kreepai-design-system .kreepai-layout-main.is-collapsed { margin-left: 0; }
   :root.kreepai-design-system .kreepai-header-inner { padding: 0 12px; }
-  :root.kreepai-design-system .kreepai-header-title { display: none; }
+  :root.kreepai-design-system .kreepai-header-title { display: block; min-width: 0; overflow: hidden; }
   :root.kreepai-design-system .sidebar { width: 300px; border-radius: 0; }
 }
 @media (min-width: 769px) {
@@ -496,3 +496,57 @@
 :root.kreepai-design-system .kreepai-field-error { margin: 6px 0 0; color: #ff3b30; font: 400 13px/20px var(--ff-body); overflow-wrap: anywhere; }
 :root.kreepai-design-system .kreepai-agreement-checkbox { margin-top: 2px; }
 @media (pointer: coarse) { :root.kreepai-design-system .kreepai-agreement-choice label { display: inline-flex; align-items: center; min-height: 44px; } }
+
+/* 下拉选择菜单：账号更多操作也使用通用16px面板/12px内距，不再保留旧紧凑彩色操作列表。 */
+:root.kreepai-design-system .account-action-menu-items { display: grid; gap: 2px; }
+:root.kreepai-design-system .account-action-menu-items .dropdown-item { width: 100%; display: flex; gap: 8px; font: 400 14px/20px var(--ff-body); color: var(--text); text-align: left; }
+:root.kreepai-design-system .account-action-menu-items .dropdown-item > svg { width: 16px; height: 16px; color: inherit; flex-shrink: 0; }
+/* 切换开关：状态色与40×23/17px几何共用，禁用与键盘焦点由原button保留。 */
+:root.kreepai-design-system .kreepai-switch[aria-checked=true] { background: var(--accent); }
+:root.kreepai-design-system .kreepai-switch[aria-checked=false] { background: var(--card-hover); }
+/* 顶栏：与Console同款正文标题/中性1px触发器；页面描述不占第二行。 */
+:root.kreepai-design-system .kreepai-header-title h1 { font: 650 16px/20px var(--ff-body); }
+:root.kreepai-design-system .kreepai-header-title p { display: none; }
+:root.kreepai-design-system .kreepai-header-controls > a,
+:root.kreepai-design-system .kreepai-header-controls > div > button,
+:root.kreepai-design-system .kreepai-header-balance { border-color: var(--border); }
+/* 侧边栏 / 品牌标识：Console同款64px玻璃品牌、原生滚动轨道、版本角标和底部按钮。 */
+:root.kreepai-design-system .sidebar {
+  --sidebar-bg: var(--bg); --sidebar-fg: var(--text); --sidebar-card: var(--bg);
+  --sidebar-muted: var(--text-3); --sidebar-hover: var(--card-hover); --sidebar-selected: var(--card-hover);
+  --sidebar-border: var(--border); --sidebar-ring: oklch(14.5% 0 0 / .35); --sidebar-content-gap: 20px; --ff: var(--ff-body);
+}
+:root.kreepai-design-system .sidebar-header { position: relative; flex: 0 0 64px; box-sizing: border-box; backdrop-filter: var(--topbar-backdrop-filter); -webkit-backdrop-filter: var(--topbar-backdrop-filter); }
+:root.kreepai-design-system .sidebar-logo { flex: 0 0 40px; min-width: 40px; }
+:root.kreepai-design-system .sidebar-brand { line-height: 20px; }
+:root.kreepai-design-system .kreepai-brand-caption { display: block; margin-top: 2px; color: var(--text-3); font: 400 12px/16px var(--ff-body); }
+:root.kreepai-design-system .kreepai-brand-version { position: absolute; right: 10px; bottom: 3px; max-width: 140px; color: var(--text-3); font: 400 10px/12px var(--ff-body); }
+:root.kreepai-design-system .kreepai-brand-version .badge { background: transparent; color: inherit; padding: 0; font: inherit; }
+:root.kreepai-design-system .sidebar-nav { flex: 1 1 auto; box-sizing: border-box; padding: 0 0 20px 16px; overflow-x: hidden; overflow-y: auto; scrollbar-gutter: stable; scrollbar-width: auto; }
+:root.kreepai-design-system .kreepai-sidebar-filter { margin: 20px 0; }
+:root.kreepai-design-system .kreepai-sidebar-filter input { background: var(--sidebar-card); }
+:root.kreepai-design-system .kreepai-sidebar-filter input::-webkit-search-cancel-button { display: none; }
+:root.kreepai-design-system .sidebar.is-collapsed .sidebar-header { justify-content: center; padding-inline: 15px; }
+:root.kreepai-design-system .sidebar.is-collapsed .sidebar-brand { display: none; }
+:root.kreepai-design-system .sidebar.is-collapsed .sidebar-nav { padding: 8px 0 20px; scrollbar-gutter: stable both-edges; }
+:root.kreepai-design-system .sidebar.is-collapsed .n-menu { width: 40px; max-width: 100%; margin-inline: auto; }
+:root.kreepai-design-system .kreepai-sidebar-footer { flex-shrink: 0; border-top: 1px solid var(--border); padding: 12px 16px; }
+:root.kreepai-design-system .kreepai-sidebar-footer .sidebar-link { min-height: 32px; padding: 0 12px; font: 500 13px/20px var(--ff-body); }
+:root.kreepai-design-system .sidebar.is-collapsed .kreepai-sidebar-footer { padding-inline: 8px; }
+:root.kreepai-design-system .sidebar.is-collapsed .kreepai-sidebar-footer .sidebar-link { justify-content: center; padding: 0; }
+:root.kreepai-design-system .sidebar-search-empty { padding: 12px; color: var(--text-3); font: 400 13px/20px var(--ff-body); }
+@media (max-width: 768px) {
+  :root.kreepai-design-system .sidebar.app-sider { width: 300px !important; border-radius: 0; }
+  :root.kreepai-design-system .sidebar-nav { padding-inline: 16px; scrollbar-gutter: auto; scrollbar-width: none; }
+  :root.kreepai-design-system .sidebar-nav::-webkit-scrollbar { display: none; }
+}
+@media (pointer: coarse) {
+  :root.kreepai-design-system .kreepai-sidebar-footer .sidebar-link { min-height: 44px; }
+}
+
+/* 悬浮菜单按钮：Console同款连续SVG，透明42px命中；触摸44px，不加外框或内阴影。 */
+:root.kreepai-design-system .kreepai-mobile-menu-toggle { display: grid; place-items: center; width: 42px; height: 42px; padding: 10px; border: 0; border-radius: 8px; background: transparent; color: var(--text-3); box-shadow: none; }
+:root.kreepai-design-system .kreepai-mobile-menu-toggle:hover { color: var(--text); }
+:root.kreepai-design-system .kreepai-mobile-menu-toggle > svg { width: 22px; height: 22px; }
+@media (min-width: 769px) { :root.kreepai-design-system .kreepai-mobile-menu-toggle { display: none; } }
+@media (pointer: coarse) { :root.kreepai-design-system .kreepai-mobile-menu-toggle { min-width: 44px; min-height: 44px; } }

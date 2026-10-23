@@ -63,7 +63,7 @@ describe('AccountActionMenu viewport positioning', () => {
   it('measures a long OAuth menu and opens above the last row', async () => {
     await mountMenu()
 
-    expect(getTop()).toBe(720 - 305 - 4)
+    expect(getTop()).toBe(720 - 305 - 8)
     expect(getLeft()).toBe(982 - 208)
     expect(getTop() + menuHeight).toBeLessThanOrEqual(window.innerHeight - 8)
     expect(getMenu().textContent).toContain('admin.accounts.recoverState')
@@ -72,7 +72,7 @@ describe('AccountActionMenu viewport positioning', () => {
   it('opens below the trigger when the complete menu fits', async () => {
     await mountMenu(new DOMRect(500, 100, 32, 24))
 
-    expect(getTop()).toBe(128)
+    expect(getTop()).toBe(100 + 24 + 8)
     expect(getLeft()).toBe(324)
   })
 
@@ -80,7 +80,7 @@ describe('AccountActionMenu viewport positioning', () => {
     setViewport(390, 600)
     await mountMenu(new DOMRect(179, 550, 32, 24))
 
-    expect(getTop()).toBe(241)
+    expect(getTop()).toBe(550 - 305 - 8)
     expect(getLeft()).toBe(91)
   })
 
@@ -116,7 +116,7 @@ describe('AccountActionMenu viewport positioning', () => {
     resizeMenu([], {} as ResizeObserver)
     await flushPromises()
 
-    expect(getTop()).toBe(296)
+    expect(getTop()).toBe(720 - 420 - 8)
   })
 
   it('repositions and updates size limits after a viewport resize', async () => {
@@ -137,7 +137,7 @@ describe('AccountActionMenu viewport positioning', () => {
     await wrapper.setProps({ show: true, anchorRect: new DOMRect(400, 100, 32, 24) })
     await flushPromises()
 
-    expect(getTop()).toBe(128)
+    expect(getTop()).toBe(100 + 24 + 8)
     expect(getLeft()).toBe(224)
   })
 

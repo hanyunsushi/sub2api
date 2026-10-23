@@ -1,4 +1,5 @@
 <template>
+  <!-- 提示信息 / 组件绘制动画：业务弹窗统一复原淡入缩放；右上角消息单独保留源码动效。 -->
   <FeedbackSurface :show="show" modal :animation="animation" :label="title" :label-id="dialogId" :panel-class="`kf-feedback-panel modal-content kf-dialog-width-${width} ${widthClasses}`" scope-class="console-kreepai-surface kreepai-design-system" :z-index="zIndex" :close-on-escape="closeOnEscape" :close-on-click-outside="closeOnClickOutside" @close="emit('close')">
           <!-- Header -->
           <div class="modal-header">
@@ -58,7 +59,7 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnClickOutside: false,
   showCloseButton: true,
   zIndex: 1000,
-  animation: 'source'
+  animation: 'fade-scale'
 })
 
 const emit = defineEmits<Emits>()

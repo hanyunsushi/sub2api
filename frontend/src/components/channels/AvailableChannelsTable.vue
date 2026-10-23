@@ -25,8 +25,8 @@
       <tbody v-else-if="rows.length === 0">
         <tr>
           <td colspan="5" class="py-12 text-center">
-            <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-gray-400" />
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ emptyLabel }}</p>
+            <!-- 提示信息 / 卡片SVG：渠道空态共享160×100透明占位图。 -->
+            <EmptyState :title="emptyLabel" />
           </td>
         </tr>
       </tbody>
@@ -177,8 +177,8 @@
         <Icon name="refresh" size="lg" class="inline-block animate-spin text-gray-400" />
       </div>
       <div v-else-if="rows.length === 0" data-testid="mobile-empty" class="py-12 text-center">
-        <Icon name="inbox" size="xl" class="mx-auto mb-3 h-12 w-12 text-gray-400" />
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ emptyLabel }}</p>
+        <!-- 提示信息 / 卡片SVG：渠道空态共享160×100透明占位图。 -->
+            <EmptyState :title="emptyLabel" />
       </div>
       <section
         v-else
@@ -322,6 +322,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import SupportedModelChip from './SupportedModelChip.vue'

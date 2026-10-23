@@ -7,10 +7,14 @@
       <div v-if="!topbarTarget" class="kreepai-header-heading flex min-w-0 items-center gap-2 sm:gap-4">
         <button
           @click="toggleMobileSidebar"
-          class="btn-ghost btn-icon min-[769px]:hidden"
+          class="kreepai-mobile-menu-toggle min-[769px]:hidden"
           :aria-label="t('common.toggleMenu')"
         >
-          <Icon name="menu" size="md" />
+          <!-- 悬浮菜单按钮：复用Console连续路径、42px命中与22px图标。 -->
+          <svg aria-hidden="true" fill="none" viewBox="0 0 32 32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke-dasharray="12 63" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22" />
+            <path d="M7 16 27 16" />
+          </svg>
         </button>
 
         <div class="kreepai-header-title">

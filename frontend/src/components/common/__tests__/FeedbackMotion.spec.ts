@@ -42,13 +42,11 @@ describe('feedback animation selection', () => {
     expect(observed.backdrop.exit).toEqual({ opacity: 0, filter: 'none', transition: { duration: .2, ease: 'easeIn' } })
   })
 
-  it('retains source perspective, spring, blur and default backdrop for ordinary modals', async () => {
-    const wrapper = mount(FeedbackSurface, { props: { show: true, modal: true, label: 'Source' } })
-    expect(wrapper.props('animation')).toBe('source')
-    await vi.waitFor(() => expect(observed.panel.initial).toEqual({ opacity: 0, filter: 'blur(4px)', transform: 'perspective(500px) rotateX(-20deg) scale(0.8)', transition: { type: 'spring', stiffness: 150, damping: 25 } }))
-    expect(observed.backdrop.initial).toBeUndefined()
-    expect(observed.backdrop.animate).toBeUndefined()
-    expect(observed.backdrop.exit).toBeUndefined()
+  it('restores ordinary modal motion even when a historical caller requests source animation', async () => {
+    mount(FeedbackSurface, { props: { show: true, modal: true, animation: 'source', label: 'Edit account' } })
+    await vi.waitFor(() => expect(observed.panel.initial).toEqual({ opacity: 0, filter: 'none', transform: 'scale(0.95)' }))
+    expect(observed.backdrop.initial).toEqual({ opacity: 0, filter: 'none' })
+    expect(observed.panel.animate).not.toHaveProperty('rotateX')
   })
 
   it.each(['source', 'fade-scale'] as const)('makes %s immediate and flat under reduced motion', async animation => {

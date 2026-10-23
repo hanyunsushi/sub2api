@@ -31,7 +31,7 @@
     </h3>
 
     <!-- 提示信息：长描述可换行，保留调用方原文。 -->
-    <p class="empty-state-description">
+    <p v-if="description" class="empty-state-description">
       {{ description }}
     </p>
 
@@ -85,6 +85,11 @@ defineEmits(['action'])
 <style scoped>
 /* 提示信息：空态最小180px/内距26px；不套卡片表面，不把普通描述当页面标题。 */
 :root.kreepai-design-system .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   min-height: 180px;
   padding: 26px;
   color: var(--text-3);
