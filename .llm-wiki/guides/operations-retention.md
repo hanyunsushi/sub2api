@@ -48,6 +48,6 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 - [项目权威](../../agent.md)
 - [Wiki索引](../_index.md)
 
-# 本轮验收
+# 当前验收入口
 
-本轮源码检查点`191902bca`；本轮独立服务仅改文档，原应用、PostgreSQL/Redis及正式卷保留；Console中的前端按干净提交重建。 当前镜像加三个`codex-pre-*`回滚tag；构建暂存目录已移除，非敏感构建/激活摘要保存在OCI恢复目录。五月AI Search草稿已以`f3e83a911`提交并推送`codex/ai-search`，作为历史草稿归档，不计入生产发布；旧工作区已移除。 具体活动digest、恢复清单、私有副本及未验范围归[项目权威](../../agent.md)。共享OCI结果见[发布与恢复验收](/Users/hinaw/console-kreeper/.llm-wiki/guides/oci-runtime-and-recovery.md)。
+2026-10-23独立Sub2API原生外壳与弹窗修复已按clean archive、前端嵌入构建、应用-only切换、完整恢复点和精确保留流程部署。当前artifact、源码、三份回滚tag、数据恢复点与生产只读浏览器边界由[项目权威](../../agent.md#原生外壳与九处反馈修复2026-10-23已部署)维护。其他项目与Console指针未由本轮修改。
