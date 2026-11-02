@@ -25,6 +25,8 @@ updated: 2026-10-12
 
 # Guides
 
+- [Sub2API 0.2.19 发布回执](guides/sub2api-upstream-v0219-release-20261102.json) - 双入口、迁移、恢复及验证边界
+
 - [Upstream Management and Billing](guides/upstream-management-and-billing.md) - MCP OAuth, scoped admin keys and migration boundaries
 - [合聚 API 外部订阅接入](guides/heju-external-subscription.md) - 官方只读接入、凭据、单位与账号/Key统计范围
 - [Development and Testing](guides/development-and-testing.md) - Minimal local workflow

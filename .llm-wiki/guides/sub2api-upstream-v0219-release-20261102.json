@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-02",
+  "source_commit": "a4efbbc2c9d596d5e0f8e61f806af46f98dcec40",
+  "upstream_version": "0.2.19",
+  "native": {
+    "commit": "a4efbbc2c9d596d5e0f8e61f806af46f98dcec40",
+    "version": "0.2.19",
+    "image": "sha256:4f666d57e044fe8a05508875fd308b7e0b20a002669fcc0d530b75911183f16e",
+    "container": "6c66bb978956e8fba02c0c1d63f21c94dd37aae87eb8fb199b5058c3f6421ab0",
+    "health": "healthy",
+    "restarts": 0,
+    "other_containers_unchanged": 11,
+    "env_and_mounts_unchanged": true,
+    "source_markers_updated": true,
+    "rollback_tag": "sub2api-custom:codex-pre-upstream-v0219-20261102",
+    "native_backup": "/home/ubuntu/oci-recovery/sub2api/20261102T073213Z"
+  },
+  "console": {
+    "release": "console-20261102-sub2api-v0219-a",
+    "previous": "console-20261102-marketing-stock-transfer-a",
+    "manifest_files": 1224,
+    "other_apps_files_preserved": 994,
+    "host_unchanged_except_bootstrap_paths": true
+  },
+  "final_console": "console-20261102-marketing-week-dates-a",
+  "parallel_marketing_update_preserved": true,
+  "ai_artifact_identical_after_parallel_update": true,
+  "verification": {
+    "source_tests": "405 frontend files / 3206 tests; ordinary and unit/embed full Go suites, typecheck, lint and native/MFE builds passed",
+    "clean_archive_builds": "native + Linux ARM64 embedded binary + Console ESM/CSS/API/Teleport checks passed",
+    "public_checks": 32,
+    "public_resource_hashes": 18,
+    "legacy_native_static_files_verified": 204,
+    "healthy_containers": 12,
+    "account_credentials_unchanged": true,
+    "provider_configuration_unchanged": true,
+    "only_setting_value_change": "normal refresh of external_subscription_display_statuses cache",
+    "record_counts": {
+      "accounts": 42,
+      "users": 4,
+      "groups": 19
+    },
+    "migrations": [
+      246,
+      247,
+      248,
+      249
+    ],
+    "migration_checksums": "match migration runner SHA-256 after TrimSpace",
+    "migration_246_affected_groups": 0,
+    "mcp_enabled": false,
+    "browser": "no new authenticated production browser acceptance"
+  },
+  "activation_attempts": {
+    "automatic_rollbacks": 2,
+    "reason": "verification compared order-sensitive environment/mount lists; candidates were healthy; canonical key/destination comparisons resolved the false alarms",
+    "database_restore_performed": false
+  },
+  "recovery": {
+    "native": "/home/ubuntu/oci-recovery/sub2api/20261102T073213Z",
+    "console": "/home/ubuntu/oci-recovery/console/20261102T073250Z",
+    "private_off_host": "~/.local/share/oci-recovery/20261102-sub2api-v0219/",
+    "image_export": {
+      "image": "sha256:4f666d57e044fe8a05508875fd308b7e0b20a002669fcc0d530b75911183f16e",
+      "sha256": "8b80c1440523e963ab7f06a709c86b55ad0cbe543ba600e44da575f40f629c2d",
+      "size": 256831819
+    },
+    "permissions": "0700 directories / 0600 files",
+    "restore_drill": "not performed"
+  },
+  "retention": {
+    "kept_console_releases": [
+      "console-20261102-marketing-week-dates-a",
+      "console-20261102-sub2api-v0219-a",
+      "console-20261102-marketing-stock-transfer-a",
+      "console-20261102-openstock-sidebar-a"
+    ],
+    "manifest_files_verified": 4890,
+    "explicit_resource_references": 1001,
+    "paths_removed": 4,
+    "image_tags_removed": 2,
+    "rollback_tags": [
+      "sub2api-custom:codex-pre-upstream-v0219-20261102",
+      "sub2api-custom:codex-pre-heju-20261024",
+      "sub2api-custom:codex-pre-native-review-20261023T143500Z"
+    ],
+    "runtime_unchanged_during_cleanup": true
+  },
+  "build_method": "clean committed source archive; local Linux ARM64 Go embed cross-build; runtime image derived from previous production image, with resources updated; qualified Compose app-only up --no-deps --wait",
+  "host_package_change": "installed rsync 3.2.7 for checksum-based incremental artifact transfer"
+}

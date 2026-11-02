@@ -50,4 +50,4 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 # 当前验收入口
 
-2026-10-23独立Sub2API原生外壳与弹窗修复已按clean archive、前端嵌入构建、应用-only切换、完整恢复点和精确保留流程部署。当前artifact、源码、三份回滚tag、数据恢复点与生产只读浏览器边界由[项目权威](../../agent.md#原生外壳与九处反馈修复2026-10-23已部署)维护。其他项目与Console指针未由本轮修改。
+0.2.19双入口发布、迁移246–249、一致性备份和精确保留已完成；当前artifact、恢复点、三份回滚和未测边界由[项目权威](../../agent.md#当前发布与恢复合同2026-11-020219已发布)维护，脱敏证据见[发布回执](sub2api-upstream-v0219-release-20261102.json)。Console的并行营销更新保留。
