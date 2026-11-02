@@ -1,3 +1,5 @@
+import adminAccessKeys from './adminAccessKeys'
+import mcp from './mcp'
 import landing from './landing'
 import common from './common'
 import dashboard from './dashboard'
@@ -17,6 +19,8 @@ export default {
     logoPresets: 'Custom logo URLs',
     quotaBar: 'Quota bar'
   },
+  adminAccessKeys,
+  mcp,
   ...landing,
   ...common,
   ...dashboard,

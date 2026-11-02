@@ -7,7 +7,7 @@ updated: 2026-10-11
 
 ## Prerequisites
 
-- Go version from `backend/go.mod` (currently 1.27.0).
+- Go version from `backend/go.mod` (currently 1.27.3).
 - pnpm with the committed `frontend/pnpm-lock.yaml`.
 - PostgreSQL and Redis only for tests or local backend flows that require them.
 
@@ -42,9 +42,10 @@ For migrations, authentication, payment, network or production data changes, rec
 ## Upstream Merge
 
 1. Verify the remote `upstream/main` SHA and create a local protection branch.
-2. Merge with `git merge --no-commit --no-ff`, preserving entity logos, menu extensions and external-subscription functionality while using official frontend presentation and accepting official additions. Do not restore retired visual contracts.
+2. Merge with `git merge --no-commit --no-ff`, preserving entity logos, external subscriptions, account cards and Console integration while accepting upstream business additions and retaining the current AI-owned shared design layer. Do not restore retired visual contracts.
 3. Regenerate Ent output after schema changes, then run the backend full suite and frontend gates above.
-4. Review the complete diff and commit the development merge. Do not infer a production, OCI or backup update from a successful local merge.
+4. Build the native frontend and Console microfrontend, including CSS/API/Teleport artifact checks. Keep focused tests for local UI that an upstream deletion would otherwise remove.
+5. Review the complete diff and commit the development merge. Do not infer a production, OCI or backup update from a successful local merge.
 
 ## See Also
 

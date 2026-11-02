@@ -1,6 +1,6 @@
 ---
 title: Frontend Module
-updated: 2026-10-19
+updated: 2026-11-02
 sources:
   - frontend/src/main.ts
   - frontend/src/App.vue
@@ -16,9 +16,11 @@ sources:
 
 # Frontend Module
 
-## Upstream v0.2.12–v0.2.15 integration
+## Current upstream integration
 
-The development branch now includes `upstream/main` `9591136d45cef26453348ed9532a7ebbce7cf99c` through merge commit `076106755be184981cafe70411eef60d4cbef101`. Official additions include account priority quick adjustment, the built-in platform catalog, recharge-bonus settings, monitor-v2 settings and the related lifecycle/request reliability fixes. The merge keeps the official presentation contract while leaving the retained external-subscription, logo and account-quota extensions attached to their official surfaces. The source includes the merged update and official-menu restoration; running release evidence belongs to the Project Authority.
+The v0.2.19 source adds feature-gated MCP connections/consent, administrator-key permission management, Grok model diagnostics and group image-count billing. The account platform/status filters persist through the official storage path; the existing accessible secondary-filter panel remains available. External-subscription navigation is retained alongside the MCP entry, including simple mode. Details and source owners are in [Upstream Management and Billing](../guides/upstream-management-and-billing.md).
+
+The frontend uses vue-i18n 11 and the matching message compiler. Vite retains the CSP-compatible runtime alias; JIT compilation is enabled by the library, so the v9-only explicit define is removed. Native and Console ESM builds remain separate verification targets.
 
 ## Console opt-in integration
 
@@ -46,7 +48,7 @@ The [customization inventory](../concepts/customization-inventory.md) defines th
 
 User analytics/filter loading, admin rankings, site billing-mode controls, key expired/exhausted status guards, bulk subscription/key actions, payment, risk-control, operations, provider/model policies and normal monitoring use official implementations. External extensions must not replace these capabilities.
 
-`main.ts`, `App.vue`, `style.css`, Tailwind, the modular locales and shared controls follow the official baseline. Local repair/text-action CSS, forced Anthropic theme, custom fonts, OGL/landing effects, legacy locale trees and visual source-contract tests are removed. Component-local styles only frame the retained new tools using official utilities.
+Business flows and modular locales follow the upstream baseline. Shared controls, fonts, motion and layout follow the AI-owned design layer described above; native and Console views use the same implementation. The retired Anthropic theme and landing effects remain removed.
 
 ## Development and Verification
 

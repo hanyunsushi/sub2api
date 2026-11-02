@@ -1,6 +1,6 @@
 ---
 title: Backend Module
-updated: 2026-10-14
+updated: 2026-11-02
 sources:
   - backend/cmd/server/
   - backend/internal/handler/
@@ -12,6 +12,12 @@ sources:
 ---
 
 # Backend Module
+
+## Current upstream integration
+
+The development source includes the v0.2.19 mainline capabilities: OAuth management MCP, scoped administrator API keys, per-image group billing, Gemini image-generation guards/retries, model-catalog diagnostics and gateway/payment compatibility fixes. Ent and Wire output must be regenerated against the retained local schemas and providers. Integration and migration boundaries are described in [Upstream Management and Billing](../guides/upstream-management-and-billing.md); exact merge/protection commits, validation and production status belong to the [Project Authority](../../agent.md).
+
+The following integration sections describe historical baselines, not the current deployed artifact.
 
 ## Upstream v0.2.16 integration
 
