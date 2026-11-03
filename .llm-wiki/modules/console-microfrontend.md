@@ -42,6 +42,10 @@ The mount context accepts optional `onVersion(version: string)`. Its scoped `wat
 
 Native and MFE page preparation now share the application-owned [request-gated loading and motion](embedded-design-system.md#request-gated-loading-and-motion). Runtime remains the mount/route/style/Host bridge; it does not maintain a second motion system or acquire Host navigation as a page animation target. Version publication and the mount-to-page-loading handoff have source evidence; their final tests/browser receipts are pending.
 
+## Sidebar icon runtime boundary
+
+The Host and AI bundle their own Vue runtimes. Navigation icon callbacks must not share setup lifecycle state or template refs across that boundary. [SidebarIcon](embedded-design-system.md#sf-symbols-integration) exports only a functional container; VNode hooks mount and dispose the AI-owned icon subtree through its own renderer. The two-runtime regression loads an independent Vue renderer and verifies default/Fill, name updates, expansion precedence, unmount and remount. Existing single-runtime tests also cover hover/focus and original route behavior. Production verification belongs to [authority](../../agent.md).
+
 ## Initial project readiness
 
 Mount resolves the real public configuration before publishing the initial action/session set. The Host stages those events and current page handlers, then commits a complete topbar presentation; it keeps the operation group hidden/inert with preserved geometry while pending. This does not change original standalone authentication or handlers.

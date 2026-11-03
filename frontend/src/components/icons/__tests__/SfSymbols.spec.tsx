@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { runInNewContext } from 'node:vm'
 import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -70,6 +73,39 @@ describe('real SF Symbols Regular exports', () => {
 })
 
 describe('SF state ownership', () => {
+  it('renders and cleans up inside a separate Host Vue runtime without sharing refs or lifecycle state', async () => {
+    const source = readFileSync(createRequire(import.meta.url).resolve('vue/dist/vue.runtime.global.prod.js'), 'utf8')
+    const host = runInNewContext(`${source};Vue`, { document, window, Element, HTMLElement, SVGElement, console }) as typeof import('vue')
+    expect(host.h).not.toBe(h)
+    const root = document.createElement('div')
+    document.body.append(root)
+    const draw = (name: SfIconName, current?: string, expanded?: boolean) => host.render(host.h('button', {
+      'aria-current': current, 'aria-expanded': expanded,
+    }, [host.h(SidebarIcon, { name })]), root)
+    try {
+      draw('key')
+      await flushPromises()
+      expect(root.querySelector('svg')?.getAttribute('data-icon-export')).toBe('sfKey')
+      draw('key', 'page')
+      await flushPromises()
+      expect(root.querySelector('svg')?.getAttribute('data-icon-export')).toBe('sfKeyFill')
+      draw('folder', 'page', false)
+      await flushPromises()
+      expect(root.querySelector('svg')?.getAttribute('data-icon-export')).toBe('sfFolder')
+      draw('folder', 'page', true)
+      await flushPromises()
+      expect(root.querySelector('svg')?.getAttribute('data-icon-export')).toBe('sfFolderFill')
+      const leaf = root.querySelector('.sf-sidebar-symbol')!
+      host.render(null, root)
+      expect(leaf.childElementCount).toBe(0)
+      draw('key')
+      await flushPromises()
+      expect(root.querySelectorAll('svg')).toHaveLength(1)
+    } finally {
+      host.render(null, root)
+      root.remove()
+    }
+  })
   it('follows actual native/Host row selection and expansion, never hover or active descendants alone', async () => {
     const open = ref<boolean | undefined>(undefined), current = ref<string | undefined>(undefined)
     const wrapper = mount(defineComponent({ setup: () => () => h('button', { 'aria-expanded': open.value, 'aria-current': current.value }, [h(SidebarIcon, { name: 'key' })]) }), { attachTo: document.body }); wrappers.push(wrapper)
