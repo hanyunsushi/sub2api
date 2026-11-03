@@ -50,4 +50,4 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 # 当前验收入口
 
-0.2.19设计系统与真实SF双入口发布已完成；源码/image、备份、三份原生回滚与并行Console保留归[项目权威](../../agent.md#设计系统与sf发布2026-11-03)，脱敏证据见[发布回执](sub2api-design-system-release-20261103.json)。11月2日上游迁移事实由[原批回执](sub2api-upstream-v0219-release-20261102.json)保留。
+原生保持0.2.19/528cffced；Console AI侧栏修复MFE62868f464已发布。当前身份、恢复、三个Console回滚与桌面浏览器验收归[项目权威](../../agent.md#ai侧栏跨运行时修复2026-11-03)，脱敏证据见[侧栏修复回执](ai-sidebar-runtime-fix-20261103.json)。原生SF批次见[原回执](sub2api-design-system-release-20261103.json)，上游迁移事实见[0.2.19回执](sub2api-upstream-v0219-release-20261102.json)。

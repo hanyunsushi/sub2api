@@ -25,6 +25,8 @@ updated: 2026-10-12
 
 # Guides
 
+- [AI侧栏跨Vue运行时修复](guides/ai-sidebar-runtime-fix-20261103.json) - 空白菜单根因、桌面真实交互、备份与保留
+
 - [设计系统与SF双入口发布](guides/sub2api-design-system-release-20261103.json) - 0.2.19源码、运行、恢复与验证边界
 
 - [Sub2API 0.2.19 发布回执](guides/sub2api-upstream-v0219-release-20261102.json) - 双入口、迁移、恢复及验证边界
