@@ -86,6 +86,11 @@ describe('SF state ownership', () => {
       draw('key')
       await flushPromises()
       expect(root.querySelector('svg')?.getAttribute('data-icon-export')).toBe('sfKey')
+      const leafStyle = (root.querySelector('.sf-sidebar-symbol') as HTMLElement).style
+      expect([leafStyle.display, leafStyle.width, leafStyle.height, leafStyle.color]).toEqual(['inline-flex', '16px', '16px', 'inherit'])
+      expect(root.querySelector('.console-kreepai-surface')).toBeNull()
+      const svgStyle = root.querySelector('svg')!.style
+      expect([svgStyle.display, svgStyle.width, svgStyle.height, svgStyle.color]).toEqual(['block', '100%', '100%', 'inherit'])
       draw('key', 'page')
       await flushPromises()
       expect(root.querySelector('svg')?.getAttribute('data-icon-export')).toBe('sfKeyFill')
@@ -116,9 +121,9 @@ describe('SF state ownership', () => {
     open.value = false; await nextTick(); await flushPromises(); expect(visibleFill()).toBe(false)
     open.value = true; await nextTick(); await flushPromises(); expect(visibleFill()).toBe(true)
     open.value = false; await nextTick(); await flushPromises(); expect(visibleFill()).toBe(false)
-    // A single visible export, including inside the MFE's own CSS-scope carrier.
+    // Host owns sidebar colors; an exported icon must not create an app CSS root.
     expect(wrapper.findAll('svg')).toHaveLength(1)
-    expect(wrapper.get('.sf-sidebar-symbol').classes()).toContain('console-kreepai-surface')
+    expect(wrapper.get('.sf-sidebar-symbol').classes()).not.toContain('console-kreepai-surface')
   })
   it('fills the refresh only while loading and keeps click/disabled semantics', async () => {
     const wrapper = mount(RefreshButton); wrappers.push(wrapper)

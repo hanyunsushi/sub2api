@@ -13,12 +13,18 @@ function sync(root: HTMLElement, name: SfIconName) {
   const filled = button?.hasAttribute('aria-expanded')
     ? button.getAttribute('aria-expanded') === 'true'
     : button?.getAttribute('aria-current') === 'page'
-  render(h(Icon, { name, filled: !!filled }), root)
+  render(h(Icon, {
+    name, size: 'sm', filled: !!filled,
+    style: { display: 'block', width: '100%', height: '100%', color: 'inherit' },
+  }), root)
 }
 
 export default function SidebarIcon({ name }: { name: SfIconName }) {
   return h('span', {
-    class: 'sf-sidebar-symbol console-kreepai-surface',
+    class: 'sf-sidebar-symbol',
+    // 侧边栏 / 卡片SVG：16px叶子继承菜单状态色，不冒充子应用根，
+    // 几何不依赖另一份Vue的scoped标记或子应用CSS命名空间。
+    style: { display: 'inline-flex', width: '16px', height: '16px', flexShrink: 0, color: 'inherit' },
     'aria-hidden': 'true',
     onVnodeMounted(vnode: VNode) {
       const root = vnode.el as HTMLElement
@@ -46,7 +52,3 @@ export default function SidebarIcon({ name }: { name: SfIconName }) {
   })
 }
 </script>
-<style scoped>
-/* 侧边栏：原20px槽位不变，不新增缩放、弹跳或交叉渐隐。 */
-.sf-sidebar-symbol { display: inline-grid; width: 100%; height: 100%; place-items: center; }
-</style>
