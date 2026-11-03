@@ -56,7 +56,7 @@ The application maps the current `kreeper-first-design-system` foundations/butto
 
 The review also checked the current scrollbar centering/mobile-gutter and submenu ownership against the app's existing implementation; those already match the relevant behavior. Showcase-only GoldenAssetCard/Roboto/AntV specimens are not inserted into product flows. Existing AWS-category charts retain their explicit chart contract. Functional artwork follows the user's explicit SF Symbols decision described below; source and distributable notices retain its separate artwork/wrapper terms.
 
-Verification and production boundaries are owned by [authority](../../agent.md#新版设计系统接入2026-11-02本地未发布).
+Verification and production boundaries are owned by [authority](../../agent.md#新版设计系统接入2026-11-02已发布).
 
 ## SF Symbols integration
 
@@ -68,7 +68,7 @@ Verification and production boundaries are owned by [authority](../../agent.md#�
 
 AppHeader's mobile control follows drawer state, AnnouncementBell follows its modal and subscription details follow their popover. RefreshButton uses ArrowClockwiseCircle/Fill only while the original request is pending, keeping disabled gating and400/800ms/reduced-motion behavior. Automatic-refresh configuration fills while its menu is open; enabling polling alone is not loading. InfoNotice and message feedback render real semantic SF glyphs with the original visible text, roles, duration and close handling. `SfSymbolReact.tsx` consumes the same manifest as Vue; only the date trigger becomes CalendarCircle/Fill while open, preserving the original date arrows, Motion, draft/commit and timezone behavior.
 
-Verification and local/production boundaries belong to [authority](../../agent.md#sf-symbols-前端接入2026-11-03本地未发布). Tests exercise all pair resolution, exact paths/opacity, labels, direction/brand exceptions, explicit sizes, native/Host aria transitions, refresh gating and semantic notice text. Current SF work has no authenticated production or browser visual acceptance claim.
+Verification and release boundaries belong to [authority](../../agent.md#sf-symbols-前端接入2026-11-03已发布). Tests exercise all pair resolution, exact paths/opacity, labels, direction/brand exceptions, explicit sizes, native/Host aria transitions, refresh gating and semantic notice text. Current SF work has no authenticated production or browser visual acceptance claim.
 
 ## Upstream 0.2.19 form and connection details
 
@@ -80,7 +80,7 @@ Verification and local/production boundaries belong to [authority](../../agent.m
 
 The two Grok OAuth/API-key model sections use the shared RouteSwitch with their original whitelist/mapping state. The switch exposes tablist/tab/aria-selected, keyboard navigation and reduced-motion behavior; diagnostics stay between the switch and the active editor. `GrokModelDiagnosticsPanel` uses neutral nested surface, current catalog status badges and warning/error notices. Request/target columns switch at460px of actual diagnostics content. Long model IDs and endpoints wrap, and expanded content/focus is not hidden by the outer panel. Historical catalogs, missing mappings and failed/configured-fallback attempts retain their existing distinct messages and sync behavior. Account secondary-filter counts reuse the information badge without changing filter events.
 
-Behavior regression entry points are the dedicated AdminAccessKeys, MCP consent/connection, Grok diagnostics/edit-modal, AccountTableFilters and RouteSwitch test suites. Style assertions now refer to shared surface ownership and tab selection semantics; authorization and API payload assertions remain. Verification/deployment boundaries belong to [Project Authority](../../agent.md#前端细节设计对齐2026-11-02本地未发布).
+Behavior regression entry points are the dedicated AdminAccessKeys, MCP consent/connection, Grok diagnostics/edit-modal, AccountTableFilters and RouteSwitch test suites. Style assertions now refer to shared surface ownership and tab selection semantics; authorization and API payload assertions remain. Verification/deployment boundaries belong to [Project Authority](../../agent.md#前端细节设计对齐2026-11-02已发布).
 
 ## Dashboard request recovery
 

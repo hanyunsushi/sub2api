@@ -1,7 +1,14 @@
 ---
 title: Current Documentation Sync State
-updated: 2026-10-21
+updated: 2026-11-03
 ---
+
+# 设计系统与SF发布同步（2026-11-03）
+
+- Doc Impact Map：现有按钮/选择器/表格/复制栏与真实SF的实现合同归[共享层](modules/embedded-design-system.md)，页面核对归[设计核对](modules/ai-design-review.md)；部署、恢复、并行Console与验收限制归[权威](../agent.md#设计系统与sf发布2026-11-03)，机器摘要归[发布回执](guides/sub2api-design-system-release-20261103.json)。保留合同入口和索引同步。
+- 已检查last_synced_commit至HEAD、暂存及未暂存/新增文件；源码a74280177/528cffced已推送并发布，两种前端与ARM64 embed构建、406文件3217测试及类型/lint/i18n/隔离门禁通过。无业务数据/API变更，产品版本保持0.2.19。
+- 原生及Console本批52公网/32摘要通过；并行OpenStock推进后49/30通过，192个AI文件原字节保留。原生seal/apply清1目录/2tag，保留当前加三回滚，Console共享保留由并行当前批维护；完整异机image/备份已核验。没有新增认证浏览器或完整恢复演练。
+- 文档lint：受影响Wiki链接/锚点、索引反链、源文件引用、JSON、权威软链接及限定diff格式通过；无秘密或构建产物入Git。CodeGraph不可用，不宣称刷新索引。原有本机停用/历史同步dirty内容保留，不纳入本批。
 
 # Scope
 

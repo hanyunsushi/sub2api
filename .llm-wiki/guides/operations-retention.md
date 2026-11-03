@@ -50,4 +50,4 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 # 当前验收入口
 
-0.2.19双入口发布、迁移246–249、一致性备份和精确保留已完成；当前artifact、恢复点、三份回滚和未测边界由[项目权威](../../agent.md#当前发布与恢复合同2026-11-020219已发布)维护，脱敏证据见[发布回执](sub2api-upstream-v0219-release-20261102.json)。Console的并行营销更新保留。
+0.2.19设计系统与真实SF双入口发布已完成；源码/image、备份、三份原生回滚与并行Console保留归[项目权威](../../agent.md#设计系统与sf发布2026-11-03)，脱敏证据见[发布回执](sub2api-design-system-release-20261103.json)。11月2日上游迁移事实由[原批回执](sub2api-upstream-v0219-release-20261102.json)保留。
