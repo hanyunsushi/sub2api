@@ -3,9 +3,9 @@ title: Current Documentation Sync State
 updated: 2026-11-03
 ---
 
-# AI侧栏跨运行时同步
+# AI侧栏样式同步
 
-Doc Impact Map：AI图标叶子/生命周期归Sub2API共享层和MFE模块；生产身份、Console定向发布、恢复/保留及真实浏览器边界归[权威](../agent.md#ai侧栏跨运行时修复2026-11-03)，[回执](guides/ai-sidebar-runtime-fix-20261103.json)与索引提供入口。last_synced至HEAD、暂存与全部dirty边界已核对；原有本机停用、审计/示范等未提交内容保留。62868f464发布MFE，原生528cffced不重建；双Vue错误先复现后修复，406文件3218测试、类型/源lint/clean MFE通过，32公网/21摘要和用户原1167×816会话菜单/筛选/折叠/设置Fill/切走返回/刷新通过，零新应用错误。共享保留及异机恢复已核验。受影响链接/锚点、JSON、索引反链、源路径、有效权威软链接及diff格式lint通过；CodeGraph不可用不宣称同步索引。未新增手机/跨引擎或完整恢复演练。
+Doc Impact Map：公共图标的16px几何、CSS根/颜色继承边界归Sub2API共享设计模块，跨Vue状态生命周期仍归MFE合同；运行、并行基线、浏览器、恢复与精确保留归[权威](../agent.md#ai侧栏样式接入修正2026-11-03)，[脱敏回执](guides/ai-sidebar-style-fix-20261103.json)与索引提供入口。已核对last_synced至HEAD、暂存和dirty范围，原有本机停用/审计/示范保持。3218测试、类型/lint/clean MFE、32公网/21摘要、1167/390真实几何与状态检查通过；原生未重建，不声称全业务、跨引擎、物理触摸或完整恢复验收。受影响链接/锚点、JSON、索引反链、源路径、有效权威软链接及diff lint通过；CodeGraph工具不可用，不宣称刷新索引。
 
 # Scope
 

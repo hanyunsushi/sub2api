@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "date": "2026-11-03",
+  "status": "published",
+  "source_commit": "9fecae91f4c87d9f48a521aab85ba46ec6cd024e",
+  "release_id": "console-20261103-ai-sidebar-style-a",
+  "baseline": "console-20261103-openstock-select-a",
+  "scope": "Console AI sidebar SF icon leaf geometry and inherited menu colors",
+  "cause": "20px Icon default plus a nested application CSS root reset Host color; foreign scoped-style IDs did not style the leaf",
+  "fix": "16px inline-flex leaf and explicit SVG geometry/color inheritance; no nested app root; independent runtime renderer retained",
+  "native": {
+    "unchanged": true,
+    "source_commit": "528cffcedf9b442c999941915e4f83eeef2a758a",
+    "image": "sha256:83adac2edc659d5fe7fe1b97e8370d48a9087d1b1a2c43fefda61584357130b8",
+    "version": "0.2.19"
+  },
+  "console": {
+    "manifest_files": 1226,
+    "other_app_files_preserved": 994,
+    "host_files_verified": 38,
+    "host_source": "8c840bd9489280fbddf2cc2d1663340f4cdfcbd5",
+    "openstock_source": "a4ecce8da8cd5b06921cb7af08ee10b2fe272e82",
+    "previous": "console-20261103-openstock-select-a",
+    "parallel_update": "initial runtime guard rejected before installation; candidate rebased onto the actual OpenStock select release"
+  },
+  "validation": {
+    "tests": 3218,
+    "test_files": 406,
+    "typecheck": "passed",
+    "changed_source_eslint": "passed",
+    "clean_mfe_build_and_isolation": "passed",
+    "http_checks": 32,
+    "resource_hashes": 21,
+    "browser": "Codex in-app browser via CUA",
+    "desktop": {
+      "viewport": {
+        "height": 816,
+        "width": 1167
+      },
+      "ai_icon_count": 23,
+      "icon_size": "16x16",
+      "row_height": 32,
+      "padding": "6px 12px",
+      "radius": 8,
+      "font": "13px/20px",
+      "default_color": "oklch(0.556 0 0)",
+      "selected_color": "#0088FF",
+      "selected_variant": "fill"
+    },
+    "expanded": {
+      "color": "rgb(0, 136, 255)",
+      "expanded": "true",
+      "variant": "fill",
+      "width": 16
+    },
+    "hover": {
+      "color": "rgb(0, 136, 255)",
+      "expanded": "false",
+      "hovered": true,
+      "variant": "default"
+    },
+    "keyboard_focus": {
+      "name": "API 密钥",
+      "color": "rgb(0, 136, 255)",
+      "variant": "default",
+      "selected": false,
+      "focusVisible": true
+    },
+    "collapsed": {
+      "width": 72,
+      "icon_centers": [
+        35.5
+      ]
+    },
+    "mobile": {
+      "drawer": [
+        {
+          "class": "sidebar-surface mobile-sidebar",
+          "radius": "0px",
+          "width": 300
+        },
+        {
+          "class": "n-drawer-body-content-wrapper",
+          "radius": "0px",
+          "width": 300
+        },
+        {
+          "class": "mobile-sidebar-drawer-root n-drawer n-drawer--left-placement n-drawer--native-scrollbar",
+          "radius": "0px",
+          "width": 300
+        }
+      ],
+      "iconWidths": [
+        16
+      ],
+      "overflow": false,
+      "selected": [
+        {
+          "color": "rgb(0, 136, 255)",
+          "name": "渠道状态",
+          "variant": "fill"
+        }
+      ],
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    "document_overflow": false,
+    "app_console_errors": 0,
+    "business_writes": false
+  },
+  "recovery": {
+    "console_backup": "/home/ubuntu/oci-recovery/console/20261103T045527Z",
+    "offhost_directory": "~/.local/share/oci-recovery/20261103-ai-sidebar-style/",
+    "backup_files_verified": 5,
+    "complete_release_files_verified": 1226,
+    "clean_source_files_verified": 4689,
+    "permissions": "0700/0600",
+    "restore_drill": "not performed"
+  },
+  "retention": {
+    "kept": [
+      "console-20261103-ai-sidebar-style-a",
+      "console-20261103-openstock-select-a",
+      "console-20261103-ai-sidebar-a",
+      "console-20261103-openstock-admin-a"
+    ],
+    "verified_files": 4904,
+    "static_references": 582,
+    "compatibility_files_compared": 451,
+    "expired_ids": [
+      "console-20261103-sub2api-sf-a",
+      "console-20261102-openstock-golden-a"
+    ],
+    "alias_target": "console-20261103-openstock-admin-a",
+    "sealed_and_applied": true,
+    "removed_paths": 3,
+    "removed_images": 0,
+    "runtime_unchanged_since_activation_baseline": true
+  },
+  "limits": [
+    "Browser measurements cover this administrator session at1167x816 and390x844 in one browser engine",
+    "Native production was not redeployed or visually accepted by this Console-only fix",
+    "No full frontend business-flow or physical-touch acceptance",
+    "No full restore drill"
+  ],
+  "authority": "../../agent.md#ai侧栏样式接入修正2026-11-03",
+  "wiki_index": "../_index.md",
+  "application_authority": "/Users/hinaw/sub2api-src/agent.md#ai侧栏样式接入修正2026-11-03"
+}
