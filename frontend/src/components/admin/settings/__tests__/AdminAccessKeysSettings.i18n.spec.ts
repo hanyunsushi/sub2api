@@ -128,6 +128,6 @@ describe('管理员密钥英文体验', () => {
     await wrapper.get('[data-test="save"]').trigger('click')
     await flushPromises()
     expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({ confirm_full_access: true, policy: expect.objectContaining({ full_access: true }) }))
-    expect(wrapper.get('[role="status"]').text()).toBe('Key saved')
+    expect(wrapper.get('[role="status"][data-tone="success"]').text()).toBe('Key saved')
   })
 })

@@ -535,7 +535,7 @@ describe('GrokModelDiagnosticsPanel', () => {
     expect(wrapper.text()).toContain('grok-4.7')
   })
 
-  it('wraps long model ids and stays inside a narrow dark layout', async () => {
+  it('uses the shared theme surface and preserves wrapping for long model ids', async () => {
     const wrapper = track(mountPanel({
       diagnostics: freshDiagnostics({
         endpoint: LONG_ENDPOINT,
@@ -544,8 +544,9 @@ describe('GrokModelDiagnosticsPanel', () => {
       })
     }))
     const root = wrapper.get('[data-testid="grok-model-diagnostics"]')
-    expect(root.classes()).toEqual(expect.arrayContaining(['max-w-full', 'overflow-hidden', 'min-w-0']))
-    expect(root.classes().some(className => className.startsWith('dark:'))).toBe(true)
+    // 主题、宽度和圆角由共享层管理，不以overflow-hidden掩盖溢出或裁切键盘焦点。
+    expect(root.classes()).toEqual(expect.arrayContaining(['kreepai-detail-panel', 'grok-diagnostics']))
+    expect(root.classes()).not.toContain('overflow-hidden')
     await openDetails(wrapper)
     expect(wrapper.get('[data-testid="grok-diagnostics-endpoint"]').classes()).toContain('break-all')
     const model = wrapper.get('[data-testid="grok-diagnostics-model"]')

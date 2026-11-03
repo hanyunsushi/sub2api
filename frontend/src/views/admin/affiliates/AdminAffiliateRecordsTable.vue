@@ -10,7 +10,7 @@
           <!-- 日期范围选择器：保留原过滤字段、时分精度与查询触发。 -->
 <DateRangeFields v-model:start="filters.start_at" v-model:end="filters.end_at" @change="reloadFromFirstPage" />
           <button class="btn btn-secondary px-2 md:px-3" :disabled="loading" :title="t('common.refresh')" @click="loadRecords">
-            <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+            <Icon :filled="loading" name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
           </button>
           <button
             v-if="props.type === 'transfers'"

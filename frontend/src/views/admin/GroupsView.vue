@@ -74,7 +74,7 @@
                   class="dropdown-item flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
                 >
                   <span>{{ col.label }}</span>
-                  <Icon
+                  <Icon filled
                     v-if="isColumnVisible(col.key)"
                     name="check"
                     size="sm"
@@ -3841,7 +3841,7 @@
               :disabled="compositeRoutesLoading"
               @click="loadCompositeRoutes"
             >
-              <Icon
+              <Icon :filled="compositeRoutesLoading"
                 name="refresh"
                 size="sm"
                 :class="compositeRoutesLoading ? 'animate-spin' : ''"
@@ -4067,7 +4067,7 @@
                 class="btn btn-primary"
                 :disabled="compositeRouteSaving"
               >
-                <Icon
+                <Icon filled
                   v-if="!compositeRouteSaving"
                   name="check"
                   size="sm"

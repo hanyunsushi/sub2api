@@ -7,12 +7,7 @@
       class="btn btn-secondary"
       :title="t('common.autoRefresh.title')"
     >
-      <svg
-        class="h-3.5 w-3.5"
-        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-      >
-        <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.312a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm-10.624-2.848a5.5 5.5 0 019.201-2.466l.312.311H11.768a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.537a.75.75 0 00-1.5 0v2.034l-.312-.312A7 7 0 002.628 8.397a.75.75 0 001.449.39z" clip-rule="evenodd" />
-      </svg>
+      <Icon name="refresh" :filled="showDropdown" class="h-3.5 w-3.5" />
       <span class="auto-refresh-label">
         <span class="auto-refresh-reserve" aria-hidden="true">{{ enabled ? t('common.autoRefresh.countdown', { seconds: intervalSeconds }) : t('common.autoRefresh.title') }}</span>
         <span class="auto-refresh-value">
@@ -34,9 +29,7 @@
           type="button" role="menuitemradio" class="dropdown-item flex w-full items-center justify-between"
         >
           <span>{{ t('common.autoRefresh.enable') }}</span>
-          <svg v-if="enabled" class="h-4 w-4 text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-          </svg>
+          <Icon name="check" filled v-if="enabled" class="h-4 w-4 text-primary-500" />
         </button>
         <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
         <button
@@ -47,9 +40,7 @@
           type="button" role="menuitemradio" class="dropdown-item flex w-full items-center justify-between"
         >
           <span>{{ t('common.autoRefresh.seconds', { n: sec }) }}</span>
-          <svg v-if="intervalSeconds === sec" class="h-4 w-4 text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-          </svg>
+          <Icon name="check" filled v-if="intervalSeconds === sec" class="h-4 w-4 text-primary-500" />
         </button>
       </div>
     </div>
@@ -57,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import Icon from '@/components/icons/Icon.vue'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 

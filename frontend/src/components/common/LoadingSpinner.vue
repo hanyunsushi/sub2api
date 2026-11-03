@@ -22,6 +22,6 @@ const colorClass = computed(() => {
 </script>
 <style scoped>
 /* 加载反馈：页面/内容使用系统加载蓝；按钮内跟随所属按钮前景。 */
-.kreepai-loader-primary { color: var(--accent, #007aff); }
+.kreepai-loader-primary { color: var(--accent, #0088ff); }
 :global(.btn) .kreepai-loader-primary { color: inherit; }
 </style>

@@ -1,23 +1,31 @@
 <template>
-  <section class="card space-y-4 p-6" :aria-label="t('adminAccessKeys.title')">
+  <!-- 展示信息模块：一级设置卡片，内部密钥与权限详情共用二级白面。 -->
+  <section class="admin-access-keys card min-w-0 space-y-4 p-4 sm:p-6" :aria-label="t('adminAccessKeys.title')" :aria-busy="loading || busy">
     <h2 class="text-lg font-semibold">{{ t('adminAccessKeys.title') }}</h2>
     <p class="text-sm text-gray-500">{{ t('adminAccessKeys.authorizationHint') }}</p>
-    <p class="rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">{{ t('adminAccessKeys.sharedAccountWarning') }}</p>
-    <p v-if="error" role="alert" class="text-sm text-red-600">{{ error }}</p>
-    <p v-if="notice" role="status" class="text-sm text-green-600">{{ notice }}</p>
-    <div v-if="secret" class="space-y-2 rounded-lg border border-amber-300 p-4">
+    <InfoNotice tone="warning">{{ t('adminAccessKeys.sharedAccountWarning') }}</InfoNotice>
+    <InfoNotice v-if="error" tone="danger">{{ error }}</InfoNotice>
+    <InfoNotice v-if="notice" tone="success">{{ notice }}</InfoNotice>
+    <!-- 警告信息 / 复制按钮：一次性密钥保留原显隐和复制行为，长值可完整换行。 -->
+    <InfoNotice v-if="secret" tone="warning">
       <p>{{ t('adminAccessKeys.secretWarning') }}</p>
-      <code class="block select-all break-all">{{ secret }}</code>
-      <button type="button" class="btn btn-secondary btn-sm" @click="copySecret">{{ t('adminAccessKeys.copySecret') }}</button>
-      <button type="button" data-test="dismiss-secret" class="btn btn-secondary btn-sm" @click="secret = ''">{{ t('adminAccessKeys.dismissSecret') }}</button>
-    </div>
-    <div class="flex gap-2">
+      <code class="my-3 block select-all break-all rounded-lg bg-[var(--bg)] p-3">{{ secret }}</code>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="btn btn-primary btn-sm" @click="copySecret">{{ t('adminAccessKeys.copySecret') }}</button>
+        <button type="button" data-test="dismiss-secret" class="btn btn-secondary btn-sm" @click="secret = ''">{{ t('adminAccessKeys.dismissSecret') }}</button>
+      </div>
+    </InfoNotice>
+    <div class="flex flex-wrap gap-2">
       <button type="button" data-test="create" class="btn btn-primary" :disabled="busy || loading || !loaded" @click="edit()">{{ t('adminAccessKeys.create') }}</button>
       <button type="button" class="btn btn-secondary" :disabled="busy || loading" @click="load">{{ t('adminAccessKeys.refresh') }}</button>
     </div>
-    <p v-if="loading">{{ t('adminAccessKeys.loading') }}</p>
-    <div v-for="item in items" :key="item.id" class="space-y-2 rounded-lg border border-gray-200 p-4 dark:border-dark-700">
-      <p class="font-medium">{{ item.name }} <code>{{ item.key_prefix }}…</code> · {{ status(item) }}</p>
+    <p v-if="loading" role="status" class="flex items-center gap-2 text-sm text-gray-500"><LoadingSpinner size="sm" aria-hidden="true" />{{ t('adminAccessKeys.loading') }}</p>
+    <div v-for="item in items" :key="item.id" class="kreepai-detail-panel space-y-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="min-w-0 break-all font-medium">{{ item.name }}</p>
+        <code class="break-all text-xs text-gray-500">{{ item.key_prefix }}…</code>
+        <StatusBadge :status="item.revoked_at || !item.enabled ? 'inactive' : item.expires_at && new Date(item.expires_at).getTime() <= Date.now() ? 'warning' : 'active'" :label="status(item)" />
+      </div>
       <p class="text-sm text-gray-500">{{ item.description || t('adminAccessKeys.noDescription') }} · {{ t('adminAccessKeys.expires', { value: item.expires_at || t('adminAccessKeys.never') }) }}</p>
       <p class="text-sm text-gray-500">{{ t('adminAccessKeys.lastUsed', { value: item.last_used_at || t('adminAccessKeys.neverUsed') }) }} {{ item.last_used_ip }}</p>
       <div class="space-y-1 text-sm text-gray-500" :aria-label="t('adminAccessKeys.summaryLabel')">
@@ -29,57 +37,62 @@
         <button type="button" class="btn btn-secondary btn-sm" :disabled="busy" @click="edit(item)">{{ t('adminAccessKeys.editPermissions') }}</button>
         <button type="button" class="btn btn-secondary btn-sm" :disabled="busy" @click="toggle(item)">{{ item.enabled ? t('adminAccessKeys.disable') : t('adminAccessKeys.enable') }}</button>
         <button type="button" class="btn btn-secondary btn-sm" :disabled="busy" @click="rotateKey(item)">{{ t('adminAccessKeys.rotate') }}</button>
-        <button type="button" class="btn btn-secondary btn-sm text-red-600" :disabled="busy" @click="revokeKey(item)">{{ t('adminAccessKeys.revoke') }}</button>
+        <button type="button" class="btn btn-danger btn-sm" :disabled="busy" @click="revokeKey(item)">{{ t('adminAccessKeys.revoke') }}</button>
       </div>
       <div v-else>
-        <button type="button" class="btn btn-secondary btn-sm text-red-600" :disabled="busy" @click="deleteRecord(item)">{{ t('adminAccessKeys.deleteRecord') }}</button>
+        <button type="button" class="btn btn-danger btn-sm" :disabled="busy" @click="deleteRecord(item)">{{ t('adminAccessKeys.deleteRecord') }}</button>
       </div>
     </div>
-    <div v-if="draft" class="space-y-4 rounded-lg border border-gray-200 p-4 dark:border-dark-700">
+    <div v-if="draft" class="kreepai-detail-panel space-y-4">
       <h3 class="font-semibold">{{ editingID ? t('adminAccessKeys.editTitle') : t('adminAccessKeys.createTitle') }}</h3>
-      <label class="block">{{ t('adminAccessKeys.name') }}<input v-model="draft.name" data-test="name" class="input mt-1" maxlength="100" /></label>
-      <label class="block">{{ t('adminAccessKeys.description') }}<textarea v-model="draft.description" class="input mt-1" maxlength="1000" /></label>
-      <label class="block">{{ t('adminAccessKeys.expiration') }}<input v-model="expiration" type="datetime-local" class="input mt-1" /></label>
-      <label class="block">{{ t('adminAccessKeys.allowedIps') }}<textarea v-model="ips" class="input mt-1" placeholder="192.0.2.1&#10;2001:db8::/32" /></label>
-      <label class="flex gap-2"><input v-model="draft.enabled" type="checkbox" />{{ t('adminAccessKeys.enabled') }}</label>
-      <div class="space-y-2 rounded-lg border border-red-300 p-3">
-        <label class="flex gap-2"><input data-test="full-access" type="checkbox" :checked="draft.policy.full_access || fullAccessPrompt" :disabled="busy" @change="changeFullAccess" />{{ t('adminAccessKeys.fullAccessLabel') }}</label>
-        <p class="text-sm text-red-700 dark:text-red-300">{{ t('adminAccessKeys.fullAccessWarning') }}</p>
-        <p v-if="draft.policy.full_access" class="text-sm">{{ t('adminAccessKeys.rulesSuspended') }}</p>
+      <!-- 填写框 / 复选框：原生字段保留模型，双列按设置正文容器宽度重排。 -->
+      <div class="access-key-fields">
+        <label class="input-label min-w-0">{{ t('adminAccessKeys.name') }}<input v-model="draft.name" data-test="name" class="input mt-1" maxlength="100" /></label>
+        <label class="input-label min-w-0">{{ t('adminAccessKeys.expiration') }}<input v-model="expiration" type="datetime-local" class="input mt-1" /></label>
+        <label class="input-label min-w-0">{{ t('adminAccessKeys.description') }}<textarea v-model="draft.description" class="input mt-1" rows="3" maxlength="1000" /></label>
+        <label class="input-label min-w-0">{{ t('adminAccessKeys.allowedIps') }}<textarea v-model="ips" class="input mt-1 font-mono" rows="3" placeholder="192.0.2.1&#10;2001:db8::/32" /></label>
       </div>
+      <label class="kreepai-check-option"><input v-model="draft.enabled" type="checkbox" /><span>{{ t('adminAccessKeys.enabled') }}</span></label>
+      <InfoNotice tone="warning">
+        <label class="kreepai-check-option"><input data-test="full-access" type="checkbox" :checked="draft.policy.full_access || fullAccessPrompt" :disabled="busy" @change="changeFullAccess" /><span>{{ t('adminAccessKeys.fullAccessLabel') }}</span></label>
+        <p>{{ t('adminAccessKeys.fullAccessWarning') }}</p>
+        <p v-if="draft.policy.full_access" class="text-sm">{{ t('adminAccessKeys.rulesSuspended') }}</p>
+      </InfoNotice>
       <fieldset :disabled="busy || !!draft.policy.full_access" class="space-y-4">
-      <fieldset v-for="(rule, index) in draft.policy.rules" :key="index" class="space-y-3 rounded-lg border border-gray-200 p-3 dark:border-dark-700">
-        <legend>{{ t('adminAccessKeys.ruleLegend', { index: index + 1 }) }}</legend>
-        <label class="flex gap-2"><input v-model="rule.all_groups" type="checkbox" />{{ t('adminAccessKeys.allGroups') }}</label>
-        <label class="block">{{ t('adminAccessKeys.groups') }}<select v-model="rule.group_ids" :data-test="`groups-${index}`" multiple class="input mt-1" :disabled="rule.all_groups"><option v-for="group in groups" :key="group.id" :value="group.id">{{ group.name }}</option></select></label>
-        <label class="flex gap-2"><input v-model="rule.include_ungrouped" type="checkbox" />{{ t('adminAccessKeys.includeUngrouped') }}</label>
-        <div>{{ t('adminAccessKeys.accountTypes') }}<div class="flex flex-wrap gap-4"><label v-for="type in accountTypes" :key="type" class="flex gap-2"><input v-model="rule.account_types" type="checkbox" :value="type" />{{ type }}</label></div></div>
-        <label class="block">{{ t('adminAccessKeys.platforms') }}<select v-model="rule.platforms" multiple class="input mt-1"><option v-for="platform in CONCRETE_PLATFORM_OPTIONS" :key="platform.value" :value="platform.value">{{ platform.label }}</option></select></label>
-        <div>{{ t('adminAccessKeys.accountOperations') }}<div class="grid gap-2 sm:grid-cols-2"><label v-for="permission in accountPermissions" :key="permission.id" class="flex gap-2"><input v-model="rule.permissions" type="checkbox" :value="permission.id" />{{ permissionLabel(permission) }} <span class="text-xs text-gray-500">{{ permission.id }}</span></label></div></div>
-        <div v-if="groupPermissions.length" class="space-y-2 rounded border border-amber-300 p-3">
-          <p>{{ t('adminAccessKeys.groupOperations') }}</p>
-          <p class="text-sm text-amber-700 dark:text-amber-300">{{ t('adminAccessKeys.modelAllowlistHint') }}</p>
-          <div class="grid gap-2 sm:grid-cols-2"><label v-for="permission in groupPermissions" :key="permission.id" class="flex gap-2"><input v-model="rule.permissions" type="checkbox" :value="permission.id" />{{ permissionLabel(permission) }} <span class="text-xs text-gray-500">{{ permission.id }}</span></label></div>
+      <fieldset v-for="(rule, index) in draft.policy.rules" :key="index" class="access-key-rule min-w-0 space-y-3">
+        <legend class="px-1 font-semibold">{{ t('adminAccessKeys.ruleLegend', { index: index + 1 }) }}</legend>
+        <label class="kreepai-check-option"><input v-model="rule.all_groups" type="checkbox" /><span>{{ t('adminAccessKeys.allGroups') }}</span></label>
+        <div class="access-key-fields">
+          <label class="input-label min-w-0">{{ t('adminAccessKeys.groups') }}<select v-model="rule.group_ids" :data-test="`groups-${index}`" multiple :size="4" class="input mt-1" :disabled="rule.all_groups"><option v-for="group in groups" :key="group.id" :value="group.id">{{ group.name }}</option></select></label>
+          <label class="input-label min-w-0">{{ t('adminAccessKeys.platforms') }}<select v-model="rule.platforms" multiple :size="4" class="input mt-1"><option v-for="platform in CONCRETE_PLATFORM_OPTIONS" :key="platform.value" :value="platform.value">{{ platform.label }}</option></select></label>
         </div>
-        <button type="button" class="btn btn-secondary btn-sm" @click="draft.policy.rules.splice(index, 1)">{{ t('adminAccessKeys.removeRule') }}</button>
+        <label class="kreepai-check-option"><input v-model="rule.include_ungrouped" type="checkbox" /><span>{{ t('adminAccessKeys.includeUngrouped') }}</span></label>
+        <div>{{ t('adminAccessKeys.accountTypes') }}<div class="flex flex-wrap gap-x-4"><label v-for="type in accountTypes" :key="type" class="kreepai-check-option"><input v-model="rule.account_types" type="checkbox" :value="type" /><span>{{ type }}</span></label></div></div>
+        <div>{{ t('adminAccessKeys.accountOperations') }}<div class="access-key-permissions"><label v-for="permission in accountPermissions" :key="permission.id" class="kreepai-check-option"><input v-model="rule.permissions" type="checkbox" :value="permission.id" /><span>{{ permissionLabel(permission) }}<small>{{ permission.id }}</small></span></label></div></div>
+        <div v-if="groupPermissions.length" class="space-y-2">
+          <p>{{ t('adminAccessKeys.groupOperations') }}</p>
+          <InfoNotice tone="warning">{{ t('adminAccessKeys.modelAllowlistHint') }}</InfoNotice>
+          <div class="access-key-permissions"><label v-for="permission in groupPermissions" :key="permission.id" class="kreepai-check-option"><input v-model="rule.permissions" type="checkbox" :value="permission.id" /><span>{{ permissionLabel(permission) }}<small>{{ permission.id }}</small></span></label></div>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" @click="draft.policy.rules.splice(index, 1)">{{ t('adminAccessKeys.removeRule') }}</button>
       </fieldset>
       <button type="button" data-test="add-rule" class="btn btn-secondary btn-sm" @click="draft.policy.rules.push(emptyRule())">{{ t('adminAccessKeys.addRule') }}</button>
-      <fieldset class="space-y-3 rounded-lg border border-amber-300 p-3">
-        <legend>{{ t('adminAccessKeys.globalPermissions') }}</legend>
-        <fieldset v-for="category in globalCategories" :key="category.name" class="space-y-2 rounded border border-gray-200 p-3 dark:border-dark-700">
+      <fieldset class="access-key-rule min-w-0 space-y-3">
+        <legend class="px-1 font-semibold">{{ t('adminAccessKeys.globalPermissions') }}</legend>
+        <fieldset v-for="category in globalCategories" :key="category.name" class="min-w-0 space-y-2">
           <legend class="text-sm font-medium">{{ category.name }}</legend>
-          <label v-for="permission in category.permissions" :key="permission.id" class="flex gap-2"><input v-model="draft.policy.global_permissions" type="checkbox" :value="permission.id" />{{ permissionLabel(permission) }} <span class="text-xs text-gray-500">{{ permission.id }}</span></label>
+          <div class="access-key-permissions"><label v-for="permission in category.permissions" :key="permission.id" class="kreepai-check-option"><input v-model="draft.policy.global_permissions" type="checkbox" :value="permission.id" /><span>{{ permissionLabel(permission) }}<small>{{ permission.id }}</small></span></label></div>
         </fieldset>
       </fieldset>
       </fieldset>
-      <div class="flex gap-2"><button type="button" data-test="save" class="btn btn-primary" :disabled="busy || fullAccessPrompt" @click="save">{{ busy ? t('adminAccessKeys.processing') : t('adminAccessKeys.save') }}</button><button type="button" class="btn btn-secondary" :disabled="busy" @click="draft = null">{{ t('adminAccessKeys.cancel') }}</button></div>
+      <div class="flex flex-wrap gap-2"><button type="button" data-test="save" class="btn btn-primary" :disabled="busy || fullAccessPrompt" @click="save">{{ busy ? t('adminAccessKeys.processing') : t('adminAccessKeys.save') }}</button><button type="button" class="btn btn-secondary" :disabled="busy" @click="draft = null">{{ t('adminAccessKeys.cancel') }}</button></div>
     </div>
     <BaseDialog :show="fullAccessPrompt" :title="t('adminAccessKeys.fullAccessConfirmTitle')" width="normal" @close="cancelFullAccess">
-      <p class="text-red-700 dark:text-red-300">{{ t('adminAccessKeys.fullAccessWarning') }}</p>
-      <label class="mt-4 block">{{ t('adminAccessKeys.fullAccessPhraseHint', { phrase: t('adminAccessKeys.fullAccessPhrase') }) }}<input v-model="fullAccessPhrase" data-test="full-access-phrase" class="input mt-1" autocomplete="off" /></label>
+      <InfoNotice tone="warning">{{ t('adminAccessKeys.fullAccessWarning') }}</InfoNotice>
+      <label class="input-label mt-4 block">{{ t('adminAccessKeys.fullAccessPhraseHint', { phrase: t('adminAccessKeys.fullAccessPhrase') }) }}<input v-model="fullAccessPhrase" data-test="full-access-phrase" class="input mt-1" autocomplete="off" /></label>
       <template #footer>
         <button type="button" data-test="full-access-cancel" class="btn btn-secondary" @click="cancelFullAccess">{{ t('adminAccessKeys.cancel') }}</button>
-        <button type="button" data-test="full-access-confirm" class="btn btn-danger" :disabled="fullAccessPhrase !== t('adminAccessKeys.fullAccessPhrase')" @click="confirmFullAccess">{{ t('adminAccessKeys.fullAccessConfirmTitle') }}</button>
+        <button type="button" data-test="full-access-confirm" class="btn btn-primary btn-highlight-arc" :disabled="fullAccessPhrase !== t('adminAccessKeys.fullAccessPhrase')" @click="confirmFullAccess">{{ t('adminAccessKeys.fullAccessConfirmTitle') }}</button>
       </template>
     </BaseDialog>
     <TotpStepUpDialog :controller="stepUp" />
@@ -94,6 +107,9 @@ import type { AccessRule, AdminKey, AdminKeyInput, Permission } from '@/api/admi
 import { getAllIncludingInactive } from '@/api/admin/groups'
 import { CONCRETE_PLATFORM_OPTIONS } from '@/constants/platforms'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import InfoNotice from '@/components/common/InfoNotice.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
 import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
 import { useAdminAccessKeyPermissions } from '@/composables/useAdminAccessKeyPermissions'
 import { isStepUpCancelled, useStepUp } from '@/composables/useStepUp'
@@ -243,3 +259,13 @@ async function copySecret() { try { await navigator.clipboard.writeText(secret.v
 function status(item: AdminKey) { return item.revoked_at ? t('adminAccessKeys.statusRevoked') : !item.enabled ? t('adminAccessKeys.statusDisabled') : item.expires_at && new Date(item.expires_at).getTime() <= Date.now() ? t('adminAccessKeys.statusExpired') : t('adminAccessKeys.statusEnabled') }
 onMounted(load)
 </script>
+
+<style scoped>
+/* 展示信息模块 / 复选框：权限规则按正文容器重排；不使用整页视口推断可用列宽。 */
+.admin-access-keys { container: access-keys / inline-size; }
+.access-key-fields, .access-key-permissions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.access-key-rule { padding: 12px 14px 14px; border: 1px solid var(--border); border-radius: 18px; }
+@container access-keys (min-width: 640px) {
+  .access-key-fields, .access-key-permissions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>

@@ -22,7 +22,7 @@
                 {{ t('common.reset') }}
               </button>
               <button type="button" class="btn btn-secondary" :disabled="loadingKeys || loadingJobs" :title="t('common.refresh')" @click="refreshPage">
-                <Icon name="refresh" size="md" :class="loadingKeys || loadingJobs ? 'animate-spin' : ''" />
+                <Icon :filled="loadingKeys || loadingJobs" name="refresh" size="md" :class="loadingKeys || loadingJobs ? 'animate-spin' : ''" />
               </button>
               <button type="button" class="btn btn-secondary" @click="showGuideModal = true">
                 <Icon name="book" size="md" class="mr-2" />
@@ -57,7 +57,7 @@
                 :disabled="bulkDownloading || selectedDownloadableRows.length === 0"
                 @click="downloadSelectedJobs"
               >
-                <Icon :name="bulkDownloading ? 'refresh' : 'download'" size="sm" class="mr-1.5" :class="bulkDownloading ? 'animate-spin' : ''" />
+                <Icon :filled="bulkDownloading" :name="bulkDownloading ? 'refresh' : 'download'" size="sm" class="mr-1.5" :class="bulkDownloading ? 'animate-spin' : ''" />
                 {{ t('batchImage.actions.downloadSelected') }}
               </button>
               <button
@@ -66,7 +66,7 @@
                 :disabled="bulkDeleting"
                 @click="deleteSelectedJobs"
               >
-                <Icon :name="bulkDeleting ? 'refresh' : 'trash'" size="sm" class="mr-1.5" :class="bulkDeleting ? 'animate-spin' : ''" />
+                <Icon :filled="bulkDeleting" :name="bulkDeleting ? 'refresh' : 'trash'" size="sm" class="mr-1.5" :class="bulkDeleting ? 'animate-spin' : ''" />
                 {{ t('batchImage.actions.deleteRecords') }}
               </button>
             </div>
@@ -194,7 +194,7 @@
                 :title="t('batchImage.actions.downloadZip')"
                 @click="downloadJob(row)"
               >
-                <Icon
+                <Icon :filled="isDownloadingJob(row.id)"
                   :name="isDownloadingJob(row.id) ? 'refresh' : 'download'"
 	                  size="sm"
 	                  :class="isDownloadingJob(row.id) ? 'animate-spin' : ''"
@@ -294,7 +294,7 @@
               :disabled="retryingBatchId === job.id"
               @click="retryFailedJob(job)"
             >
-              <Icon name="refresh" size="sm" :class="retryingBatchId === job.id ? 'animate-spin' : ''" />
+              <Icon :filled="retryingBatchId === job.id" name="refresh" size="sm" :class="retryingBatchId === job.id ? 'animate-spin' : ''" />
               {{ t('batchImage.actions.retryFailedItems') }}
             </button>
             <button
@@ -304,7 +304,7 @@
               :disabled="deletingBatchId === job.id"
               @click="deleteJob(job)"
             >
-              <Icon :name="deletingBatchId === job.id ? 'refresh' : 'trash'" size="sm" :class="deletingBatchId === job.id ? 'animate-spin' : ''" />
+              <Icon :filled="deletingBatchId === job.id" :name="deletingBatchId === job.id ? 'refresh' : 'trash'" size="sm" :class="deletingBatchId === job.id ? 'animate-spin' : ''" />
               {{ t('batchImage.actions.deleteRecords') }}
             </button>
           </template>
@@ -372,7 +372,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('batchImage.detail.items') }}</h3>
           <button type="button" class="btn btn-secondary btn-sm" :disabled="refreshing || loadingItems" @click="refreshDetail">
-            <Icon name="refresh" size="sm" class="mr-1.5" :class="refreshing || loadingItems ? 'animate-spin' : ''" />
+            <Icon :filled="refreshing || loadingItems" name="refresh" size="sm" class="mr-1.5" :class="refreshing || loadingItems ? 'animate-spin' : ''" />
             {{ t('common.refresh') }}
           </button>
         </div>
@@ -456,7 +456,7 @@
                       :title="previewErrorIds.has(itemPreviewKey(item)) ? t('batchImage.detail.previewReload') : t('batchImage.detail.previewLoad')"
                       @click="loadItemPreview(item)"
                     >
-                      <Icon :name="previewLoadingIds.has(itemPreviewKey(item)) ? 'refresh' : 'eye'" size="sm" :class="previewLoadingIds.has(itemPreviewKey(item)) ? 'animate-spin' : ''" />
+                      <Icon :filled="previewLoadingIds.has(itemPreviewKey(item))" :name="previewLoadingIds.has(itemPreviewKey(item)) ? 'refresh' : 'eye'" size="sm" :class="previewLoadingIds.has(itemPreviewKey(item)) ? 'animate-spin' : ''" />
                     </button>
                     <div v-else class="flex h-full w-full items-center justify-center text-gray-400" :title="item.image_count > 0 ? t('batchImage.detail.previewUnavailable') : t('batchImage.detail.noImage')">
                       <Icon name="document" size="sm" />
@@ -477,7 +477,7 @@
           </table>
         </div>
         <div v-else class="rounded-lg border border-dashed border-gray-200 py-10 text-center dark:border-dark-700">
-          <Icon name="refresh" size="lg" class="mx-auto mb-3 text-gray-400" :class="loadingItems ? 'animate-spin' : ''" />
+          <Icon :filled="loadingItems" name="refresh" size="lg" class="mx-auto mb-3 text-gray-400" :class="loadingItems ? 'animate-spin' : ''" />
           <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
             {{ loadingItems ? t('batchImage.detail.loadingItems') : t('batchImage.detail.noItems') }}
           </p>
@@ -490,7 +490,7 @@
       <template #footer>
         <div class="flex justify-end gap-3">
 	          <button type="button" class="btn btn-secondary" :disabled="!currentJob || !canCancel(currentJob) || cancelling" @click="cancelSelected">
-	            <Icon v-if="cancelling" name="refresh" size="sm" class="mr-2 animate-spin" />
+	            <Icon filled v-if="cancelling" name="refresh" size="sm" class="mr-2 animate-spin" />
 	            {{ t('batchImage.actions.cancelJob') }}
 	          </button>
 	          <button
@@ -500,7 +500,7 @@
 	            :disabled="retryingBatchId === currentJob.id"
 	            @click="retrySelected"
 	          >
-	            <Icon name="refresh" size="sm" class="mr-2" :class="currentJob && retryingBatchId === currentJob.id ? 'animate-spin' : ''" />
+	            <Icon :filled="currentJob && retryingBatchId === currentJob.id" name="refresh" size="sm" class="mr-2" :class="currentJob && retryingBatchId === currentJob.id ? 'animate-spin' : ''" />
 	            {{ t('batchImage.actions.retryFailedItems') }}
 	          </button>
 	          <button
@@ -509,7 +509,7 @@
             :disabled="!currentJob || !canDownload(currentJob) || downloading"
             @click="downloadSelected"
           >
-            <Icon
+            <Icon :filled="!!currentJob && isDownloadingJob(currentJob.id)"
               :name="currentJob && isDownloadingJob(currentJob.id) ? 'refresh' : 'download'"
               size="sm"
               class="mr-2"
@@ -708,7 +708,7 @@
         <div class="flex justify-end gap-3">
           <button type="button" class="btn btn-secondary" :disabled="submitting" @click="closeCreateModal">{{ t('common.cancel') }}</button>
 	          <button type="button" class="btn btn-primary inline-flex min-w-[120px] justify-center" :disabled="submitting || loadingModels || (parsedItems.length === 0 && !promptDraft.trim()) || !selectedApiKey || !form.model" @click="submitJob">
-            <Icon v-if="submitting" name="refresh" size="sm" class="mr-2 animate-spin" />
+            <Icon filled v-if="submitting" name="refresh" size="sm" class="mr-2 animate-spin" />
             {{ submitting ? t('common.submitting') : t('batchImage.actions.submitJob') }}
           </button>
         </div>

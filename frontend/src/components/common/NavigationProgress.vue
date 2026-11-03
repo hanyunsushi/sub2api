@@ -11,5 +11,5 @@ const position = usePageLoadingPosition(() => document.querySelector<HTMLElement
 </template>
 <style scoped>
 /* 加载反馈：定位不占布局，不遮挡常驻顶栏/侧栏。 */
-.navigation-loading-dot { position: fixed; z-index: 125; color: var(--accent, #007aff); transform: translate(-50%,-50%); pointer-events: none; }
+.navigation-loading-dot { position: fixed; z-index: 125; color: var(--accent, #0088ff); transform: translate(-50%,-50%); pointer-events: none; }
 </style>

@@ -30,11 +30,11 @@ import {
 } from "motion/react";
 import type { Transition, Variants } from "motion/react";
 import {
-  CalendarDays,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { SfSymbolReact } from "@/components/icons/SfSymbolReact";
 import { motionTokens } from "./date-range-picker-utils/motion-tokens";
 import styles from "./date-range-picker-utils/date-range-picker.module.css";
 
@@ -1155,7 +1155,7 @@ export function DateRangePicker({
           animate={quiet}
           transition={quietTransition}
         >
-          <CalendarDays size={16} strokeWidth={1.75} aria-hidden="true" />
+          <SfSymbolReact name="calendar" filled={open} />
         </motion.span>
         {open || !layoutId ? (
           <motion.span

@@ -32,7 +32,7 @@
           :aria-current="locale.code === currentLocaleCode ? 'true' : undefined"
         >
           <span>{{ locale.name }}</span>
-          <Icon v-if="locale.code === currentLocaleCode" name="check" size="sm" class="ml-auto text-primary-500" />
+          <Icon filled v-if="locale.code === currentLocaleCode" name="check" size="sm" class="ml-auto text-primary-500" />
         </button>
       </div>
     </transition>

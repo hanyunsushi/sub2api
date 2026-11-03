@@ -80,7 +80,7 @@
   <div
     v-else
     ref="tableWrapperRef"
-    class="table-wrapper"
+    class="table-wrapper kreepai-table-wrapper"
     :class="{
       'actions-expanded': actionsExpanded,
       'is-scrollable': isScrollable
@@ -284,6 +284,12 @@ const observeElementRectNonZero = (
 const checkScrollable = () => {
   if (tableWrapperRef.value) {
     isScrollable.value = tableWrapperRef.value.scrollWidth > tableWrapperRef.value.clientWidth
+    // 展示信息模块：表头色带跟随真实换行高度，覆盖表格顶部及两侧留白。
+    const header = tableWrapperRef.value.querySelector('thead')
+    if (header) {
+      const inset = Number.parseFloat(getComputedStyle(tableWrapperRef.value).paddingTop) || 0
+      tableWrapperRef.value.style.setProperty('--table-header-band', `${header.getBoundingClientRect().height + inset}px`)
+    }
   }
 }
 
@@ -362,6 +368,8 @@ const attachDesktopTableTracking = () => {
       checkActionsColumnWidth()
     })
     resizeObserver.observe(tableWrapperRef.value)
+    const header = tableWrapperRef.value.querySelector('thead')
+    if (header) resizeObserver.observe(header)
   } else {
     // 降级方案：不支持 ResizeObserver 时使用 window resize
     resizeHandler = () => {

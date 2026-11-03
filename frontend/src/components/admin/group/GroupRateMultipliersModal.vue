@@ -228,7 +228,7 @@
             :disabled="saving"
             @click="handleSave"
           >
-            <Icon v-if="saving" name="refresh" size="sm" class="mr-1 animate-spin" />
+            <Icon filled v-if="saving" name="refresh" size="sm" class="mr-1 animate-spin" />
             {{ t('common.save') }}
           </button>
         </div>

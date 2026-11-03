@@ -58,7 +58,7 @@
             :class="['select-option', modelValue === null && 'select-option-selected']"
           >
             <span class="select-option-label">{{ t('admin.accounts.noProxy') }}</span>
-            <Icon v-if="modelValue === null" name="check" size="sm" class="text-primary-500" />
+            <Icon filled v-if="modelValue === null" name="check" size="sm" class="text-primary-500" />
           </div>
 
           <!-- Proxy options -->
@@ -118,7 +118,7 @@
               <Icon v-else name="play" size="xs" />
             </button>
 
-            <Icon
+            <Icon filled
               v-if="modelValue === proxy.id"
               name="check"
               size="sm"

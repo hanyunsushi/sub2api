@@ -1,7 +1,8 @@
 ---
 title: AI first design system review
-updated: 2026-10-20
+updated: 2026-11-03
 sources:
+  - frontend/src/components/icons/
   - frontend/src/styles/design-system/kreepai.css
   - frontend/src/components/common/
   - frontend/src/components/keys/EndpointPopover.vue
@@ -81,6 +82,23 @@ Scope is visual/application-owned frontend only. Both native and MFE builds impo
 The previous24 warnings were stale QingZhou source snapshots/coverage, not24 AI visual defects. The earlier detail-review baseline included reviewed source/build/runtime changes, updated patterns and an explicit integration/visual review record:110 sources/55 patterns/273 package hashes with no drift, independent typecheck,47 contract checks and Vite build. Those receipts predate the loading/version/settings increment above. Its reviewed optional-version runtime snapshot and canonical Shell/reference assets are synchronized; current audit110sources/55patterns/273hashes and48 isolated contracts/typecheck/build pass. Neither baseline establishes current browser/production behavior.
 
 Final native/compiled/production evidence and current release/rollback identifiers belong to [Project Authority](../../agent.md) and [Host authority](/Users/hinaw/console-kreeper/agent.md). Browser fixtures are local synthetic data; payment settlement, external OAuth, all provider-specific states and physical mobile hardware are separate acceptance boundaries. No production credentials or real account data are stored here.
+
+## Current design-system adaptation
+
+The current implementation applies the updated canonical system to existing frontend owners:300ms surface/highlight buttons, round dot checkbox/radio with native mixed state, current raw Apple semantic badges, continuous table header bands with carrier-dependent body surfaces, connected32/44px copy fields and transparent refresh controls. [Shared layer](embedded-design-system.md#current-design-system-revision) owns the mapping, source revision, application exceptions and artwork boundary. Earlier review rows describing400ms inset/inner light are historical evidence rather than the active button contract. Business authorization, source data, API payloads and ordinary modal fade-scale remain app-owned. Production status and current verification belong to [authority](../../agent.md#新版设计系统接入2026-11-02本地未发布).
+
+The user's explicit SF requirement is implemented in the [shared SF layer](embedded-design-system.md#sf-symbols-integration): real Regular contours and default/Fill pairs serve native and Console menu callbacks, shared controls, summaries, feedback and the React date trigger. Actual route/expanded/loading state owns Fill; static cards and hover do not. Brand/direction/data exceptions retain their original resources. The earlier SF exclusion is superseded. Resource/state tests and code/build verification are current evidence; no new authenticated or browser visual acceptance is claimed.
+
+## Upstream 0.2.19 detail alignment
+
+| Surface | Application-owned mapping |
+| --- | --- |
+| Administrator access keys | Shared warning/error/success notices, status badges, nested white detail surface, wrapping permission IDs and content-container field grids. Native multi-select lists keep their real height and original grant semantics. |
+| MCP connections and consent | Shared loading/empty/error presentation, primary copy action, separate scope/access/status badges, full return-address text and wrapping revoke actions. Original preview, approval, step-up and redirect guards remain. |
+| Grok model configuration | Shared neutral RouteSwitch for whitelist/mapping; diagnostics use semantic status, inline notices and content-container mapping columns. Historical/current catalog distinctions and saved mapping behavior remain. |
+| Secondary account filters | Shared information badge for active count; original filter panel and events remain. |
+
+Ordinary primary8px corners and ordinary fade-scale dialogs remain app-specific. Button hover and checkbox geometry follow the current design-system adaptation above. No new visual category or global theme migration is introduced. Implementation details and source ownership are in [shared visual layer](embedded-design-system.md#upstream-0219-form-and-connection-details); current local verification and production separation are in [authority](../../agent.md#前端细节设计对齐2026-11-02本地未发布).
 
 ## See also
 

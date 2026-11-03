@@ -217,7 +217,7 @@
                   : 'bg-primary-500 text-white hover:bg-primary-600'
           ]"
         >
-          <Icon
+          <Icon filled
             v-if="status === 'connecting'"
             name="refresh"
             size="sm"

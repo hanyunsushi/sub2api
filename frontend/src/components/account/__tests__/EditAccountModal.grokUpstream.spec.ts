@@ -1396,8 +1396,8 @@ describe('EditAccountModal Grok OAuth upstream config', () => {
       )
       const mapping = tabs.findAll('button').find(button => button.text().includes('admin.accounts.modelMapping'))
       const whitelist = tabs.findAll('button').find(button => button.text().includes('admin.accounts.modelWhitelist'))
-      expect(mapping?.attributes('aria-pressed')).toBe('true')
-      expect(whitelist?.attributes('aria-pressed')).toBe('false')
+      expect(mapping?.attributes('aria-selected')).toBe('true')
+      expect(whitelist?.attributes('aria-selected')).toBe('false')
       expect(wrapper.findAll('[data-testid="grok-diagnostics-sync"]')).toHaveLength(1)
       expect(wrapper.find('[data-testid="sync-upstream-models"]').exists()).toBe(false)
 
@@ -1414,8 +1414,8 @@ describe('EditAccountModal Grok OAuth upstream config', () => {
       expect(settings.find('[data-testid="grok-model-mapping-editor"]').exists()).toBe(false)
       expect(wrapper.findAll('[data-testid="grok-diagnostics-sync"]')).toHaveLength(1)
       expect(wrapper.find('[data-testid="sync-upstream-models"]').exists()).toBe(false)
-      expect(whitelist?.attributes('aria-pressed')).toBe('true')
-      expect(mapping?.attributes('aria-pressed')).toBe('false')
+      expect(whitelist?.attributes('aria-selected')).toBe('true')
+      expect(mapping?.attributes('aria-selected')).toBe('false')
       const fill = settings.findAll('button').find(button => button.text().includes('admin.accounts.fillRelatedModels'))
       expect(fill).toBeTruthy()
       expect(panel.element.compareDocumentPosition(fill!.element) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(

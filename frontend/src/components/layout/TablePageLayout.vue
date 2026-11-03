@@ -12,7 +12,8 @@
 
     <!-- 滚动区域：表格 -->
     <div class="layout-section-scrollable">
-      <div class="card table-scroll-container">
+      <!-- 展示信息模块：纯表格承载不新增卡片深度，数据底色继承实际父模块。 -->
+      <div class="table-scroll-container">
         <slot name="table" />
       </div>
     </div>

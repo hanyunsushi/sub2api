@@ -94,7 +94,7 @@
               :disabled="transferring || detail.aff_quota <= 0"
               @click="transferQuota"
             >
-              <Icon v-if="transferring" name="refresh" size="sm" class="animate-spin" />
+              <Icon filled v-if="transferring" name="refresh" size="sm" class="animate-spin" />
               <Icon v-else name="dollar" size="sm" />
               <span>{{ transferring ? t('affiliate.transfer.transferring') : t('affiliate.transfer.button') }}</span>
             </button>

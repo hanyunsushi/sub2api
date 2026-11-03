@@ -38,7 +38,7 @@
             @click="selectLocale(option.code)"
           >
             <span>{{ option.label }}</span>
-            <Icon v-if="option.active" name="check" size="sm" class="ml-auto text-primary-500" />
+            <Icon filled v-if="option.active" name="check" size="sm" class="ml-auto text-primary-500" />
           </button>
         </div>
       </div>

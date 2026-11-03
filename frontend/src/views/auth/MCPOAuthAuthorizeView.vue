@@ -1,21 +1,22 @@
 <template>
-  <main class="min-h-screen bg-gray-50 px-4 py-8 dark:bg-dark-950 sm:py-12">
+  <!-- 展示信息模块：授权仍是独立确认页，不引入额外导航或扩大默认权限。 -->
+  <main class="min-h-screen bg-[var(--bg)] px-4 py-8 sm:py-12">
     <section class="card mx-auto max-w-2xl p-5 sm:p-8" aria-labelledby="mcp-consent-title" :aria-busy="loading || submitting">
       <div class="mb-6 flex items-start gap-3">
-        <div class="rounded-xl bg-primary-50 p-3 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400"><Icon name="mcp" size="lg" /></div>
-        <div>
+        <div class="stat-icon flex items-center justify-center"><Icon name="mcp" size="lg" /></div>
+        <div class="min-w-0">
           <h1 id="mcp-consent-title" class="text-xl font-semibold text-gray-900 dark:text-white">{{ t('mcp.consentTitle') }}</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('mcp.consentDescription') }}</p>
         </div>
       </div>
-      <p v-if="loading" role="status" class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">{{ t('mcp.consentLoading') }}</p>
+      <p v-if="loading" role="status" class="flex items-center justify-center gap-2 py-8 text-sm text-gray-500 dark:text-gray-400"><LoadingSpinner size="sm" aria-hidden="true" />{{ t('mcp.consentLoading') }}</p>
       <div v-else-if="previewError" class="space-y-4">
-        <p role="alert" class="text-sm text-red-600 dark:text-red-400">{{ previewError }}</p>
+        <InfoNotice tone="danger">{{ previewError }}</InfoNotice>
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('mcp.consentRetryHint') }}</p>
         <RouterLink to="/settings/mcp" class="btn btn-secondary">{{ t('mcp.backToConnections') }}</RouterLink>
       </div>
       <form v-else-if="consent" class="space-y-6" @submit.prevent="decide(true)">
-        <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-900">
+        <div class="kreepai-detail-panel">
           <dl class="space-y-4 text-sm">
             <div>
               <dt class="text-gray-500 dark:text-gray-400">{{ t('mcp.applicationName') }}</dt>
@@ -23,7 +24,7 @@
             </div>
             <div>
               <dt class="text-gray-500 dark:text-gray-400">{{ t('mcp.clientId') }}</dt>
-              <dd class="mt-1 truncate font-mono text-xs text-gray-700 dark:text-gray-200" :title="consent.client_id">{{ consent.client_id }}</dd>
+              <dd class="mt-1 break-all font-mono text-xs text-gray-700 dark:text-gray-200">{{ consent.client_id }}</dd>
             </div>
             <div>
               <dt class="text-gray-500 dark:text-gray-400">{{ t('mcp.returnAddress') }}</dt>
@@ -36,7 +37,7 @@
               <dd class="mt-1 break-all font-mono text-xs text-gray-600 dark:text-gray-300">{{ consent.resource }}</dd>
             </div>
           </dl>
-          <p class="mt-4 border-t border-gray-200 pt-4 text-sm text-amber-800 dark:border-dark-700 dark:text-amber-300">{{ t('mcp.untrustedApplicationHint') }}</p>
+          <InfoNotice tone="warning" class="mt-4">{{ t('mcp.untrustedApplicationHint') }}</InfoNotice>
         </div>
         <p v-if="authStore.user?.email" class="break-all text-sm text-gray-600 dark:text-gray-300">{{ t('mcp.signedInAs', { email: authStore.user.email }) }}</p>
         <div>
@@ -56,8 +57,9 @@
           <p id="mcp-permissions-hint" class="mt-2 text-xs" :class="readOnly ? 'text-gray-500 dark:text-gray-400' : 'text-amber-700 dark:text-amber-400'">{{ readOnly ? t('mcp.readOnlyHint') : t('mcp.readWriteHint') }}</p>
           <p v-if="scope === 'admin' && !readOnly" data-testid="admin-write-hint" class="mt-1 text-xs text-amber-700 dark:text-amber-400">{{ t('mcp.adminWriteHint') }}</p>
         </div>
-        <p v-if="submitError" role="alert" class="text-sm text-red-600 dark:text-red-400">{{ submitError }}</p>
-        <div class="flex justify-end gap-3 border-t border-gray-100 pt-5 dark:border-dark-700">
+        <InfoNotice v-if="submitError" tone="danger">{{ submitError }}</InfoNotice>
+        <!-- 普通按钮 / 强调按钮：保留拒绝与批准原事件，长翻译和窄屏允许换行。 -->
+        <div class="flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-5 dark:border-dark-700">
           <button data-testid="deny" type="button" class="btn btn-secondary" :disabled="submitting" @click="decide(false)">{{ t('mcp.deny') }}</button>
           <button data-testid="approve" type="submit" class="btn btn-primary" :disabled="submitting">{{ submitting ? t('common.processing') : t('mcp.approve') }}</button>
         </div>
@@ -73,6 +75,8 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { mcpAPI, type MCPAccessScope, type MCPAuthorization, type MCPConsent } from '@/api/mcp'
 import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
+import InfoNotice from '@/components/common/InfoNotice.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { Icon } from '@/components/icons'
 import { isStepUpBlocked, isStepUpCancelled, stepUpBlockReason, useStepUp } from '@/composables/useStepUp'
 import { useAuthStore } from '@/stores/auth'

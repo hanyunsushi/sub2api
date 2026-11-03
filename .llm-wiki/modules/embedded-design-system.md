@@ -1,7 +1,9 @@
 ---
 title: Kreepai Shared Design System
-updated: 2026-10-23
+updated: 2026-11-03
 sources:
+  - frontend/src/components/icons/
+  - frontend/public/licenses/sf-symbols.txt
   - frontend/src/styles/design-system/
   - frontend/tailwind.config.js
   - frontend/src/components/layout/AuthLayout.vue
@@ -16,6 +18,12 @@ sources:
   - frontend/src/App.vue
   - frontend/src/router/index.ts
   - frontend/src/api/client.ts
+  - frontend/src/components/admin/settings/AdminAccessKeysSettings.vue
+  - frontend/src/components/account/GrokModelDiagnosticsPanel.vue
+  - frontend/src/components/account/EditAccountModal.vue
+  - frontend/src/components/admin/account/AccountTableFilters.vue
+  - frontend/src/views/user/MCPView.vue
+  - frontend/src/views/auth/MCPOAuthAuthorizeView.vue
 ---
 
 # Shared visual layer
@@ -35,6 +43,44 @@ The adapter defines the four first-design-system font roles (Fraunces / Source H
 - Admin dashboard summary icons are neutral, numeric values retain their independent font role, and the original refresh handler stays in its original page control.
 
 Semantic Chinese comments mark the template and CSS boundaries. All generated stylesheet rules remain under the Kreepai native CSS scope; explicit root-plus-boundary specificity overrides upstream component-scoped styles without changing Host styles. The scope is not a JavaScript or security sandbox. The embedded layout is light, matching the current Host; the native dark preference retains the application’s existing slate tokens as an explicit local compatibility treatment, rather than a new global design-system theme.
+
+## Current design-system revision
+
+The application maps the current `kreeper-first-design-system` foundations/buttons/forms/content contracts at canonical repository revision `6af6feee2e29a89aa91cc9e9ab8f13986ebe5148`, reviewed together with the live uncommitted scrollbar/source-reference changes. This is an application adaptation rather than a byte-for-byte copy of the showcase package. User direction to apply the updated design system supersedes the retired400ms inset/inner-light and square-checkbox decisions; ordinary modal fade-scale and original API/business boundaries remain app-specific.
+
+- `kreepai.css` owns Apple info/accent0088FF, success34C759, warningFF8D28, dangerFF383C and inactive8E8E93. Shared state/information badges retain raw semantic foregrounds and15% mixing against the application surface. Tailwind primary, portal feedback, inline notices, loaders and the copied calendar accent stay aligned.
+- Ordinary/arc actions use a white surface and neutral gray hover with fixed1px ring. Ordinary emphasis keeps8px corners and blue84%/white16% highlight with1→2px ring. Explicit highlight/confirmation arcs keep18px corners and fixed1px ring. Shared color/ring feedback is300ms ease; the retired pseudo-element inset layer is removed. Delete/revoke remains transparent red; full-access grant confirmation is a blue highlighted risk confirmation. Existing modal motion and refresh400/800ms rotation are separate contracts.
+- Native checkbox/radio inputs draw16px circles,6px white dots and200ms internal scaling. Checkbox mixed remains an8×2px bar. Native name/value, multiple selection, deselection, indeterminate, disabled, labels and Space remain intact; reduced motion cancels scale/transition and forced colors restores native appearance. The controls retain the existing application theme and do not introduce HeroUI/React dependencies.
+- DataTable draws a continuousF2F2F7 header band,8/12/12 inner spacing and18px wrapper corners; its existing ResizeObserver tracks the real header height. Data surfaces alternate against white/FAFAFA carriers; row hover keeps the same surface, sticky columns keep1px separators and original sorting/selection/virtualization. The pure TablePageLayout wrapper introduces no extra card depth. Native dark mode retains slate surfaces and a separate dark header token.
+- Connected copy fields keep one32px row/44px coarse-pointer row,18px outer corners and square seams; copy hover only changes color and fixed1px border, without primary expansion or inset light. MCP endpoint uses this shared field with the original clipboard handler. Refresh uses the updated transparent/accent surface with original request gating and rotation.
+
+The review also checked the current scrollbar centering/mobile-gutter and submenu ownership against the app's existing implementation; those already match the relevant behavior. Showcase-only GoldenAssetCard/Roboto/AntV specimens are not inserted into product flows. Existing AWS-category charts retain their explicit chart contract. Functional artwork follows the user's explicit SF Symbols decision described below; source and distributable notices retain its separate artwork/wrapper terms.
+
+Verification and production boundaries are owned by [authority](../../agent.md#新版设计系统接入2026-11-02本地未发布).
+
+## SF Symbols integration
+
+`components/icons/sf-symbols.ts` maps87 existing/new functional aliases to79 real Regular default/Fill pairs, backed by158 original exports in `sf-symbols.json`. The pinned source is `bradleyhodges/sfsymbols@2a0100e93e11a22ea0ff5e0530efd10e2cf0d243`; each export retains its original viewBox, paths, fillOpacity, source URL and SHA-256. `THIRD_PARTY_NOTICES.md` and `public/licenses/sf-symbols.txt` retain the source/distribution notices. The application does not infer another official weight or symbol-animation capability.
+
+`Icon.vue` preserves its public names/sizes/strokeWidth callers and adds optional `filled`/`label`. SF contours render with currentColor and no artificial stroke; explicit consumer box classes retain their original size. Default/Fill swap only follows real state. Directional arrows keep their original SVGs and never Fill, except the16px SF footer collapse control. MCP, vendor/OS/identity marks, uploaded custom SVGs, data drawings and waiting geometry remain their own resources. Ordinary static summary icons stay default and neutral. Exact-match inline conversions retain original conditions, events, labels, colors and layout classes.
+
+`SidebarIcon.vue` reads the existing nearest native/Host button's `aria-expanded` or leaf `aria-current=page`, subscribes only to those attributes and disconnects on unmount. This keeps the original React-owned menu DOM, route/permission tree and Motion implementation. A collapsed active parent stays default; its true expansion switches Fill. The icon carries the MFE CSS namespace locally, and its variant does not depend on an ancestor selector across `@scope` boundaries. Hover/focus changes no variant. The same callback is published through the existing Console navigation bridge.
+
+AppHeader's mobile control follows drawer state, AnnouncementBell follows its modal and subscription details follow their popover. RefreshButton uses ArrowClockwiseCircle/Fill only while the original request is pending, keeping disabled gating and400/800ms/reduced-motion behavior. Automatic-refresh configuration fills while its menu is open; enabling polling alone is not loading. InfoNotice and message feedback render real semantic SF glyphs with the original visible text, roles, duration and close handling. `SfSymbolReact.tsx` consumes the same manifest as Vue; only the date trigger becomes CalendarCircle/Fill while open, preserving the original date arrows, Motion, draft/commit and timezone behavior.
+
+Verification and local/production boundaries belong to [authority](../../agent.md#sf-symbols-前端接入2026-11-03本地未发布). Tests exercise all pair resolution, exact paths/opacity, labels, direction/brand exceptions, explicit sizes, native/Host aria transitions, refresh gating and semantic notice text. Current SF work has no authenticated production or browser visual acceptance claim.
+
+## Upstream 0.2.19 form and connection details
+
+`AdminAccessKeysSettings` uses shared notices, status badges and two-level surfaces. Permission names and identifiers wrap independently; the native checkbox values, restrictive defaults, group selections, full-access phrase confirmation, locale reset, step-up and once-only secret visibility remain owned by the original handlers. Ordinary field/permission grids switch to two columns only when the settings content container reaches640px. Native `select.input[multiple]` is excluded from the34/44px single-line height rule and retains at least132px, original multiple selection and keyboard behavior. Checkbox labels retain32px desktop/44px coarse-pointer hit areas without enlarging the16px input.
+
+`InfoNotice` accepts optional `tone: info | warning | danger | success`, defaulting to info. Actual errors have `role=alert`; other tones retain `role=status`, with explicit text and distinct semantic symbols. Tone surfaces use15% warning/danger/success fills; foreground body text inherits the application theme. Existing informational consumers keep their default presentation. `kreepai-detail-panel` owns the18px nested white surface and width/wrapping constraints in both native and scoped MFE CSS.
+
+`MCPView` reuses EmptyState, DotMatrix waiting, inline errors and scope/access/status badges. Endpoint copy retains the original clipboard handler in the shared connected copy field. The address/copy row keeps aligned32/44px geometry; long names and authorization actions wrap. The consent view keeps full client/redirect/resource text visible and shared warning/error surfaces; native boolean permission selects, conservative user/read-only defaults and server redirect validation are unchanged. Revoke still requires the original dialog and server confirmation.
+
+The two Grok OAuth/API-key model sections use the shared RouteSwitch with their original whitelist/mapping state. The switch exposes tablist/tab/aria-selected, keyboard navigation and reduced-motion behavior; diagnostics stay between the switch and the active editor. `GrokModelDiagnosticsPanel` uses neutral nested surface, current catalog status badges and warning/error notices. Request/target columns switch at460px of actual diagnostics content. Long model IDs and endpoints wrap, and expanded content/focus is not hidden by the outer panel. Historical catalogs, missing mappings and failed/configured-fallback attempts retain their existing distinct messages and sync behavior. Account secondary-filter counts reuse the information badge without changing filter events.
+
+Behavior regression entry points are the dedicated AdminAccessKeys, MCP consent/connection, Grok diagnostics/edit-modal, AccountTableFilters and RouteSwitch test suites. Style assertions now refer to shared surface ownership and tab selection semantics; authorization and API payload assertions remain. Verification/deployment boundaries belong to [Project Authority](../../agent.md#前端细节设计对齐2026-11-02本地未发布).
 
 ## Dashboard request recovery
 
@@ -93,7 +139,7 @@ The [2026-10-19 detail review](ai-design-review.md) corrects original control pl
 
 ## Detail contracts
 
-Ordinary neutral/default-arc and gray header triggers use the shared gray inset-shadow hover with unchanged text-2; emphasis/highlight actions retain Apple blue and animate32px/32% white inset light. Enter/leave are400ms ease, outer rings stay1px and keyboard focus remains independent. Primary page actions are8px, explicit confirmations18px. StandardRefresh retains its own SVG motion. RouteSwitch owns240ms following surface, local horizontal overflow and keyboard selection; settings/monitor/model panels preserve their original state models. InfoNotice uses the canonical20px ! icon/status and10/12 inset. Identity avatars reuse stable six-color mapping. Sticky table boundaries are1px separators without gradients; popup/tooltip shadows are independent. Raw route/auth matrices explicitly use accent rather than inherited body gray. See [the seventeen-point review](ai-design-review.md#seventeen-point-detail-review-2026-10-19).
+Ordinary neutral/default-arc actions use white surfaces and300ms gray hover with unchanged text-2/fixed1px rings; ordinary emphasis uses the current blue highlight and1→2px ring, while explicit highlight arcs keep1px rings. Keyboard focus stays independent. Historical400ms inset-light behavior is superseded by the current revision above. Primary page actions are8px, explicit confirmations18px. StandardRefresh retains its own SVG motion. RouteSwitch owns240ms following surface, local horizontal overflow and keyboard selection; settings/monitor/model panels preserve their original state models. InfoNotice keeps the20px circular symbol and10/12 inset; its default info tone remains status, while warning/success preserve status and actual danger errors use alert. Identity avatars reuse stable six-color mapping. Sticky table boundaries are1px separators without gradients; popup/tooltip shadows are independent. Raw route/auth matrices explicitly use accent rather than inherited body gray. See [the seventeen-point review](ai-design-review.md#seventeen-point-detail-review-2026-10-19).
 
 ## Date and overlay adapters
 
@@ -166,7 +212,7 @@ FeedbackMessages uses a20px filled Apple semantic circle and white mark. Message
 
 ## Design-sync production release 2026-10-22
 
-The 2026-10-22 release restored confirmation motion only. The current AI contract below supersedes its ordinary-modal motion; the Naive provider belongs to the canonical reusable system, while AI keeps its existing Headless lifecycle. Main-action hover uses the 32px/32% white inner-light layer with 400ms entry/exit; ordinary/default-arc hover retains the gray inset treatment and text-2. The feedback stack/material, default white-background design-system logo and desktop SVG empty/result states are sourced from the shared design-system assets. Native product logos and route/business behavior remain app-owned.
+The 2026-10-22 release restored confirmation motion only. The current AI contract below supersedes its ordinary-modal motion; its recorded button treatment is a historical release baseline superseded by Current design-system revision; the Naive provider belongs to the canonical reusable system, while AI keeps its existing Headless lifecycle. Main-action hover uses the 32px/32% white inner-light layer with 400ms entry/exit; ordinary/default-arc hover retains the gray inset treatment and text-2. The feedback stack/material, default white-background design-system logo and desktop SVG empty/result states are sourced from the shared design-system assets. Native product logos and route/business behavior remain app-owned.
 
 The pushed frontend commit `2091a0f0eb6ae8ff0d87b5c0c5125de4fa70c42a` was embedded into the application image without changing the `0.2.16` product version or backend source. Runtime image/container identity, nine local routes, public health/home/login, unchanged PostgreSQL/Redis and volumes, database/appdata backups and rollback tag are recorded in [project authority](../../agent.md#设计系统反馈修复部署2026-10-22已部署). Public HTTP checks are not production authenticated visual acceptance.
 

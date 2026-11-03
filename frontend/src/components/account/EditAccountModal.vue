@@ -276,79 +276,41 @@
           </div>
 
           <template v-else>
-            <!-- Mode Toggle -->
-            <div
-              :data-testid="account.platform === 'grok' ? 'grok-model-mode-tabs' : undefined"
-              :class="account.platform === 'grok'
-                ? 'mb-4 flex gap-1 rounded-xl bg-gray-100 p-1 dark:bg-dark-900'
-                : 'mb-4 flex gap-2'"
-            >
+            <!-- 路由切换组件：Grok模型模式复用共享中性轨道，原白名单/映射状态与诊断顺序不变。 -->
+            <RouteSwitch
+              v-if="account.platform === 'grok'"
+              data-testid="grok-model-mode-tabs"
+              class="mb-4"
+              :model-value="modelRestrictionMode"
+              :options="modelModeOptions"
+              :label="t('admin.accounts.modelRestriction')"
+              @update:model-value="modelRestrictionMode = $event as 'whitelist' | 'mapping'"
+            />
+            <div v-else class="mb-4 flex gap-2">
               <button
                 type="button"
                 @click="modelRestrictionMode = 'whitelist'"
-                :aria-pressed="account.platform === 'grok' ? modelRestrictionMode === 'whitelist' : undefined"
-                :class="account.platform === 'grok'
-                  ? [
-                      'rounded-lg px-3 py-2 text-sm',
-                      modelRestrictionMode === 'whitelist'
-                        ? 'bg-white text-cyan-700 shadow-sm dark:bg-dark-800 dark:text-cyan-300'
-                        : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
-                    ]
-                  : [
-                      'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
-                      modelRestrictionMode === 'whitelist'
-                        ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
-                    ]"
+                :class="[
+                  'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                  modelRestrictionMode === 'whitelist'
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
+                ]"
               >
-                <svg
-                  v-if="account.platform !== 'grok'"
-                  class="mr-1.5 inline h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <Icon name="checkCircle" class="mr-1.5 inline h-4 w-4" />
                 {{ t('admin.accounts.modelWhitelist') }}
               </button>
               <button
                 type="button"
                 @click="modelRestrictionMode = 'mapping'"
-                :aria-pressed="account.platform === 'grok' ? modelRestrictionMode === 'mapping' : undefined"
-                :class="account.platform === 'grok'
-                  ? [
-                      'rounded-lg px-3 py-2 text-sm',
-                      modelRestrictionMode === 'mapping'
-                        ? 'bg-white text-purple-700 shadow-sm dark:bg-dark-800 dark:text-purple-300'
-                        : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
-                    ]
-                  : [
-                      'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
-                      modelRestrictionMode === 'mapping'
-                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
-                    ]"
+                :class="[
+                  'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                  modelRestrictionMode === 'mapping'
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
+                ]"
               >
-                <svg
-                  v-if="account.platform !== 'grok'"
-                  class="mr-1.5 inline h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                  />
-                </svg>
+                <Icon name="swap" class="mr-1.5 inline h-4 w-4" />
                 {{ t('admin.accounts.modelMapping') }}
               </button>
             </div>
@@ -390,20 +352,7 @@
             <div v-else :data-testid="account.platform === 'grok' ? 'grok-model-mapping-editor' : undefined">
               <div :class="account.platform === 'grok' ? 'mb-3' : 'mb-3 rounded-lg bg-purple-50 p-3 dark:bg-purple-900/20'">
                 <p :class="account.platform === 'grok' ? 'text-xs text-gray-500 dark:text-dark-400' : 'text-xs text-purple-700 dark:text-purple-400'">
-                  <svg
-                    v-if="account.platform !== 'grok'"
-                    class="mr-1 inline h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Icon name="infoCircle" v-if="account.platform !== 'grok'" class="mr-1 inline h-4 w-4" />
                   {{ t('admin.accounts.mapRequestModels') }}
                 </p>
               </div>
@@ -471,14 +420,7 @@
                     : 'rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20'"
                 >
                   <Icon v-if="account.platform === 'grok'" name="trash" size="sm" aria-hidden="true" />
-                  <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Icon name="trash" v-else class="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -491,19 +433,7 @@
                 ? 'mb-3 inline-flex items-center gap-1 py-2 text-xs text-primary-700 dark:text-primary-300'
                 : 'mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300'"
             >
-              <svg
-                class="mr-1 inline h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+              <Icon name="plus" class="mr-1 inline h-4 w-4" />
               {{ t('admin.accounts.addMapping') }}
             </button>
 
@@ -693,14 +623,7 @@
                 @keyup.enter="addCustomErrorCode"
               />
               <button type="button" @click="addCustomErrorCode" class="btn btn-secondary px-3">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
+                <Icon name="plus" class="h-4 w-4" />
               </button>
             </div>
 
@@ -900,50 +823,38 @@
         </div>
 
         <template v-else>
-          <!-- Mode Toggle -->
-          <div
-            :data-testid="account.platform === 'grok' ? 'grok-model-mode-tabs' : undefined"
-            :class="account.platform === 'grok'
-              ? 'mb-4 flex gap-1 rounded-xl bg-gray-100 p-1 dark:bg-dark-900'
-              : 'mb-4 flex gap-2'"
-          >
+          <!-- 路由切换组件：Grok模型模式复用共享中性轨道，原白名单/映射状态与诊断顺序不变。 -->
+          <RouteSwitch
+            v-if="account.platform === 'grok'"
+            data-testid="grok-model-mode-tabs"
+            class="mb-4"
+            :model-value="modelRestrictionMode"
+            :options="modelModeOptions"
+            :label="t('admin.accounts.modelRestriction')"
+            @update:model-value="modelRestrictionMode = $event as 'whitelist' | 'mapping'"
+          />
+          <div v-else class="mb-4 flex gap-2">
             <button
               type="button"
               @click="modelRestrictionMode = 'whitelist'"
-              :aria-pressed="account.platform === 'grok' ? modelRestrictionMode === 'whitelist' : undefined"
-              :class="account.platform === 'grok'
-                ? [
-                    'rounded-lg px-3 py-2 text-sm',
-                    modelRestrictionMode === 'whitelist'
-                      ? 'bg-white text-cyan-700 shadow-sm dark:bg-dark-800 dark:text-cyan-300'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
-                  ]
-                : [
-                    'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
-                    modelRestrictionMode === 'whitelist'
-                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
-                  ]"
+              :class="[
+                'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                modelRestrictionMode === 'whitelist'
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
+              ]"
             >
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
             <button
               type="button"
               @click="modelRestrictionMode = 'mapping'"
-              :aria-pressed="account.platform === 'grok' ? modelRestrictionMode === 'mapping' : undefined"
-              :class="account.platform === 'grok'
-                ? [
-                    'rounded-lg px-3 py-2 text-sm',
-                    modelRestrictionMode === 'mapping'
-                      ? 'bg-white text-purple-700 shadow-sm dark:bg-dark-800 dark:text-purple-300'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
-                  ]
-                : [
-                    'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
-                    modelRestrictionMode === 'mapping'
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
-                  ]"
+              :class="[
+                'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                modelRestrictionMode === 'mapping'
+                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
+              ]"
             >
               {{ t('admin.accounts.modelMapping') }}
             </button>
@@ -1052,14 +963,7 @@
                     : 'rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20'"
                 >
                   <Icon v-if="account.platform === 'grok'" name="trash" size="sm" aria-hidden="true" />
-                  <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Icon name="trash" v-else class="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -1192,19 +1096,7 @@
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
               ]"
             >
-              <svg
-                class="mr-1.5 inline h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+              <Icon name="checkCircle" class="mr-1.5 inline h-4 w-4" />
               {{ t('admin.accounts.modelWhitelist') }}
             </button>
             <button
@@ -1217,19 +1109,7 @@
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
               ]"
             >
-              <svg
-                class="mr-1.5 inline h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                />
-              </svg>
+              <Icon name="swap" class="mr-1.5 inline h-4 w-4" />
               {{ t('admin.accounts.modelMapping') }}
             </button>
           </div>
@@ -1249,19 +1129,7 @@
           <div v-else>
             <div class="mb-3 rounded-lg bg-purple-50 p-3 dark:bg-purple-900/20">
               <p class="text-xs text-purple-700 dark:text-purple-400">
-                <svg
-                  class="mr-1 inline h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <Icon name="infoCircle" class="mr-1 inline h-4 w-4" />
                 {{ t('admin.accounts.mapRequestModels') }}
               </p>
             </div>
@@ -1303,14 +1171,7 @@
                   @click="removeModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                 >
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Icon name="trash" class="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -1320,19 +1181,7 @@
               @click="addModelMapping"
               class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
             >
-              <svg
-                class="mr-1 inline h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+              <Icon name="plus" class="mr-1 inline h-4 w-4" />
               {{ t('admin.accounts.addMapping') }}
             </button>
 
@@ -1629,14 +1478,7 @@
                   @click="removeAntigravityModelMapping(index)"
                   class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                 >
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
+                  <Icon name="trash" class="h-4 w-4" />
                 </button>
               </div>
               <!-- 校验错误提示 -->
@@ -1654,9 +1496,7 @@
             @click="addAntigravityModelMapping"
             class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
           >
-            <svg class="mr-1 inline h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
+            <Icon name="plus" class="mr-1 inline h-4 w-4" />
             {{ t('admin.accounts.addMapping') }}
           </button>
 
@@ -1847,14 +1687,7 @@
             @click="addTempUnschedRule()"
             class="w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
           >
-            <svg
-              class="mr-1 inline h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
+            <Icon name="plus" class="mr-1 inline h-4 w-4" />
             {{ t('admin.accounts.tempUnschedulable.addRule') }}
           </button>
         </div>
@@ -2336,7 +2169,7 @@
               data-testid="opencode-go-refresh"
               @click="refreshOpenCodeGoUsage"
             >
-              <Icon name="refresh" size="xs" class="mr-1.5" :class="{ 'animate-spin': opencodeGoRefreshing }" />
+              <Icon :filled="opencodeGoRefreshing" name="refresh" size="xs" class="mr-1.5" :class="{ 'animate-spin': opencodeGoRefreshing }" />
               {{ t('admin.accounts.opencodeGo.refreshNow') }}
             </button>
           </div>
@@ -3423,6 +3256,7 @@ import ProxyAdBanner from '@/components/common/ProxyAdBanner.vue'
 import GroupSelector from '@/components/common/GroupSelector.vue'
 import ModelWhitelistSelector from '@/components/account/ModelWhitelistSelector.vue'
 import GrokModelDiagnosticsPanel from '@/components/account/GrokModelDiagnosticsPanel.vue'
+import RouteSwitch from '@/components/common/RouteSwitch.vue'
 import QuotaLimitCard from '@/components/account/QuotaLimitCard.vue'
 import GrokBaseUrlPresets from '@/components/account/GrokBaseUrlPresets.vue'
 import CnBaseUrlPresets from '@/components/account/CnBaseUrlPresets.vue'
@@ -3837,6 +3671,10 @@ const isBedrockAPIKeyMode = computed(() =>
 const modelMappings = ref<ModelMapping[]>([])
 const openAICompactModelMappings = ref<ModelMapping[]>([])
 const modelRestrictionMode = ref<'whitelist' | 'mapping'>('whitelist')
+const modelModeOptions = computed(() => [
+  { value: 'whitelist', label: t('admin.accounts.modelWhitelist') },
+  { value: 'mapping', label: t('admin.accounts.modelMapping') }
+])
 const allowedModels = ref<string[]>([])
 const DEFAULT_POOL_MODE_RETRY_COUNT = 3
 const MAX_POOL_MODE_RETRY_COUNT = 10

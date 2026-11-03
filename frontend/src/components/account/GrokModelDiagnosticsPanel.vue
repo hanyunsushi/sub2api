@@ -1,7 +1,9 @@
 <template>
+  <!-- 展示信息模块：诊断为账号表单的二级白面；状态不染整张卡片。 -->
   <section
     data-testid="grok-model-diagnostics"
-    class="min-w-0 max-w-full overflow-hidden rounded-xl border border-gray-200 bg-white text-sm text-gray-700 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-200"
+    class="grok-diagnostics kreepai-detail-panel text-sm"
+    :aria-busy="loading || syncing"
   >
     <div
       data-testid="grok-diagnostics-summary"
@@ -12,9 +14,9 @@
           <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
             {{ t('admin.accounts.grokModelDiagnostics.catalogTitle') }}
           </h3>
-          <p data-testid="grok-diagnostics-state" :class="stateClass">{{ headline }}</p>
+          <StatusBadge data-testid="grok-diagnostics-state" :status="stateTone" :label="headline" />
         </div>
-        <p class="mt-1 text-xs text-gray-500 dark:text-dark-400">
+        <p class="mt-1 break-words text-xs text-gray-500 dark:text-dark-400">
           <span v-if="modelCountLabel">{{ modelCountLabel }}</span>
           <span v-if="catalogHost">{{ modelCountLabel ? ' · ' : '' }}{{ catalogHost }}</span>
           <span data-testid="grok-diagnostics-last-success">
@@ -37,48 +39,49 @@
       </button>
     </div>
 
-    <p v-if="loading" class="px-4 pb-3 text-xs text-gray-500 dark:text-dark-400">
-      {{ t('common.loading') }}
+    <p v-if="loading" role="status" class="flex items-center gap-2 px-4 pb-3 text-xs text-gray-500 dark:text-dark-400">
+      <LoadingSpinner size="sm" aria-hidden="true" />{{ t('common.loading') }}
     </p>
-    <p
+    <InfoNotice
       v-if="refreshFailed"
       data-testid="grok-diagnostics-refresh-failed"
-      class="px-4 pb-3 text-xs text-red-600 dark:text-red-400"
+      tone="danger"
+      class="mb-3"
     >
       {{ t('admin.accounts.grokModelDiagnostics.refreshFailed') }}
-    </p>
+    </InfoNotice>
 
-    <div
+    <!-- 警告信息：保留目录时效、回退与上次成功等不同事实，不将未知状态标记为健康。 -->
+    <InfoNotice
       v-if="showFailureNotice || showFallbackNotice || showStateNotice || showPreviousValid"
-      class="mx-4 mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
+      tone="warning"
+      class="mb-3"
     >
       <p v-if="showFailureNotice" class="flex items-start gap-2">
-        <Icon name="exclamationTriangle" size="xs" aria-hidden="true" class="mt-0.5 shrink-0" />
         <span>{{ attemptErrorLabel }}</span>
       </p>
       <p v-if="showFallbackNotice" class="flex items-start gap-2">
-        <Icon name="exclamationTriangle" size="xs" aria-hidden="true" class="mt-0.5 shrink-0" />
         <span>{{ t('admin.accounts.grokModelDiagnostics.fallbackNotice') }}</span>
       </p>
       <p v-if="showPreviousValid">{{ t('admin.accounts.grokModelDiagnostics.previousCatalogValid') }}</p>
       <p v-if="effectiveState === 'stale'">{{ t('admin.accounts.grokModelDiagnostics.staleNotice') }}</p>
       <p v-if="effectiveState === 'source_changed'">{{ t('admin.accounts.grokModelDiagnostics.changedNotice') }}</p>
       <p v-if="effectiveState === 'unknown'">{{ t('admin.accounts.grokModelDiagnostics.unknownNotice') }}</p>
-    </div>
+    </InfoNotice>
 
-    <div
+    <InfoNotice
       v-if="missingMappings.length > 0"
-      class="mx-4 mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-900/20 dark:text-amber-200"
+      tone="warning"
+      class="mb-3"
     >
       <p data-testid="grok-diagnostics-missing-summary" class="flex items-start gap-2">
-        <Icon name="exclamationTriangle" size="xs" aria-hidden="true" class="mt-0.5 shrink-0" />
         <span>{{ t('admin.accounts.grokModelDiagnostics.missingSummary', { count: missingMappings.length }) }}</span>
       </p>
       <p class="mt-1">{{ t('admin.accounts.grokModelDiagnostics.summaryNotice') }}</p>
       <button
         type="button"
         data-testid="grok-diagnostics-difference-toggle"
-        class="mt-2 inline-flex items-center gap-1 font-medium"
+        class="btn btn-secondary btn-sm mt-2"
         :aria-expanded="differencesOpen"
         :aria-controls="differencesId"
         @click="differencesOpen = !differencesOpen"
@@ -109,13 +112,13 @@
           </li>
         </ul>
       </div>
-    </div>
+    </InfoNotice>
 
     <div class="border-t border-gray-200 dark:border-dark-600">
       <button
         type="button"
         data-testid="grok-diagnostics-details-toggle"
-        class="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-medium text-gray-800 dark:text-gray-100"
+        class="btn btn-ghost my-2 w-full justify-start text-left"
         :aria-expanded="detailsOpen"
         :aria-controls="detailsId"
         @click="detailsOpen = !detailsOpen"
@@ -187,7 +190,7 @@
           <p v-if="hasFreshGaps" class="mt-1 text-xs text-gray-500 dark:text-dark-400">
             {{ t('admin.accounts.grokModelDiagnostics.compatibilityNotice') }}
           </p>
-          <div class="mt-2 hidden text-xs text-gray-500 dark:text-dark-400 sm:grid sm:grid-cols-2 sm:gap-3">
+          <div class="grok-mapping-columns mt-2 text-xs text-gray-500 dark:text-dark-400">
             <span>{{ t('admin.accounts.grokModelDiagnostics.requestColumn') }}</span>
             <span>{{ t('admin.accounts.grokModelDiagnostics.targetColumn') }}</span>
           </div>
@@ -217,6 +220,9 @@ import { useI18n } from 'vue-i18n'
 import type { GrokModelDiagnosticItem, GrokModelDiagnostics } from '@/types'
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
 import Icon from '@/components/icons/Icon.vue'
+import InfoNotice from '@/components/common/InfoNotice.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const props = withDefaults(defineProps<{
   diagnostics: GrokModelDiagnostics | null
@@ -367,17 +373,17 @@ const headline = computed(() => {
   return t('admin.accounts.grokModelDiagnostics.fresh')
 })
 
-const stateClass = computed(() => {
+const stateTone = computed(() => {
   const attention = effectiveState.value !== 'fresh'
     || attemptStatus.value === 'failed'
     || attemptStatus.value === 'configured_fallback'
   if (!attention && effectiveState.value === 'fresh') {
-    return 'text-xs font-medium text-emerald-700 dark:text-emerald-300'
+    return 'active'
   }
   if (effectiveState.value === 'unknown' && attemptStatus.value !== 'failed' && attemptStatus.value !== 'configured_fallback') {
-    return 'text-xs font-medium text-gray-500 dark:text-dark-400'
+    return 'inactive'
   }
-  return 'text-xs font-medium text-amber-800 dark:text-amber-200'
+  return 'warning'
 })
 
 const attemptLabel = computed(() => {
@@ -442,7 +448,7 @@ const MappingRow = defineComponent({
     status: { type: String, default: '' }
   },
   setup(rowProps) {
-    return () => h('div', { class: 'grid grid-cols-1 gap-1 sm:grid-cols-2 sm:items-start sm:gap-3' }, [
+    return () => h('div', { class: 'grok-mapping-row' }, [
       h('div', { class: 'min-w-0 break-all font-mono text-xs' }, rowProps.item.requested),
       h('div', { class: 'flex min-w-0 items-start gap-1' }, [
         rowProps.item.upstream
@@ -461,3 +467,14 @@ const MappingRow = defineComponent({
   }
 })
 </script>
+
+<style scoped>
+/* 展示信息模块：保持表单内独立白面，展开内容与焦点不被外壳裁切。 */
+:root.kreepai-design-system .grok-diagnostics { container: grok-diagnostics / inline-size; padding: 0; }
+.grok-mapping-columns { display: none; }
+/* 展示信息模块 / 数字展示：长映射按诊断正文宽度换行，不按含侧栏的视口强塞双列。 */
+.grok-diagnostics :deep(.grok-mapping-row) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+@container grok-diagnostics (min-width: 460px) {
+  .grok-mapping-columns, .grok-diagnostics :deep(.grok-mapping-row) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+}
+</style>

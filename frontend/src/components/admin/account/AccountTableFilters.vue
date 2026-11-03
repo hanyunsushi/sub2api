@@ -20,7 +20,8 @@
         @click="moreFiltersOpen = !moreFiltersOpen"
       >
         {{ t('admin.accounts.moreFilters') }}
-        <span v-if="activeSecondaryCount" aria-hidden="true" class="rounded-full bg-primary-100 px-2 text-xs font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">{{ activeSecondaryCount }}</span>
+        <!-- 区分-信息牌：仅表达已有筛选数量，不将筛选条件当成健康状态。 -->
+        <span v-if="activeSecondaryCount" aria-hidden="true" class="badge badge-primary">{{ activeSecondaryCount }}</span>
       </button>
     </div>
     <div v-show="moreFiltersOpen" :id="moreFiltersId" class="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3">

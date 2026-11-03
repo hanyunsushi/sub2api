@@ -19,7 +19,7 @@
             class="btn btn-secondary btn-sm"
             :title="t('common.refresh')"
           >
-            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+            <Icon :filled="loading" name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
           </button>
           <button
             type="button"
