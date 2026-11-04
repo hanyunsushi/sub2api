@@ -8,7 +8,9 @@
     <div class="space-y-4">
       <!-- No Group Assigned Warning -->
       <div v-if="!platform" class="flex items-start gap-3 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-        <Icon name="exclamationTriangle" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+        <svg class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
         <div>
           <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
             {{ t('keys.useKeyModal.noGroupTitle') }}
@@ -155,8 +157,12 @@
                     ? 'bg-green-500/20 text-green-400'
                     : 'bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white'"
                 >
-                  <Icon filled name="check" v-if="copiedIndex === index" class="w-3.5 h-3.5" />
-                  <Icon name="clipboard" v-else class="w-3.5 h-3.5" />
+                  <svg v-if="copiedIndex === index" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+                  </svg>
                   {{ copiedIndex === index ? t('keys.useKeyModal.copied') : t('keys.useKeyModal.copy') }}
                 </button>
               </div>
@@ -212,7 +218,7 @@
               :disabled="codexModelManifestState === 'loading' || !apiKey"
               @click="loadCodexModelManifest"
             >
-              <Icon :filled="codexModelManifestState === 'loading'"
+              <Icon
                 name="refresh"
                 size="sm"
                 class="mr-1.5"
@@ -417,8 +423,24 @@ const WindowsIcon = {
   }
 }
 
-// 卡片SVG：CLI终端使用SF Regular真实图形；操作系统和Gemini身份标识保留。
-const TerminalIcon = { render: () => h(Icon, { name: 'terminal', size: 'sm' }) }
+// Terminal icon for Claude Code
+const TerminalIcon = {
+  render() {
+    return h('svg', {
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24',
+      'stroke-width': '1.5',
+      class: 'w-4 h-4'
+    }, [
+      h('path', {
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+        d: 'm6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 17.25V6.75A2.25 2.25 0 0 0 18.75 4.5H5.25A2.25 2.25 0 0 0 3 6.75v10.5A2.25 2.25 0 0 0 5.25 20.25Z'
+      })
+    ])
+  }
+}
 
 // Sparkle icon for Gemini
 const SparkleIcon = {

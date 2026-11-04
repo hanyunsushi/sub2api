@@ -99,7 +99,7 @@
           data-testid="ollama-cloud-refresh"
           @click="refreshUsage"
         >
-          <Icon :filled="refreshing" name="refresh" size="xs" class="mr-1.5" :class="{ 'animate-spin': refreshing }" />
+          <Icon name="refresh" size="xs" class="mr-1.5" :class="{ 'animate-spin': refreshing }" />
           {{ t('admin.accounts.ollamaCloud.refreshNow') }}
         </button>
       </div>

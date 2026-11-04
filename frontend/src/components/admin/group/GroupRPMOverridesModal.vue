@@ -76,7 +76,7 @@
             class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
             @click="clearAllLocal"
           >
-            <Icon filled v-if="clearing" name="refresh" size="sm" class="mr-1 inline animate-spin" />
+            <Icon v-if="clearing" name="refresh" size="sm" class="mr-1 inline animate-spin" />
             {{ t('admin.groups.clearAll') }}
           </button>
         </div>
@@ -196,7 +196,7 @@
             :disabled="saving"
             @click="handleSave"
           >
-            <Icon filled v-if="saving" name="refresh" size="sm" class="mr-1 animate-spin" />
+            <Icon v-if="saving" name="refresh" size="sm" class="mr-1 animate-spin" />
             {{ t('common.save') }}
           </button>
         </div>

@@ -106,7 +106,9 @@
                 class="btn btn-secondary px-2 md:px-3"
                 :title="t('admin.users.columnSettings')"
               >
-                <Icon name="grid" class="h-4 w-4 md:mr-1.5" />
+                <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
                 <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
               </button>
               <!-- Dropdown menu -->
@@ -127,7 +129,7 @@
                       class="dropdown-item flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                     >
                       <span>{{ t('admin.users.columns.email') }}</span>
-                      <Icon filled v-if="userColumnMode === 'email'" name="check" size="sm" class="text-primary-500" />
+                      <Icon v-if="userColumnMode === 'email'" name="check" size="sm" class="text-primary-500" />
                     </button>
                     <!-- 下拉选择菜单：选项复用共享几何，保留原选择事件。 -->
                     <button
@@ -135,7 +137,7 @@
                       class="dropdown-item flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                     >
                       <span>{{ t('admin.users.columns.username') }}</span>
-                      <Icon filled v-if="userColumnMode === 'username'" name="check" size="sm" class="text-primary-500" />
+                      <Icon v-if="userColumnMode === 'username'" name="check" size="sm" class="text-primary-500" />
                     </button>
                   </div>
                   <!-- Other columns toggle -->
@@ -147,7 +149,7 @@
                     class="dropdown-item flex w-full items-center justify-between rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-700"
                   >
                     <span>{{ col.label }}</span>
-                    <Icon filled v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
+                    <Icon v-if="isColumnVisible(col.key)" name="check" size="sm" class="text-primary-500" />
                   </button>
                 </div>
               </div>
@@ -268,7 +270,19 @@
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.daily_window_start">
-                  <Icon name="clock" class="h-3 w-3" />
+                  <svg
+                    class="h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                   <span>{{ formatDailyUsageWindow(row) }}</span>
                 </div>
               </div>
@@ -293,7 +307,19 @@
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.weekly_window_start">
-                  <Icon name="clock" class="h-3 w-3" />
+                  <svg
+                    class="h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                   <span>{{ formatResetTime(row.weekly_window_start, 'weekly') }}</span>
                 </div>
               </div>
@@ -318,7 +344,19 @@
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.monthly_window_start">
-                  <Icon name="clock" class="h-3 w-3" />
+                  <svg
+                    class="h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                   <span>{{ formatResetTime(row.monthly_window_start, 'monthly') }}</span>
                 </div>
               </div>
@@ -720,7 +758,7 @@
           <div class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
             <!-- 普通按钮：沿用原回调与禁用条件，复用共享交互样式。 -->
             <button type="button" class="btn btn-secondary absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showGuideModal = false">
-              <Icon name="x" size="md" class="h-5 w-5" />
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
             <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('admin.subscriptions.guide.title') }}</h2>

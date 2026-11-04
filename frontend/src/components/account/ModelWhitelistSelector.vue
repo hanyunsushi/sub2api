@@ -67,7 +67,9 @@
                     : 'border-gray-300 dark:border-dark-500'
                 ]"
               >
-                <Icon filled name="check" v-if="modelValue.includes(model.value)" class="h-3 w-3" />
+                <svg v-if="modelValue.includes(model.value)" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
               </span>
               <ModelIcon :model="model.value" size="18px" />
               <span class="truncate text-gray-900 dark:text-white">{{ model.value }}</span>

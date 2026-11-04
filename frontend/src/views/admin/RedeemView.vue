@@ -34,7 +34,7 @@
               class="btn btn-secondary"
               :title="t('common.refresh')"
             >
-              <Icon :filled="loading" name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
             <button @click="handleExportCodes" class="btn btn-secondary">
               {{ t('admin.redeem.exportCsv') }}
@@ -101,7 +101,14 @@
                 :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
               >
                 <Icon v-if="copiedCode !== value" name="copy" size="sm" :stroke-width="2" />
-                <Icon name="check" v-else class="h-4 w-4" />
+                <svg v-else class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
               </button>
             </div>
           </template>
@@ -181,7 +188,14 @@
                 @click="handleDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
-                <Icon name="trash" class="h-4 w-4" />
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
                 <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
               <span v-else class="text-gray-400 dark:text-dark-500">-</span>
@@ -522,7 +536,19 @@
               <div
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30"
               >
-                <Icon name="check" class="h-5 w-5 text-green-600 dark:text-green-400" />
+                <svg
+                  class="h-5 w-5 text-green-600 dark:text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
               </div>
               <div>
                 <h2 class="text-base font-semibold text-gray-900 dark:text-white">
@@ -563,7 +589,14 @@
               ]"
             >
               <Icon v-if="!copiedAll" name="copy" size="sm" :stroke-width="2" />
-              <Icon name="check" v-else class="h-4 w-4" />
+              <svg v-else class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
               {{ copiedAll ? t('admin.redeem.copied') : t('admin.redeem.copyAll') }}
             </button>
             <button @click="downloadGeneratedCodes" class="btn btn-primary flex items-center gap-2">

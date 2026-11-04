@@ -78,7 +78,7 @@
               : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-dark-500 dark:hover:text-gray-200'"
             @click="switchTab(tab.key)"
           >
-            <Icon :name="tab.icon" size="sm" :filled="activeTab === tab.key" />
+            <Icon :name="tab.icon" size="sm" />
             {{ tab.label }}
           </button>
         </div>
@@ -92,7 +92,9 @@
                 class="btn btn-secondary px-2 md:px-3"
                 :title="t('admin.users.columnSettings')"
               >
-                <Icon name="grid" class="h-4 w-4 md:mr-1.5" />
+                <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
+                </svg>
                 <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
               </button>
               <div
@@ -107,7 +109,7 @@
                   class="flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
                 >
                   <span>{{ col.label }}</span>
-                  <Icon filled
+                  <Icon
                     v-if="isCurrentColumnVisible(col.key)"
                     name="check"
                     size="sm"

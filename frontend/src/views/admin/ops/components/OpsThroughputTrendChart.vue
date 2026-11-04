@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Icon from '@/components/icons/Icon.vue'
 // 数字展示 / 组件绘制动画：两种入口共用图表字体与低动态，状态编码/业务数据保持。
 import { consoleChartPlugins } from '@/styles/design-system/chart-style'
 const designChartPlugins = consoleChartPlugins()
@@ -184,7 +183,9 @@ function downloadChart() {
       class="mb-4 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
     >
       <h3 class="flex min-w-0 items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-        <Icon name="trendingUp" size="sm" class="h-4 w-4 text-blue-500" />
+        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
         {{ t('admin.ops.throughputTrend') }}
         <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.throughputTrend')" />
       </h3>

@@ -408,7 +408,7 @@
             {{ t('common.cancel') }}
           </button>
           <button @click="handleSubmit" :disabled="submitting" class="btn btn-primary">
-            <Icon filled v-if="submitting" name="refresh" size="sm" class="mr-1 animate-spin" />
+            <Icon v-if="submitting" name="refresh" size="sm" class="mr-1 animate-spin" />
             {{ showEditModal ? t('common.update') : t('common.create') }}
           </button>
         </div>

@@ -4,10 +4,9 @@ import { createRequire } from 'node:module'
 import { runInNewContext } from 'node:vm'
 import { flushPromises, mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick, ref } from 'vue'
-import { renderToStaticMarkup } from 'react-dom/server'
-import Icon from '../Icon.vue'
+import Icon from '../SfIcon.vue'
+import BusinessIcon from '../Icon.vue'
 import SidebarIcon from '../SidebarIcon.vue'
-import { SfSymbolReact } from '../SfSymbolReact'
 import { resolveSfIcon, sfIconPairs, sfSymbols, type SfIconName } from '../sf-symbols'
 import RefreshButton from '@/components/common/RefreshButton.vue'
 import InfoNotice from '@/components/common/InfoNotice.vue'
@@ -58,12 +57,13 @@ describe('real SF Symbols Regular exports', () => {
       expect(wrapper.get('path').attributes('d')).toBeTruthy()
     }
   })
-  it('uses the same original export in the React date bridge', () => {
-    const html = renderToStaticMarkup(<SfSymbolReact name="calendar" filled />)
-    expect(html).toContain('data-icon-export="sfCalendarCircleFill"')
-    expect(html).toContain(`viewBox="${sfSymbols.CalendarCircleFill.viewBox}"`)
-    expect(html).toContain(`d="${sfSymbols.CalendarCircleFill.paths[0]?.d}"`)
-    expect(html).toContain('aria-hidden="true"')
+  it('keeps ordinary business icons on their original stroke artwork', () => {
+    const wrapper = mount(BusinessIcon, { props: { name: 'key' } }); wrappers.push(wrapper)
+    expect(wrapper.get('svg').attributes('data-icon-library')).toBeUndefined()
+    expect(wrapper.get('svg').attributes('viewBox')).toBe('0 0 24 24')
+    expect(wrapper.get('svg').attributes('fill')).toBe('none')
+    expect(wrapper.get('svg').attributes('stroke')).toBe('currentColor')
+    expect(wrapper.get('path').attributes('d')).not.toBe(sfSymbols.Key.paths[0]?.d)
   })
   it('preserves explicit utility-sized boxes instead of imposing the default20px', () => {
     const wrapper = mount(Icon, { props: { name: 'key' }, attrs: { class: 'h-12 w-12' } }); wrappers.push(wrapper)
@@ -125,25 +125,26 @@ describe('SF state ownership', () => {
     expect(wrapper.findAll('svg')).toHaveLength(1)
     expect(wrapper.get('.sf-sidebar-symbol').classes()).not.toContain('console-kreepai-surface')
   })
-  it('fills the refresh only while loading and keeps click/disabled semantics', async () => {
+  it('retains the original refresh artwork and request/click semantics', async () => {
     const wrapper = mount(RefreshButton); wrappers.push(wrapper)
-    expect(wrapper.get('svg').attributes('data-icon-export')).toBe('sfArrowClockwiseCircle')
+    expect(wrapper.get('svg').attributes('data-icon-export')).toBeUndefined()
     await wrapper.get('svg').trigger('mouseenter')
-    expect(wrapper.get('svg').attributes('data-icon-export')).toBe('sfArrowClockwiseCircle')
+    expect(wrapper.get('svg').attributes('data-icon-export')).toBeUndefined()
     await wrapper.get('button').trigger('click'); expect(wrapper.emitted('refresh')).toHaveLength(1)
     await wrapper.setProps({ loading: true })
-    expect(wrapper.get('svg').attributes('data-icon-export')).toBe('sfArrowClockwiseCircleFill')
+    expect(wrapper.get('svg').attributes('data-icon-export')).toBeUndefined()
+    expect(wrapper.get('svg').classes()).toContain('is-loading')
     expect(wrapper.get('button').attributes('aria-busy')).toBe('true')
     expect(wrapper.get('button').attributes('disabled')).toBeDefined()
     await wrapper.get('button').trigger('click'); expect(wrapper.emitted('refresh')).toHaveLength(1)
     await wrapper.setProps({ loading: false })
-    expect(wrapper.get('svg').attributes('data-icon-export')).toBe('sfArrowClockwiseCircle')
+    expect(wrapper.get('svg').attributes('data-icon-export')).toBeUndefined()
   })
-  it.each(['info', 'warning', 'danger', 'success'] as const)('uses real SF feedback with a visible text alternative: %s', tone => {
+  it.each(['info', 'warning', 'danger', 'success'] as const)('retains the original notice symbol and semantic text: %s', tone => {
     const wrapper = mount(InfoNotice, { props: { tone }, slots: { default: '业务提示文字' } }); wrappers.push(wrapper)
-    expect(wrapper.get('svg').attributes('data-icon-library')).toBe('SF Symbols')
-    expect(wrapper.get('svg').attributes('data-icon-variant')).toBe('fill')
-    expect(wrapper.text()).toBe('业务提示文字')
+    expect(wrapper.find('svg').exists()).toBe(false)
+    expect(wrapper.get('.kreepai-info-notice-icon').text()).toBe('!')
+    expect(wrapper.get('.kreepai-info-notice-body').text()).toBe('业务提示文字')
     expect(wrapper.get('.kreepai-info-notice').attributes('role')).toBe(tone === 'danger' ? 'alert' : 'status')
   })
 })

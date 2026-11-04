@@ -20,7 +20,20 @@
         :title="countButtonTitle"
         @click="refresh"
       >
-        <Icon :filled="loading" name="refresh" class="h-2.5 w-2.5" :class="{ 'animate-spin': loading }" />
+        <svg
+          class="h-2.5 w-2.5"
+          :class="{ 'animate-spin': loading }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
         {{ t('admin.accounts.claudeResetCredits.count') }}<span v-if="status" class="ml-0.5 tabular-nums">{{ totalResets }}</span>
       </button>
 
@@ -33,7 +46,20 @@
         :title="redeemButtonTitle"
         @click="openRedeemConfirm"
       >
-        <Icon :filled="redeeming" name="refresh" class="h-2.5 w-2.5" :class="{ 'animate-spin': redeeming }" />
+        <svg
+          class="h-2.5 w-2.5"
+          :class="{ 'animate-spin': redeeming }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 12a8 8 0 11-2.343-5.657L20 8m0 0V4m0 4h-4"
+          />
+        </svg>
         {{ t('admin.accounts.claudeResetCredits.reset') }}
       </button>
     </div>
@@ -91,7 +117,6 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/icons/Icon.vue'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Account } from '@/types'

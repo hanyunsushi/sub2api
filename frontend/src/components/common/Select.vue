@@ -103,7 +103,7 @@
                   class="flex-shrink-0 text-gray-400"
                 />
                 <span class="select-option-label" :class="option._creatable && 'italic text-gray-500 dark:text-dark-300'">{{ getOptionLabel(option) }}</span>
-                <Icon filled
+                <Icon
                   v-if="isSelected(option)"
                   name="check"
                   size="sm"

@@ -58,9 +58,11 @@
       class="mb-3"
     >
       <p v-if="showFailureNotice" class="flex items-start gap-2">
+        <Icon name="exclamationTriangle" size="xs" aria-hidden="true" class="mt-0.5 shrink-0" />
         <span>{{ attemptErrorLabel }}</span>
       </p>
       <p v-if="showFallbackNotice" class="flex items-start gap-2">
+        <Icon name="exclamationTriangle" size="xs" aria-hidden="true" class="mt-0.5 shrink-0" />
         <span>{{ t('admin.accounts.grokModelDiagnostics.fallbackNotice') }}</span>
       </p>
       <p v-if="showPreviousValid">{{ t('admin.accounts.grokModelDiagnostics.previousCatalogValid') }}</p>
@@ -75,6 +77,7 @@
       class="mb-3"
     >
       <p data-testid="grok-diagnostics-missing-summary" class="flex items-start gap-2">
+        <Icon name="exclamationTriangle" size="xs" aria-hidden="true" class="mt-0.5 shrink-0" />
         <span>{{ t('admin.accounts.grokModelDiagnostics.missingSummary', { count: missingMappings.length }) }}</span>
       </p>
       <p class="mt-1">{{ t('admin.accounts.grokModelDiagnostics.summaryNotice') }}</p>

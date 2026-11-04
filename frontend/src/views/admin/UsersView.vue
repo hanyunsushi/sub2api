@@ -153,7 +153,7 @@
                     class="dropdown-item flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
                   >
                     <span>{{ filter.name }}</span>
-                    <Icon filled
+                    <Icon
                       v-if="visibleFilters.has(filter.key)"
                       name="check"
                       size="sm"
@@ -174,7 +174,7 @@
                     class="dropdown-item flex w-full items-center justify-between px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
                   >
                     <span>{{ attr.name }}</span>
-                    <Icon filled
+                    <Icon
                       v-if="visibleFilters.has(`attr_${attr.id}`)"
                       name="check"
                       size="sm"
@@ -191,7 +191,9 @@
                   class="btn btn-secondary px-2 md:px-3"
                   :title="t('admin.users.columnSettings')"
                 >
-                  <Icon name="grid" class="h-4 w-4 md:mr-1.5" />
+                  <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
+                  </svg>
                   <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
                 </button>
                 <!-- Dropdown menu -->
@@ -213,7 +215,7 @@
                     :title="isForcedVisibleColumn(col.key) ? t('admin.users.columnAlwaysVisible') : ''"
                   >
                     <span>{{ col.label }}</span>
-                    <Icon filled
+                    <Icon
                       v-if="isColumnVisible(col.key)"
                       name="check"
                       size="sm"
@@ -711,7 +713,9 @@
                 @click="handleWithdraw(user); closeActionMenu()"
                 class="dropdown-item flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
-                <Icon name="minus" class="h-4 w-4 text-amber-500" />
+                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                </svg>
                 {{ t('admin.users.withdraw') }}
               </button>
 

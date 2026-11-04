@@ -1,6 +1,6 @@
 <script lang="ts">
 import { h, render, type VNode } from 'vue'
-import Icon from './Icon.vue'
+import Icon from './SfIcon.vue'
 import type { SfIconName } from './sf-symbols'
 
 interface MountedIcon { name: SfIconName; observer?: MutationObserver }

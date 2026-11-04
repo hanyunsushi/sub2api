@@ -31,7 +31,7 @@ describe('管理员受限密钥配置', () => {
     const wrapper = mountSettings()
     await flushPromises()
     expect(wrapper.get('[data-test="create"]').attributes('disabled')).toBeDefined()
-    expect(wrapper.get('[role="alert"]').text()).toBe('加载失败')
+    expect(wrapper.get('[role="alert"] .kreepai-info-notice-body').text()).toBe('加载失败')
   })
 
   it('分组模型权限独立勾选并保留所选分组，不隐式授予账户或全站权限', async () => {
@@ -86,7 +86,7 @@ describe('管理员受限密钥配置', () => {
     await wrapper.get('[data-test="name"]').setValue('自动化')
     await wrapper.get('[data-test="save"]').trigger('click')
     await flushPromises()
-    expect(wrapper.get('[role="alert"]').text()).toContain('服务不可用')
+    expect(wrapper.get('[role="alert"] .kreepai-info-notice-body').text()).toContain('服务不可用')
     expect(wrapper.find('[data-test="save"]').exists()).toBe(true)
     expect(wrapper.find('[data-test="dismiss-secret"]').exists()).toBe(false)
   })

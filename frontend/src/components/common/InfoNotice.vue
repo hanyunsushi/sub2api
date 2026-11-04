@@ -1,14 +1,12 @@
 <template>
   <!-- 提示信息 / 警告信息：静态说明使用status，实际错误使用alert；语义不依赖颜色。 -->
   <div class="kreepai-info-notice" :data-tone="tone" :role="tone === 'danger' ? 'alert' : 'status'">
-    <Icon :name="noticeIcons[tone]" filled class="kreepai-info-notice-icon" />
+    <span class="kreepai-info-notice-icon" aria-hidden="true">!</span>
     <div class="kreepai-info-notice-body"><slot /></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/icons/Icon.vue'
-const noticeIcons = { info: 'infoCircle', warning: 'exclamationCircle', danger: 'xCircle', success: 'checkCircle' } as const
 withDefaults(defineProps<{ tone?: 'info' | 'warning' | 'danger' | 'success' }>(), { tone: 'info' })
 </script>
 
@@ -39,7 +37,14 @@ withDefaults(defineProps<{ tone?: 'info' | 'warning' | 'danger' | 'success' }>()
   flex: 0 0 20px;
   width: 20px;
   height: 20px;
-  color: var(--notice-color);
+  place-items: center;
+  border-radius: 50%;
+  background: var(--notice-color);
+  color: #fff;
+  font-family: var(--ff-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
 }
 .kreepai-info-notice-body { min-width: 0; flex: 1; overflow-wrap: anywhere; }
 .kreepai-info-notice-body ul { margin: 6px 0 0; padding-left: 20px; }

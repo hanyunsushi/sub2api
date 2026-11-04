@@ -13,7 +13,7 @@
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button type="button" class="btn btn-secondary inline-flex items-center gap-2" :disabled="statusLoading" @click="loadStatus(false)">
-              <Icon :filled="statusLoading" name="refresh" size="sm" :class="statusLoading ? 'animate-spin' : ''" />
+              <Icon name="refresh" size="sm" :class="statusLoading ? 'animate-spin' : ''" />
               {{ t('admin.riskControl.refreshStatus') }}
             </button>
             <button type="button" class="btn btn-primary inline-flex items-center gap-2" @click="openSettings">
@@ -245,7 +245,7 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('admin.riskControl.recordsHint') }}</p>
               </div>
               <button type="button" class="btn btn-secondary inline-flex items-center gap-2" :disabled="logsLoading" @click="loadLogs">
-                <Icon :filled="logsLoading" name="refresh" size="sm" :class="logsLoading ? 'animate-spin' : ''" />
+                <Icon name="refresh" size="sm" :class="logsLoading ? 'animate-spin' : ''" />
                 {{ t('admin.riskControl.refresh') }}
               </button>
             </div>
@@ -1070,7 +1070,7 @@
           <div class="flex justify-end gap-2">
             <button type="button" class="btn btn-secondary" @click="settingsOpen = false">{{ t('common.cancel') }}</button>
             <button type="button" class="btn btn-primary inline-flex items-center gap-2" :disabled="saving" @click="saveConfig">
-              <Icon filled v-if="saving" name="refresh" size="sm" class="animate-spin" />
+              <Icon v-if="saving" name="refresh" size="sm" class="animate-spin" />
               <Icon v-else name="check" size="sm" />
               {{ saving ? t('common.saving') : t('admin.riskControl.saveConfig') }}
             </button>

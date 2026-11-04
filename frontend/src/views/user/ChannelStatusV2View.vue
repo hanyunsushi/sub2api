@@ -50,7 +50,7 @@
             :disabled="loading"
             @click="reload(false)"
           >
-            <Icon :filled="loading" name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
           </button>
         </header>
 

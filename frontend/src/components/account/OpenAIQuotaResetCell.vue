@@ -21,7 +21,20 @@
         :title="countButtonTitle"
         @click="handleQuery()"
       >
-        <Icon :filled="loading" name="refresh" class="h-2.5 w-2.5" :class="{ 'animate-spin': loading }" />
+        <svg
+          class="h-2.5 w-2.5"
+          :class="{ 'animate-spin': loading }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
         {{ t('admin.accounts.openaiQuotaReset.count') }}<span v-if="data"> {{ availableResetCount }}</span>
       </button>
 
@@ -32,7 +45,20 @@
         :title="resetButtonTitle"
         @click="openResetConfirm"
       >
-        <Icon :filled="resetting" name="refresh" class="h-2.5 w-2.5" :class="{ 'animate-spin': resetting }" />
+        <svg
+          class="h-2.5 w-2.5"
+          :class="{ 'animate-spin': resetting }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 12a8 8 0 11-2.343-5.657L20 8m0 0V4m0 4h-4"
+          />
+        </svg>
         {{ t('admin.accounts.openaiQuotaReset.reset') }}
       </button>
 
@@ -155,7 +181,6 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/icons/Icon.vue'
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Account } from '@/types'
