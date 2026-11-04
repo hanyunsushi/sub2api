@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "date": "2026-11-04",
+  "status": "published",
+  "source_commit": "8a12fa2856573984857f923754ac674c8180e3bd",
+  "scope": "SF Symbols only in sidebar/topbar; restore original business Icon/inline SVG, refresh/date/feedback and modal content",
+  "pre_sf_revision": "6222ce3315f11e4a6d4ae448b585424ddad0d1b8",
+  "native": {
+    "version": "0.2.19",
+    "image": "sha256:b1d1d9cee2158126404a2785abd1088dc47d12cfdb2f76f871a32a4de14a81cb",
+    "container": "2d3376db27c7b9a0d41a48b37a197c1934bad624d680e353890fbe81e7c3ae50",
+    "health": "healthy",
+    "restarts": 0,
+    "previous_image": "sha256:83adac2edc659d5fe7fe1b97e8370d48a9087d1b1a2c43fefda61584357130b8",
+    "rollback_tag": "sub2api-custom:codex-pre-nav-svg-20261104",
+    "method": "clean Git archive, native Vite and ARM64 Go embed; app-only compose --no-deps --no-build --pull never --wait",
+    "built_at": "2026-11-04T08:44:16Z",
+    "source_markers_updated": true,
+    "legacy_static_resources_preserved": 478
+  },
+  "console": {
+    "release_id": "console-20261104-ai-nav-svg-a",
+    "previous": "console-20261103-ai-sidebar-style-a",
+    "manifest_files": 1226,
+    "other_app_files_preserved": 994,
+    "host_files_verified": 38,
+    "host_source": "8c840bd9489280fbddf2cc2d1663340f4cdfcbd5",
+    "openstock_source": "a4ecce8da8cd5b06921cb7af08ee10b2fe272e82",
+    "method": "clone actual current; sparse AI patch; verify/install/atomic activate",
+    "unreleased_local_Host_changes_included": false
+  },
+  "verification": {
+    "frontend_test_files": 406,
+    "frontend_tests": 3218,
+    "typecheck": "passed",
+    "eslint": "passed",
+    "native_and_mfe_clean_builds": "passed",
+    "css_api_teleport_isolation": "passed",
+    "backend_source_unchanged": true,
+    "source_files_verified": 4690,
+    "native_dist_files_verified": 606,
+    "http_checks": 58,
+    "resource_hashes": 36,
+    "source_scope_audit": "ordinary Icon byte-identical to pre-SF; four allowed navigation SF consumers; other design-system CSS preserved",
+    "browser": {
+      "page": "Console administrator dashboard",
+      "viewport": "1552x853",
+      "sidebar_sf": 23,
+      "sidebar_icon_size": "16x16",
+      "topbar_sf": 3,
+      "body_sf": 0,
+      "date_icon": "original CalendarDays",
+      "refresh_icon": "original 4 paths",
+      "document_overflow": false,
+      "action": "explicit refresh retained meaningful content",
+      "logs": "9 request/polling errors at reload timestamp; content recovered; no refs/framework error observed"
+    }
+  },
+  "protection": {
+    "other_containers_unchanged": 11,
+    "services_unchanged": true,
+    "env_mounts_unchanged": true,
+    "record_counts": {
+      "accounts": 42,
+      "users": 4,
+      "groups": 19
+    },
+    "credential_settings_hashes_unchanged": true,
+    "business_writes": false
+  },
+  "recovery": {
+    "backups": {
+      "sub2api": "/home/ubuntu/oci-recovery/sub2api/20261104T082605Z",
+      "console": "/home/ubuntu/oci-recovery/console/20261104T082635Z"
+    },
+    "offhost_directory": "~/.local/share/oci-recovery/20261104-nav-svg-scope/",
+    "verification": {
+      "backup_files_verified": {
+        "sub2api": 7,
+        "console": 5
+      },
+      "image": "sha256:b1d1d9cee2158126404a2785abd1088dc47d12cfdb2f76f871a32a4de14a81cb",
+      "image_export_size": 454483881,
+      "image_export_sha256": "2894ddad4e4c90ca064fd5fd195a64068f1c7d024ba6b7f5cbc9bac9ea9f25f2",
+      "image_blobs_verified": 21,
+      "console_files_verified": 1226,
+      "source_archive_sha256": "692a0a7511fce32359b6d10d5bb003acdbf31a448a71e588fe69933f911ea398",
+      "permissions": "0700/0600",
+      "restore_drill": "not performed"
+    }
+  },
+  "retention": {
+    "kept": [
+      "console-20261104-ai-nav-svg-a",
+      "console-20261103-ai-sidebar-style-a",
+      "console-20261103-openstock-select-a",
+      "console-20261103-ai-sidebar-a"
+    ],
+    "expired_id": "console-20261103-openstock-admin-a",
+    "alias_target": "console-20261103-ai-sidebar-a",
+    "verified_manifest_files": 4904,
+    "static_references": 572,
+    "compatibility_files_compared": 450,
+    "sealed_and_applied": true,
+    "paths_removed": 3,
+    "tags_removed": 2,
+    "native_rollbacks": [
+      "codex-pre-nav-svg-20261104",
+      "codex-pre-sf-20261103",
+      "codex-pre-upstream-v0219-20261102"
+    ]
+  },
+  "parallel_followup": {
+    "current": "console-20261104-home-anatomy-a",
+    "previous": "console-20261104-ai-nav-svg-a",
+    "source_heads": {
+      "host": "ff30f1fe666ec46a858e7186db814a03106886ac",
+      "kreeproxy": "2103dbce9d373e60150d54153c7ba3cf6eb58eeb",
+      "kreepai": "8a12fa2856573984857f923754ac674c8180e3bd",
+      "marketing": "5d6854a0a4c936c42fe0d167a71461f8b7bb60d2",
+      "authentik": "eded900636913192a839d5b06e104bf585964a46",
+      "openstock": "a4ecce8da8cd5b06921cb7af08ee10b2fe272e82"
+    },
+    "ai_files_unchanged": 192,
+    "full_releases": [
+      "console-20261103-ai-sidebar-a",
+      "console-20261103-ai-sidebar-style-a",
+      "console-20261104-home-anatomy-a",
+      "console-20261104-ai-nav-svg-a",
+      "console-20261103-openstock-select-a"
+    ],
+    "runtime_unchanged_except_console_pointer": true
+  },
+  "limits": [
+    "Native production authenticated browser flows were not exercised",
+    "Console browser acceptance covers this administrator desktop session only",
+    "No new mobile/physical-touch/other-engine/full-restore drill",
+    "Reload-time request errors are recorded, not declared absent"
+  ],
+  "authority": "../../agent.md#sf仅限侧栏顶栏2026-11-04",
+  "wiki_index": "../_index.md",
+  "application_authority": "/Users/hinaw/sub2api-src/agent.md#sf仅限侧栏顶栏2026-11-04"
+}

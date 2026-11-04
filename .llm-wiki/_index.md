@@ -25,6 +25,8 @@ updated: 2026-10-12
 
 # Guides
 
+- [AI仅导航保留SF发布](guides/nav-svg-scope-release-20261104.json) - 业务SVG复原、双入口源码/运行与恢复边界
+
 - [AI侧栏设计样式修正](guides/ai-sidebar-style-fix-20261103.json) - 16px图标、状态继承、正式桌面/手机实测与发布边界
 
 - [AI侧栏跨Vue运行时修复](guides/ai-sidebar-runtime-fix-20261103.json) - 空白菜单根因、桌面真实交互、备份与保留

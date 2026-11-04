@@ -50,4 +50,4 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 # 当前验收入口
 
-原生保持0.2.19/528cffced；Console AI侧栏样式MFE9fecae91f已发布。当前身份、并行OpenStock基线保留、恢复和桌面/手机尺寸/状态验收归[项目权威](../../agent.md#ai侧栏样式接入修正2026-11-03)，脱敏证据见[样式修正回执](ai-sidebar-style-fix-20261103.json)。菜单恢复回归见[运行时回执](ai-sidebar-runtime-fix-20261103.json)，原生SF及上游迁移事实分别见[SF回执](sub2api-design-system-release-20261103.json)与[0.2.19回执](sub2api-upstream-v0219-release-20261102.json)。
+独立原生和Console AI同源8a12fa285，产品0.2.19；SF限定侧栏/顶栏，其他业务SVG原式。实际image、Console指针、三个回滚及恢复/验收归[项目权威](../../agent.md#sf仅限侧栏顶栏2026-11-04)，脱敏[回执](nav-svg-scope-release-20261104.json)提供机器证据。历史侧栏运行时/样式发布不代表当前产物，保留为回归来源。

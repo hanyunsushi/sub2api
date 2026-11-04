@@ -3,9 +3,9 @@ title: Current Documentation Sync State
 updated: 2026-11-03
 ---
 
-# AI侧栏样式同步
+# SF导航范围同步
 
-Doc Impact Map：公共图标的16px几何、CSS根/颜色继承边界归Sub2API共享设计模块，跨Vue状态生命周期仍归MFE合同；运行、并行基线、浏览器、恢复与精确保留归[权威](../agent.md#ai侧栏样式接入修正2026-11-03)，[脱敏回执](guides/ai-sidebar-style-fix-20261103.json)与索引提供入口。已核对last_synced至HEAD、暂存和dirty范围，原有本机停用/审计/示范保持。3218测试、类型/lint/clean MFE、32公网/21摘要、1167/390真实几何与状态检查通过；原生未重建，不声称全业务、跨引擎、物理触摸或完整恢复验收。受影响链接/锚点、JSON、索引反链、源路径、有效权威软链接及diff lint通过；CodeGraph工具不可用，不宣称刷新索引。
+Doc Impact Map：导航专用SfIcon/原业务Icon和内联SVG恢复归Sub2API共享设计模块与复盘，跨Vue叶子仍归MFE合同；双入口实际源码/image/恢复/保留与浏览器限制归[权威](../agent.md)，[脱敏回执](guides/nav-svg-scope-release-20261104.json)与索引提供入口。已核对last_synced至HEAD、暂存/dirty范围；保留并行页面与文档。3218测试、类型/lint/clean双入口构建、58公网/36摘要和源白名单核验通过；Chrome管理员桌面正文无SF、导航SF保持，9条reload请求错误与内容恢复有记录。受影响链接/JSON/源路径/权威软链接/diff lint通过；CodeGraph工具不可用，不宣称刷新。未新增原生认证逐页、手机/其他引擎/物理触摸或完整恢复验收。
 
 # Scope
 
