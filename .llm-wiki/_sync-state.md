@@ -3,6 +3,11 @@ title: Current Documentation Sync State
 updated: 2026-11-03
 ---
 
+
+## 当前侧栏发布同步范围
+
+本次Doc Impact Map含普通行中心与折叠箭头占位：实现归[设计模块](modules/embedded-design-system.md)，干净源码/测试/双入口构建、生产资源与回滚验证归[权威](../agent.md)和[回执](guides/sidebar-alignment-release-20261106.json)。本轮源码已推送发布；Node22完成AI生产构建。已核对HEAD与dirty范围，既有并行文档和业务文件保持，其他历史同步段不由此扩大验收范围。
+
 # SF导航范围同步
 
 Doc Impact Map：导航专用SfIcon/原业务Icon和内联SVG恢复归Sub2API共享设计模块与复盘，跨Vue叶子仍归MFE合同；双入口实际源码/image/恢复/保留与浏览器限制归[权威](../agent.md)，[脱敏回执](guides/nav-svg-scope-release-20261104.json)与索引提供入口。已核对last_synced至HEAD、暂存/dirty范围；保留并行页面与文档。3218测试、类型/lint/clean双入口构建、58公网/36摘要和源白名单核验通过；Chrome管理员桌面正文无SF、导航SF保持，9条reload请求错误与内容恢复有记录。受影响链接/JSON/源路径/权威软链接/diff lint通过；CodeGraph工具不可用，不宣称刷新。未新增原生认证逐页、手机/其他引擎/物理触摸或完整恢复验收。
