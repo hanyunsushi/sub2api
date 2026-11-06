@@ -3,7 +3,8 @@
 .kreepai-layout .sidebar .motion-sidebar-menu .sidebar-motion-item { position: relative; overflow: visible !important; }
 .kreepai-layout .sidebar .motion-sidebar-menu .sidebar-leaf { height: 32px !important; }
 .kreepai-layout .sidebar .motion-sidebar-menu .sidebar-row-track { position: relative; overflow: visible !important; }
-.kreepai-layout .sidebar .motion-sidebar-menu .n-menu-item-content { border: 0; cursor: pointer; text-align: left; font-family: inherit; outline: none; }
+/* 侧边栏：16px图标与20px文字行框共用中心线。 */
+.kreepai-layout .sidebar .motion-sidebar-menu .n-menu-item-content { align-items: center; border: 0; cursor: pointer; text-align: left; font-family: inherit; outline: none; }
 .kreepai-layout .sidebar .motion-sidebar-menu .n-menu-item-content:disabled { cursor: not-allowed; opacity: .4; }
 .kreepai-layout .sidebar .motion-sidebar-menu .sidebar-hover-container { position: absolute; inset-inline: 0; top: 0; height: 32px; pointer-events: none; }
 .kreepai-layout .sidebar .motion-sidebar-menu .sidebar-hover-projection,
@@ -84,3 +85,6 @@
 
 /* 加载反馈：项目原菜单未就绪时20px点阵占据普通行，不预告匿名入口或改变图标轨道。 */
 .kreepai-layout .sidebar .motion-sidebar-menu .sidebar-project-loading { display: flex; align-items: center; justify-content: center; height: 32px; color: var(--accent); }
+
+/* 侧边栏：收起时箭头保留原Motion淡出，但不占网格第二行挤偏父项图标。 */
+.kreepai-layout .sidebar.is-collapsed .motion-sidebar-menu .sidebar-motion-arrow { position: absolute; inset-inline-end: 12px; top: 8px; }
