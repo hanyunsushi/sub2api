@@ -333,7 +333,9 @@
 
 /* 顶栏：独立站原内容使用共享玻璃和控件，Console外层仍归Host。 */
 :root.kreepai-design-system { --topbar-surface: linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.5) 42%,rgba(252,252,252,.93) 100%); --topbar-backdrop-filter: blur(22px) saturate(1.5); }
-:root.kreepai-design-system .kreepai-app-header:not(.kreepai-original-header) { height: 64px; position: sticky; top: 0; z-index: 130; border-bottom: 1px solid rgba(0,0,0,.12); background: var(--topbar-surface); backdrop-filter: var(--topbar-backdrop-filter); -webkit-backdrop-filter: var(--topbar-backdrop-filter); }
+/* 顶栏：透明磨砂直接模糊背景，原控件、品牌区及菜单表面独立。 */
+:root.kreepai-design-system .kreepai-app-header:not(.kreepai-original-header) {
+  --topbar-surface: transparent; height: 64px; position: sticky; top: 0; z-index: 130; border-bottom: 1px solid rgba(0,0,0,.12); background: var(--topbar-surface); backdrop-filter: var(--topbar-backdrop-filter); -webkit-backdrop-filter: var(--topbar-backdrop-filter); }
 :root.kreepai-design-system .kreepai-header-inner { min-width: 0; padding: 0 24px; }
 :root.kreepai-design-system .kreepai-header-title { min-width: 0; }
 :root.kreepai-design-system .kreepai-header-title h1 { font: 650 16px/20px var(--ff-heading); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -563,3 +565,8 @@
 :root.kreepai-design-system .kreepai-mobile-menu-toggle > svg { width: 22px; height: 22px; }
 @media (min-width: 769px) { :root.kreepai-design-system .kreepai-mobile-menu-toggle { display: none; } }
 @media (pointer: coarse) { :root.kreepai-design-system .kreepai-mobile-menu-toggle { min-width: 44px; min-height: 44px; } }
+
+/* 顶栏：不支持磨砂时使用当前明暗主题页面面，嵌入动作不绘制重复顶栏。 */
+@supports not ((backdrop-filter: blur(22px)) or (-webkit-backdrop-filter: blur(22px))) {
+  :root.kreepai-design-system .kreepai-app-header:not(.kreepai-original-header) { background: var(--bg); }
+}

@@ -226,3 +226,9 @@ All modal `FeedbackSurface` instances use opacity and scale(.95→1), entering25
 AccountActionMenu joins the existing16px dropdown surface with12px padding,8px/40px neutral items and8px anchor gap. Real menu measurement, viewport clamping, conditional credential operations and callbacks remain original. Account scheduling uses the existing accessible `Toggle`,40×23px track/17px thumb, with the original disabled state and server callback.
 
 DataTable's desktop/card defaults, AvailableChannelsTable's two responsive branches and the empty user-subscriptions page all use `EmptyState`. It centers the supplied160×100px transparent SVG and12.5/20 body text, while retaining translated titles/descriptions and caller actions. Loading and failures remain distinct states. These shared owners are included in both native and MFE builds; compiled MFE validation is separate from deployment.
+
+## 透明磨砂顶栏
+
+`frontend/src/styles/design-system/kreepai.css`仅在原生`.kreepai-app-header:not(.kreepai-original-header)`局部覆盖透明表面，明暗主题均沿用22px模糊；无滤镜时回退当前主题页面面。侧栏品牌渐变、公开首页与认证整页布局保持；嵌入操作组仍为contents，由Host承担顶栏。
+
+共用材质合同由`kreeper-first-design-system/references/topbar.md`维护；源码/浏览器与发布状态分别由[项目权威](../../agent.md)记录。
