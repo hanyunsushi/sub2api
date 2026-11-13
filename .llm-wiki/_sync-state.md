@@ -39,3 +39,7 @@ Both authority symlinks, Wiki links/two-click reachability, CodeGraph sync and G
 ## Logo and route overlay scroll - 2026-10-24
 
 Scope: Console branding and the AI/marketing scoped route overlay. Source, browser, release and recovery evidence: [Host receipt](/Users/hinaw/console-kreeper/.llm-wiki/guides/logo-scroll-release-20261024.json). Other pending audit edits are preserved separately.
+
+## 透明磨砂发布同步
+
+Doc Impact Map：磨砂材质/范围归对应设计模块；发布身份、恢复与未验范围归agent.md；六应用共享脱敏回执在Console Wiki。核对源提交、暂存和dirty边界，仅同步本批发布；无关源码/文档保持。CodeGraph MCP不可用。六仓118份Markdown/1668处本地链接、JSON、authority软链及diff检查通过；OpenStock官方docs:sync/docs:check通过（25页/173内部链接）。证据归Console `output/frosted-release-20261113/docs-lint.json`。

@@ -232,3 +232,5 @@ DataTable's desktop/card defaults, AvailableChannelsTable's two responsive branc
 `frontend/src/styles/design-system/kreepai.css`仅在原生`.kreepai-app-header:not(.kreepai-original-header)`局部覆盖透明表面，明暗主题均沿用22px模糊；无滤镜时回退当前主题页面面。侧栏品牌渐变、公开首页与认证整页布局保持；嵌入操作组仍为contents，由Host承担顶栏。
 
 共用材质合同由`kreeper-first-design-system/references/topbar.md`维护；源码/浏览器与发布状态分别由[项目权威](../../agent.md)记录。
+
+发布身份、回滚和生产验收边界由[项目权威](../../agent.md)与[共享回执](/Users/hinaw/console-kreeper/.llm-wiki/guides/frosted-release-20261113.json)维护，不能把CSS夹具视作已登录业务验收。
