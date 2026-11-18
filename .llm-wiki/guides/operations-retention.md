@@ -1,6 +1,6 @@
 ---
 title: Sub2API发布、备份与保留合同
-updated: 2026-10-22
+updated: 2026-11-18
 ---
 
 # 入口与优先级
@@ -50,4 +50,4 @@ sudo python3 /usr/local/lib/kreeper-oci-operations/recovery.py sub2api --apply
 
 # 当前验收入口
 
-独立原生和Console AI同源8a12fa285，产品0.2.19；SF限定侧栏/顶栏，其他业务SVG原式。实际image、Console指针、三个回滚及恢复/验收归[项目权威](../../agent.md#sf仅限侧栏顶栏2026-11-04)，脱敏[回执](nav-svg-scope-release-20261104.json)提供机器证据。历史侧栏运行时/样式发布不代表当前产物，保留为回归来源。
+独立原生应用的当前版本、源码、镜像、恢复点、回滚与验收归[项目权威](../../agent.md#上游-main-合并与-oci-发布2026-11-18)。Console AI 的嵌入产物独立发布，不能从原生应用更新推断两者同源。SF限定侧栏/顶栏，其他业务SVG原式；历史侧栏发布回执保留为回归来源。

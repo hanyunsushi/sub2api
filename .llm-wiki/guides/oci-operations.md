@@ -1,6 +1,6 @@
 ---
 title: OCI Operations and Artifact Retention
-updated: 2026-11-12
+updated: 2026-11-18
 ---
 
 # OCI Operations and Artifact Retention
@@ -8,6 +8,10 @@ updated: 2026-11-12
 The OCI runtime uses Compose project `sub2api-oci`. Replace only the `sub2api` application service with `docker compose -p sub2api-oci up -d --no-deps --wait --wait-timeout 150 sub2api`; PostgreSQL, Redis, and all formal data volumes stay in place.
 
 Transfer a clean Git archive and reject `.DS_Store` and `._*` residues before building. Preserve archive modes when extracting under a restricted umask (`tar --no-same-owner -xpzf`). The Dockerfile sets the entrypoint mode with `COPY --chmod=755`; adding only execute bits to a 600 file leaves the nonroot runtime unable to read it. Verify the actual container mode, active/tag image IDs, and healthy state before declaring success. An explicit bounded health wait must capture failure logs and roll back on error.
+
+On a host without BuildKit/buildx, adapt both `FROM --platform` and cache mounts, and replace `COPY --chmod=755` with `COPY` followed by `RUN chmod 755 /app/docker-entrypoint.sh`. Run the candidate with its default entrypoint and `-version`; overriding the entrypoint only verifies the binary and misses script permission failures. The runtime Compose file references `sub2api-custom:codex`: preserve its old image under a rollback tag, retag the verified candidate to `codex`, then recreate only the application. Confirm the resulting container uses the candidate image ID; an unchanged healthy old container does not establish activation.
+
+For compatibility with already-open pages, merge retained hashed assets into `backend/internal/web/dist/assets` before compiling the Go `embed` binary, preserving current-build files on collisions. In `backend/internal/web/embed_on.go`, `FrontendServer.Middleware` checks the embedded filesystem before trying `data/public` overrides, so copying an old asset only into the data volume does not make a missing embedded path servable. Verify retained asset bytes over HTTP as well as on disk, and keep the current build's `index.html`.
 
 Build from a clean committed archive, pass COMMIT/VERSION/DATE build arguments, verify the candidate binary with `-version`, then confirm the active container/tag image IDs. Capture the release rollback tag, old source, full database dump, app data archive, migration-source hashes and pre/post container mounts without publishing credentials. Integration checks must also verify saved secrets and unrelated provider configurations are preserved. Exact current release evidence is owned by the [Project Authority](../../agent.md).
 
