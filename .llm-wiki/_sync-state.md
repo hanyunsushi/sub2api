@@ -1,7 +1,7 @@
 ---
 title: Sub2API Wiki 同步状态
 updated: 2026-11-19
-head_commit: 5acb68f5f518f9ea49923de4c2512cdacbc699d3
+head_commit: 3a023cbf9cfce0a1c04b6d7fc1fcca442d5730f4
 ---
 
 ## 当前范围
