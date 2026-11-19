@@ -1,0 +1,42 @@
+{
+  "status": "activated",
+  "sourceCommit": "5acb68f5f518f9ea49923de4c2512cdacbc699d3",
+  "productVersion": "0.2.23",
+  "image": "sha256:94a677c006391e7316900bd49a1d9adca4510ced186d939099c1ab86b6806678",
+  "activeTag": "sub2api-custom:codex",
+  "container": "1389e6b6b4b407eba62a284a8417caed2acad5faa344cca440ad03db338c2182",
+  "built": "2026-11-19T12:05:49Z",
+  "rollbackTag": "sub2api-custom:codex-pre-low-frequency-20261119T124700Z",
+  "recoveryPoint": "/home/ubuntu/oci-recovery/sub2api/20261119T110111Z",
+  "health": {
+    "status": "healthy",
+    "restarts": 0
+  },
+  "postgresContainer": "de35621775e3aee79391fceff453b8309bb37a34b9ce9ed54e03b9f563eca42e",
+  "redisContainer": "6f62231d06ba8c78a2fe33be0ee41527858a38e0f2fa7a80efdacb7198798379",
+  "routes": {
+    "/health": 200,
+    "/home": 200,
+    "/login": 200,
+    "/admin/accounts": 200,
+    "/admin/settings/external-subscriptions": 200,
+    "/keys": 200,
+    "/profile": 200
+  },
+  "verification": {
+    "frontendLint": "passed",
+    "typecheck": "passed",
+    "nativeBuild": "passed",
+    "microfrontendBuildAndNamespaceCheck": "passed",
+    "fullTests": {
+      "files": 413,
+      "tests": 3304,
+      "passed": 3300,
+      "knownFailures": 4
+    },
+    "knownFailureScope": "RegistrationEmailBlacklistEditor animated-dialog DOM removal timing assertions",
+    "browserVisualAcceptance": false,
+    "authenticatedProductionAcceptance": false
+  },
+  "runtimeBoundary": "Only the Sub2API application container was recreated. PostgreSQL, Redis, other containers, formal mounts, production data, proxy and Tunnel settings were not changed."
+}

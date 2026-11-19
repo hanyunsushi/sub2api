@@ -1,6 +1,6 @@
 ---
 title: Sub2API Wiki
-updated: 2026-10-12
+updated: 2026-11-19
 ---
 
 [Project Authority](../agent.md)
@@ -24,6 +24,8 @@ updated: 2026-10-12
 - [Customization Files](concepts/customization-files.md) - Complete baseline diff with file categories and Git status
 
 # Guides
+
+- [低频页面设计系统发布回执](guides/sub2api-low-frequency-release-20261119.json) - 独立应用镜像、Console MFE、恢复点与验证边界。
 
 - [AI仅导航保留SF发布](guides/nav-svg-scope-release-20261104.json) - 业务SVG复原、双入口源码/运行与恢复边界
 

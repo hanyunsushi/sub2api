@@ -1,6 +1,6 @@
 ---
 title: Kreepai Shared Design System
-updated: 2026-11-03
+updated: 2026-11-19
 sources:
   - frontend/src/components/icons/
   - frontend/public/licenses/sf-symbols.txt
@@ -19,6 +19,7 @@ sources:
   - frontend/src/router/index.ts
   - frontend/src/api/client.ts
   - frontend/src/components/admin/settings/AdminAccessKeysSettings.vue
+  - frontend/src/components/admin/settings/RegistrationEmailBlacklistEditor.vue
   - frontend/src/components/account/GrokModelDiagnosticsPanel.vue
   - frontend/src/components/account/EditAccountModal.vue
   - frontend/src/components/admin/account/AccountTableFilters.vue
@@ -81,6 +82,22 @@ Verification and release boundaries belong to [authority](../../agent.md#sf仅�
 The two Grok OAuth/API-key model sections use the shared RouteSwitch with their original whitelist/mapping state. The switch exposes tablist/tab/aria-selected, keyboard navigation and reduced-motion behavior; diagnostics stay between the switch and the active editor. `GrokModelDiagnosticsPanel` uses neutral nested surface, current catalog status badges and warning/error notices. Request/target columns switch at460px of actual diagnostics content. Long model IDs and endpoints wrap, and expanded content/focus is not hidden by the outer panel. Historical catalogs, missing mappings and failed/configured-fallback attempts retain their existing distinct messages and sync behavior. Account secondary-filter counts reuse the information badge without changing filter events.
 
 Behavior regression entry points are the dedicated AdminAccessKeys, MCP consent/connection, Grok diagnostics/edit-modal, AccountTableFilters and RouteSwitch test suites. Style assertions now refer to shared surface ownership and tab selection semantics; authorization and API payload assertions remain. Verification/deployment boundaries belong to [Project Authority](../../agent.md#前端细节设计对齐2026-11-02已发布).
+
+## Upstream 0.2.23 registration email blacklist editor
+
+`components/admin/settings/RegistrationEmailBlacklistEditor.vue` is the design-system mapping for the upstream registration email blacklist feature. The settings row keeps the existing registration form separation and all API, draft, confirmation, batch-disable and locale behavior; only its visual responsibility is normalized. The title is a semantic heading, the count is an information status badge, loading uses the shared DotMatrix loader, and load/parse/limit/disable feedback uses `InfoNotice` with its actual danger or warning tone.
+
+The editable and matched-user lists use `kreepai-detail-panel` as the nested white surface with a local scroll boundary. List removal uses the shared transparent red delete icon button with the desktop32px/coarse44px geometry. The “disable users” confirmation is a non-delete risk action, so it uses the explicit blue highlighted confirmation arc rather than a red delete button. Long email values remain Courier Prime, input fields remain shared `.input`, and the existing BaseDialog/ConfirmDialog motion and focus behavior are untouched. The component adds only existing design-system categories and marks template/style boundaries with Chinese responsibility comments; it does not introduce a new visual type or alter production state.
+
+The source change is committed in 5acb68f5f and included in the native and Console Kreepai releases. `eslint` for the component, `vue-tsc`, native production build, and scoped MFE build plus namespace verification pass. The focused 8-test suite retains the four known upstream DOM-timing failures around animated dialog removal; the business handlers and test setup were not changed to mask them.
+
+## Low-frequency route and operations surface audit
+
+The current frontend audit closes high-confidence design-system drift on the less frequently visited routes without changing route, API, permission, data, provider or payment behavior. `KeyUsageView` now uses shared `.input`, `.btn`, `.card`, status badges and semantic quota colors; decorative input rings, glass result panels, SVG ring gradients, glow/pulse status dots, shimmer skeletons and repeated colored icon frames are removed. `SetupWizardView` uses a white page, shared first-level card, neutral nested summaries, `InfoNotice` error/success feedback and the shared loader. `LegalDocumentView`, `NotFoundView`, `CustomPageView`, `PaymentResultView`, `PaymentQRCodeView` and `RedeemView` use the shared loader/card/notice or neutral numeric surface while retaining their original markdown, iframe, payment/provider, balance and navigation behavior.
+
+`ModelPlaza` filter actions and standalone navigation now use shared button geometry; descriptions, errors, empty states and platform sections use shared surfaces. Platform colors remain only where they carry platform identity or pricing data meaning. `ChannelMonitorView` and `ChannelStatusV2View` remove old rounded-3xl/ring/backdrop shells while retaining RouteSwitch, filters, charts, refresh and dialog behavior. Operations chart cards, alert/settings cards and the initial dashboard placeholder use the same flat `.card`/`kreepai-detail-panel` surface contract. RiskControl and AuditLog page/detail loading use the shared DotMatrix loader. Standard refresh icon rotation, chart/provider/brand colors, payment status semantics and modal flyout shadows remain scoped exceptions rather than being globally replaced.
+
+The audit is committed in 5acb68f5f518f9ea49923de4c2512cdacbc699d3 and is deployed to the native application and the Console Kreepai MFE. The second pass normalizes the low-frequency surfaces without changing provider, payment or refresh semantics. Lint, typecheck, native build, scoped microfrontend build and namespace verification pass. Full Vitest is 413 files and 3304 tests with 3300 passing and 4 known upstream animated-dialog DOM timing assertions. Runtime and Console static publication checks are recorded in the release receipts. Browser visual acceptance, authenticated production acceptance and full restore startup remain outside this evidence.
 
 ## Dashboard request recovery
 
