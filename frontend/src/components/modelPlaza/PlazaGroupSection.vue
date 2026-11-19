@@ -1,6 +1,7 @@
 <template>
+  <!-- 展示卡片：每个平台分组是一级中性卡片，平台边界只保留原身份语义。 -->
   <section
-    class="overflow-hidden rounded-2xl border bg-white shadow-card dark:bg-dark-800/50"
+    class="card overflow-hidden"
     :class="[platformBorderStrongClass(group.platform)]"
   >
     <!-- 分组头部:名称/平台/倍率徽章/专属/订阅徽章 + 描述 -->

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-slate-950">
+  <div class="flex min-h-screen items-center justify-center bg-white p-4 dark:bg-dark-950">
     <div
-      class="w-full max-w-md space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+      class="card w-full max-w-md space-y-4 p-6"
     >
       <!-- Amount + Order ID -->
       <div v-if="amount" class="text-center">
@@ -13,11 +13,8 @@
 
       <!-- Error -->
       <div v-if="error" class="space-y-3">
-        <div
-          class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-700 dark:bg-red-900/30 dark:text-red-400"
-        >
-          {{ error }}
-        </div>
+        <!-- 提示信息 / 警告信息：支付失败使用共享危险提示，provider 色只用于金额和关闭动作。 -->
+        <InfoNotice tone="danger">{{ error }}</InfoNotice>
         <button
           class="w-full text-sm underline dark:text-blue-400 dark:hover:text-blue-300"
           :style="{ color: methodColor }"
@@ -42,10 +39,7 @@
 
       <!-- Loading / Redirecting -->
       <div v-else class="flex items-center justify-center py-8">
-        <div
-          class="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
-          :style="{ borderColor: methodColor, borderTopColor: 'transparent' }"
-        />
+        <LoadingSpinner size="lg" />
         <span class="ml-3 text-sm text-gray-500 dark:text-slate-400">{{ hint }}</span>
       </div>
     </div>
@@ -59,6 +53,8 @@ import { useRoute } from 'vue-router'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import { isMobileDevice } from '@/utils/device'
 import { buildApiUrl } from '@/api/client'
+import InfoNotice from '@/components/common/InfoNotice.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 interface StripeWithWechatPay {
   confirmWechatPayPayment(clientSecret: string, options: Record<string, unknown>): Promise<{ error?: { message?: string }; paymentIntent?: { status: string } }>

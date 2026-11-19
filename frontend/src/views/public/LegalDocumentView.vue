@@ -1,10 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-900 dark:bg-dark-950 dark:text-white">
-    <header class="border-b border-gray-200 bg-white/95 dark:border-dark-800 dark:bg-dark-900/95">
+  <div class="min-h-screen bg-white text-gray-900 dark:bg-dark-950 dark:text-white">
+    <!-- 顶栏 / 品牌标识：公开文档保留独立登录入口与站点身份，不叠加半透明旧式表面。 -->
+    <header class="border-b border-gray-200 bg-white dark:border-dark-800 dark:bg-dark-900">
       <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <RouterLink to="/home" class="flex min-w-0 items-center gap-3">
           <template v-if="settings">
-            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-700">
+            <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white dark:bg-dark-800">
               <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
             </span>
             <span class="truncate text-base font-semibold text-gray-950 dark:text-white">
@@ -18,7 +19,7 @@
         </RouterLink>
         <RouterLink
           to="/login"
-          class="inline-flex flex-shrink-0 items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-primary-600/20 transition hover:bg-primary-700"
+          class="btn btn-primary flex-shrink-0"
         >
           {{ t('home.login') }}
         </RouterLink>
@@ -27,23 +28,27 @@
 
     <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:py-10">
       <div v-if="loading" class="flex min-h-[320px] items-center justify-center">
-        <div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
+        <LoadingSpinner size="lg" />
       </div>
 
       <section
         v-else-if="loadError"
-        class="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+        class="kreepai-detail-panel"
       >
-        <h1 class="text-lg font-semibold">{{ t('legal.loadFailed') }}</h1>
-        <p class="mt-2 text-sm">{{ t('legal.retryLater') }}</p>
+        <!-- 提示信息 / 警告信息：读取失败是实际错误，使用共享危险提示。 -->
+        <InfoNotice tone="danger">
+          <h1 class="font-semibold">{{ t('legal.loadFailed') }}</h1>
+          <p class="mt-1">{{ t('legal.retryLater') }}</p>
+        </InfoNotice>
       </section>
 
       <section
         v-else-if="!currentDocument"
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-dark-700 dark:bg-dark-900"
+        class="kreepai-detail-panel"
       >
+        <!-- 展示信息模块：不存在文档使用二级白面，图标框保持中性。 -->
         <div class="flex items-start gap-3">
-          <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-600 dark:bg-dark-800 dark:text-dark-300">
+          <span class="stat-icon flex h-10 w-10 flex-shrink-0 items-center justify-center">
             <Icon name="document" size="sm" />
           </span>
           <div>
@@ -55,10 +60,11 @@
         </div>
       </section>
 
-      <article v-else>
+      <!-- 展示卡片：正文以一级浅灰面承载，Markdown 内容保持原文与链接语义。 -->
+      <article v-else class="card p-6 sm:p-8">
         <div class="mb-8 border-b border-gray-200 pb-6 dark:border-dark-700">
           <div class="flex items-start gap-4">
-            <span class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300">
+            <span class="stat-icon flex h-12 w-12 flex-shrink-0 items-center justify-center">
               <Icon :name="documentIcon" size="md" />
             </span>
             <div class="min-w-0">
@@ -80,7 +86,7 @@
         ></div>
         <div
           v-else
-          class="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center text-sm text-gray-500 dark:border-dark-700 dark:bg-dark-900 dark:text-dark-400"
+          class="kreepai-detail-panel px-6 py-14 text-center text-sm text-gray-500 dark:text-dark-400"
         >
           {{ t('legal.empty') }}
         </div>
@@ -96,6 +102,8 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
+import InfoNotice from '@/components/common/InfoNotice.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { getLocale } from '@/i18n'
 import { sanitizeUrl } from '@/utils/url'
 import { useAppStore } from '@/stores/app'

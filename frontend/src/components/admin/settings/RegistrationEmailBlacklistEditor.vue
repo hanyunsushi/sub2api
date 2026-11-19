@@ -1,23 +1,36 @@
 <template>
-  <div class="border-t border-gray-100 pt-4 dark:border-dark-700" data-testid="email-blacklist-editor">
+  <!-- 展示信息模块：复杂注册策略仍属于设置表单行，内部编辑/核查内容使用二级白面。 -->
+  <div
+    class="settings-field-row kreepai-email-blacklist-editor min-w-0 border-t border-gray-100 pt-4 dark:border-dark-700"
+    data-testid="email-blacklist-editor"
+    :aria-busy="loading || saving || checking || disabling"
+  >
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div class="min-w-0">
-        <label class="font-medium text-gray-900 dark:text-white">
+        <h3 class="kreepai-email-blacklist-title">
           {{ t('admin.settings.registration.emailBlacklist.title') }}
-        </label>
+        </h3>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ t('admin.settings.registration.emailBlacklist.hint') }}
         </p>
-        <p class="mt-2 text-sm" data-testid="email-blacklist-summary">
-          <span v-if="loading" class="text-gray-500 dark:text-gray-400">{{ t('common.loading') }}</span>
-          <span v-else-if="loadError" class="text-red-600 dark:text-red-400">
-            {{ t('admin.settings.registration.emailBlacklist.loadFailed') }}
-            <button type="button" class="ml-2 underline" @click="load">{{ t('admin.settings.registration.emailBlacklist.retry') }}</button>
+        <!-- 加载反馈 / 提示信息：读取失败使用危险语义，数量只是中性信息牌。 -->
+        <div class="mt-2" data-testid="email-blacklist-summary" aria-live="polite">
+          <span v-if="loading" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <LoadingSpinner size="sm" color="gray" aria-hidden="true" />
+            {{ t('common.loading') }}
           </span>
-          <span v-else class="text-gray-700 dark:text-gray-300">
+          <InfoNotice v-else-if="loadError" tone="danger" class="kreepai-email-blacklist-error">
+            <span>
+              {{ t('admin.settings.registration.emailBlacklist.loadFailed') }}
+              <button type="button" class="btn btn-secondary btn-sm ml-2" @click="load">
+                {{ t('admin.settings.registration.emailBlacklist.retry') }}
+              </button>
+            </span>
+          </InfoNotice>
+          <span v-else class="kreepai-status" data-status="info">
             {{ t('admin.settings.registration.emailBlacklist.count', { count: formatCount(savedEmails.length) }) }}
           </span>
-        </p>
+        </div>
       </div>
       <div class="flex shrink-0 gap-2">
         <button
@@ -51,6 +64,7 @@
     >
       <div class="space-y-5">
         <section>
+          <!-- 填写框：批量输入保留等宽语义，长地址按原业务解析。 -->
           <label class="text-sm font-medium text-gray-700 dark:text-gray-300" for="email-blacklist-bulk">
             {{ t('admin.settings.registration.emailBlacklist.bulkLabel') }}
           </label>
@@ -73,7 +87,8 @@
               <Icon name="plus" size="sm" class="mr-1" />
               {{ t('admin.settings.registration.emailBlacklist.bulkAdd') }}
             </button>
-            <span v-if="addResult" class="text-sm text-gray-600 dark:text-gray-400" data-testid="email-blacklist-add-result">
+            <!-- 区分-状态牌：批量解析结果表达新增/重复数量，不把结果染成整块成功面。 -->
+            <span v-if="addResult" class="kreepai-status" data-status="success" data-testid="email-blacklist-add-result">
               {{
                 t('admin.settings.registration.emailBlacklist.addResult', {
                   added: formatCount(addResult.added),
@@ -82,18 +97,21 @@
               }}
             </span>
           </div>
-          <p
+          <InfoNotice
             v-if="addResult && addResult.invalid.length > 0"
-            class="mt-2 break-all text-sm text-amber-600 dark:text-amber-400"
+            tone="warning"
+            class="mt-2"
             data-testid="email-blacklist-invalid"
           >
-            {{
-              t('admin.settings.registration.emailBlacklist.invalidResult', {
-                count: formatCount(addResult.invalid.length),
-                sample: invalidSample
-              })
-            }}
-          </p>
+            <span class="break-all">
+              {{
+                t('admin.settings.registration.emailBlacklist.invalidResult', {
+                  count: formatCount(addResult.invalid.length),
+                  sample: invalidSample
+                })
+              }}
+            </span>
+          </InfoNotice>
         </section>
 
         <section>
@@ -102,7 +120,8 @@
               {{ t('admin.settings.registration.emailBlacklist.listLabel', { count: formatCount(draft.length) }) }}
               <span
                 v-if="pendingAdded > 0 || pendingRemoved > 0"
-                class="ml-2 font-normal text-primary-600 dark:text-primary-400"
+                class="kreepai-status ml-2 font-normal"
+                data-status="info"
                 data-testid="email-blacklist-pending"
               >
                 {{
@@ -133,7 +152,8 @@
             </div>
           </div>
 
-          <div class="mt-2 max-h-80 overflow-y-auto rounded-lg border border-gray-200 dark:border-dark-600">
+          <!-- 展示信息模块：名单是设置卡片内的二级白面，滚动只发生在完整名单区域。 -->
+          <div class="kreepai-detail-panel kreepai-email-blacklist-list mt-2 max-h-80 overflow-y-auto">
             <p v-if="draft.length === 0" class="p-4 text-sm text-gray-500 dark:text-gray-400">
               {{ t('admin.settings.registration.emailBlacklist.empty') }}
             </p>
@@ -144,21 +164,21 @@
               <li
                 v-for="email in visible"
                 :key="email"
-                class="flex items-center justify-between gap-3 px-3 py-1.5"
+                class="kreepai-email-blacklist-row flex items-center justify-between gap-3 px-4 py-2"
                 data-testid="email-blacklist-row"
               >
                 <span class="min-w-0 truncate font-mono text-sm text-gray-800 dark:text-gray-200" :title="email">
                   {{ email }}
                   <span
                     v-if="!savedSet.has(email)"
-                    class="ml-2 rounded bg-primary-50 px-1.5 py-0.5 font-sans text-xs text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                    class="badge badge-primary ml-2 shrink-0 font-sans"
                   >
                     {{ t('admin.settings.registration.emailBlacklist.newTag') }}
                   </span>
                 </span>
                 <button
                   type="button"
-                  class="shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-dark-700 dark:hover:text-red-400"
+                  class="btn btn-danger btn-icon"
                   :title="t('admin.settings.registration.emailBlacklist.remove')"
                   :aria-label="t('admin.settings.registration.emailBlacklist.remove')"
                   @click="removeEmail(email)"
@@ -171,9 +191,14 @@
           <p v-if="filtered.length > VISIBLE_LIMIT" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.settings.registration.emailBlacklist.truncated', { limit: VISIBLE_LIMIT, total: formatCount(filtered.length) }) }}
           </p>
-          <p v-if="draft.length > maxEntries" class="mt-2 text-sm text-red-600 dark:text-red-400" data-testid="email-blacklist-too-many">
+          <InfoNotice
+            v-if="draft.length > maxEntries"
+            tone="danger"
+            class="mt-2"
+            data-testid="email-blacklist-too-many"
+          >
             {{ t('admin.settings.registration.emailBlacklist.tooMany', { max: formatCount(maxEntries) }) }}
-          </p>
+          </InfoNotice>
         </section>
       </div>
 
@@ -219,14 +244,14 @@
       @close="closeDisableDialog"
     >
       <div class="space-y-3">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <InfoNotice tone="warning">
           {{ t('admin.settings.registration.emailBlacklist.disableMessage', { count: formatCount(matchedUsers.length) }) }}
-        </p>
+        </InfoNotice>
         <ul
-          class="max-h-72 divide-y divide-gray-100 overflow-y-auto rounded-lg border border-gray-200 dark:divide-dark-700 dark:border-dark-600"
+          class="kreepai-detail-panel kreepai-email-blacklist-list max-h-72 divide-y divide-gray-100 overflow-y-auto dark:divide-dark-700"
           data-testid="email-blacklist-matched-users"
         >
-          <li v-for="user in matchedUsers" :key="user.id" class="flex items-center justify-between gap-3 px-3 py-1.5 text-sm">
+          <li v-for="user in matchedUsers" :key="user.id" class="kreepai-email-blacklist-row flex items-center justify-between gap-3 px-4 py-2 text-sm">
             <span class="min-w-0 truncate font-mono text-gray-800 dark:text-gray-200" :title="user.email">{{ user.email }}</span>
             <span class="shrink-0 text-xs text-gray-500 dark:text-gray-400">
               <template v-if="user.username">{{ user.username }} · </template>#{{ user.id }}
@@ -241,7 +266,7 @@
           </button>
           <button
             type="button"
-            class="btn btn-danger"
+            class="btn btn-primary btn-highlight-arc"
             :disabled="disabling"
             data-testid="email-blacklist-disable-confirm"
             @click="disableMatchedUsers"
@@ -262,6 +287,8 @@ import type { BlacklistedEmailUser } from '@/api/admin/users'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import Icon from '@/components/icons/Icon.vue'
+import InfoNotice from '@/components/common/InfoNotice.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { useAppStore } from '@/stores'
 import { extractApiErrorMessage } from '@/utils/apiError'
 import { mergeIntoBlacklist, parseBlacklistInput } from '@/utils/registrationEmailBlacklist'
@@ -451,3 +478,16 @@ async function disableMatchedUsers() {
 
 onMounted(load)
 </script>
+
+<style scoped>
+/* 展示信息模块：复杂设置仍沿用原行级分隔，名单面板才承担二级白面与局部滚动。 */
+.kreepai-email-blacklist-editor { max-width: 100%; }
+.kreepai-email-blacklist-title { margin: 0; color: var(--text); font: 500 14px/20px var(--ff-body); }
+.kreepai-email-blacklist-list { padding: 0; overflow-x: hidden; }
+.kreepai-email-blacklist-list :deep(ul) { margin: 0; }
+
+@media (pointer: coarse) {
+  /* 普通按钮 / 删除按钮：名单行保留44px触摸命中，不改变邮箱文字的等宽角色。 */
+  .kreepai-email-blacklist-row { min-height: 44px; }
+}
+</style>

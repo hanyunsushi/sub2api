@@ -4,17 +4,16 @@
     <div class="mx-auto max-w-2xl space-y-6">
       <!-- Current Balance Card -->
       <div class="card overflow-hidden">
-        <div class="bg-gradient-to-br from-primary-500 to-primary-600 px-6 py-8 text-center">
-          <div
-            class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm"
-          >
-            <Icon name="creditCard" size="xl" class="text-white" />
+        <!-- 数字展示：余额使用中性一级卡片与等宽金额，不用渐变或磨砂图标框。 -->
+        <div class="kreepai-detail-panel px-6 py-8 text-center">
+          <div class="stat-icon mx-auto mb-4 flex items-center justify-center">
+            <Icon name="creditCard" size="xl" />
           </div>
-          <p class="text-sm font-medium text-primary-100">{{ t('redeem.currentBalance') }}</p>
-          <p class="mt-2 text-4xl font-bold text-white">
+          <p class="stat-label">{{ t('redeem.currentBalance') }}</p>
+          <p class="stat-value mt-2 text-4xl">
             ${{ user?.balance?.toFixed(2) || '0.00' }}
           </p>
-          <p class="mt-2 text-sm text-primary-100">
+          <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
             {{ t('redeem.concurrency') }}: {{ user?.concurrency || 0 }} {{ t('redeem.requests') }}
           </p>
         </div>

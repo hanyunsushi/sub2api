@@ -372,7 +372,8 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 
 <template>
   <!-- 展示卡片：一级运维数据模块使用共享中性表面，内部布局与状态色保持。 -->
-  <div class="card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <!-- 展示卡片：告警事件列表复用一级卡片层级，状态色只保留在状态牌。 -->
+  <div class="card p-6">
     <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>

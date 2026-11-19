@@ -239,7 +239,8 @@ onMounted(() => {
 
 <template>
   <!-- 展示卡片：一级运维数据模块使用共享中性表面，内部布局与状态色保持。 -->
-  <div class="card rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <!-- 展示卡片：运行配置复用一级卡片层级，配置分组由内部白面承载。 -->
+  <div class="card p-6">
     <div class="mb-4 flex items-start justify-between gap-4">
       <div>
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.runtime.title') }}</h3>

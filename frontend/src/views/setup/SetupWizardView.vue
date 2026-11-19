@@ -1,15 +1,15 @@
 <template>
   <!-- 加载反馈：原异步分支共用小型DotMatrix，不改请求、表单与失败反馈。 -->
   <div
-    class="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4 dark:from-dark-900 dark:to-dark-800"
+    class="flex min-h-screen items-center justify-center bg-white p-4 dark:bg-dark-950"
   >
     <div class="w-full max-w-2xl">
       <!-- Logo & Title -->
       <div class="mb-8 text-center">
         <div
-          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg"
+          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gray-100 text-primary-600 dark:bg-dark-800 dark:text-primary-400"
         >
-          <Icon name="cog" size="xl" class="text-white" />
+          <Icon name="cog" size="xl" />
         </div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ t('setup.title') }}</h1>
         <p class="mt-2 text-gray-500 dark:text-dark-400">{{ t('setup.description') }}</p>
@@ -59,7 +59,8 @@
       </div>
 
       <!-- Step Content -->
-      <div class="rounded-2xl bg-white p-8 shadow-xl dark:bg-dark-800">
+      <!-- 展示卡片：初始化向导的一级表面使用共享浅灰卡片，不叠加渐变或大阴影。 -->
+      <div class="card p-8">
         <!-- Step 1: Database -->
         <div v-if="currentStep === 0" class="space-y-6">
           <div class="mb-6 text-center">
@@ -92,7 +93,8 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between rounded-xl border border-gray-200 p-3 dark:border-dark-700">
+          <!-- 展示信息模块：连接开关是表单内的二级白面，不表达连接成功。 -->
+          <div class="kreepai-detail-panel flex items-center justify-between p-3">
             <div>
               <p class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ t("setup.redis.enableTls") }}
@@ -323,7 +325,7 @@
           </div>
 
           <div class="space-y-4">
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
+            <div class="kreepai-detail-panel p-4">
               <h3 class="mb-2 text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('setup.ready.database') }}
               </h3>
@@ -334,7 +336,7 @@
               </p>
             </div>
 
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
+            <div class="kreepai-detail-panel p-4">
               <h3 class="mb-2 text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('setup.ready.redis') }}
               </h3>
@@ -343,7 +345,7 @@
               </p>
             </div>
 
-            <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
+            <div class="kreepai-detail-panel p-4">
               <h3 class="mb-2 text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('setup.ready.adminEmail') }}
               </h3>
@@ -353,38 +355,25 @@
         </div>
 
         <!-- Error Message -->
-        <div
-          v-if="errorMessage"
-          class="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/50 dark:bg-red-900/20"
-        >
-          <div class="flex items-start gap-3">
-            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-red-500" />
-            <p class="text-sm text-red-700 dark:text-red-400">{{ errorMessage }}</p>
-          </div>
-        </div>
+        <!-- 提示信息 / 警告信息：连接和安装失败交给共享危险提示，保留原错误文案。 -->
+        <InfoNotice v-if="errorMessage" tone="danger" class="mt-6">
+          {{ errorMessage }}
+        </InfoNotice>
 
         <!-- Success Message -->
-        <div
-          v-if="installSuccess"
-          class="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800/50 dark:bg-green-900/20"
-        >
-          <div class="flex items-start gap-3">
-            <LoadingSpinner size="sm" v-if="!serviceReady" class="h-5 w-5 flex-shrink-0 text-green-500" />
-            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-green-500" />
+        <!-- 提示信息 / 加载反馈：安装完成后的重启等待仍由原轮询状态驱动。 -->
+        <InfoNotice v-if="installSuccess" tone="success" class="mt-6">
+          <div class="flex items-start gap-2">
+            <LoadingSpinner v-if="!serviceReady" size="sm" color="gray" class="mt-0.5 shrink-0" />
+            <Icon v-else name="checkCircle" size="md" class="mt-0.5 shrink-0 text-green-600 dark:text-green-400" />
             <div>
-              <p class="text-sm font-medium text-green-700 dark:text-green-400">
-                {{ t('setup.status.completed') }}
-              </p>
-              <p class="mt-1 text-sm text-green-600 dark:text-green-500">
-                {{
-                  serviceReady
-                    ? t('setup.status.redirecting')
-                    : t('setup.status.restarting')
-                }}
+              <p class="font-medium">{{ t('setup.status.completed') }}</p>
+              <p class="mt-1">
+                {{ serviceReady ? t('setup.status.redirecting') : t('setup.status.restarting') }}
               </p>
             </div>
           </div>
-        </div>
+        </InfoNotice>
 
         <!-- Navigation Buttons -->
         <div class="mt-8 flex justify-between">
@@ -425,6 +414,7 @@
 
 <script setup lang="ts">
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import InfoNotice from '@/components/common/InfoNotice.vue'
 import { ref, reactive, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { testDatabase, testRedis, install, type InstallRequest } from '@/api/setup'

@@ -28,9 +28,10 @@ describe('channel-monitor-v2 design system structure', () => {
     expect(src).toContain('clearFilters')
     expect(src).toContain('healthModeOptions')
     expect(src).toContain("'cache'")
-    // Ops elevation: rounded-3xl + ring surfaces
-    expect(src).toContain('rounded-3xl')
-    expect(src).toContain('ring-1 ring-gray-900/5')
+    // Monitor shell uses the shared flat card surface without legacy Ops chrome.
+    expect(src).toContain('class="card sticky')
+    expect(src).not.toContain('ring-1 ring-gray-900/5')
+    expect(src).not.toContain('backdrop-blur-sm')
     // Overview-first KPI strip before primary viz
     expect(src.indexOf('summaryAria')).toBeLessThan(src.indexOf('MonitorTrendChart'))
     // No page-level fixed min-width that forces viewport horizontal scroll

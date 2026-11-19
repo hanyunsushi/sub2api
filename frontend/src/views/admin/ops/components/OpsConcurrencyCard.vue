@@ -343,7 +343,8 @@ watch(
 
 <template>
   <!-- 展示卡片：一级运维数据模块使用共享中性表面，内部布局与状态色保持。 -->
-  <div class="card flex h-full flex-col rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-dark-800 dark:ring-dark-700">
+  <!-- 展示卡片：运维图表保持一级浅灰面，内部数据表再使用白色承载面。 -->
+  <div class="card flex h-full flex-col p-6">
     <!-- 头部 -->
     <div class="mb-4 flex shrink-0 items-center justify-between gap-3">
       <h3 class="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">

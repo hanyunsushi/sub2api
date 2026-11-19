@@ -37,7 +37,7 @@
 
           <div
             v-if="selectedJobIds.size"
-            class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm dark:border-dark-700 dark:bg-dark-800"
+            class="kreepai-detail-panel flex flex-wrap items-center justify-between gap-3 px-3 py-2"
           >
             <i18n-t
               keypath="batchImage.list.selectedJobs"
@@ -62,7 +62,7 @@
               </button>
               <button
                 type="button"
-                class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"
+                class="btn btn-danger btn-sm"
                 :disabled="bulkDeleting"
                 @click="deleteSelectedJobs"
               >
